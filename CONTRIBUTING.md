@@ -27,7 +27,13 @@ function.
         from __future__ import print_function
         print('Hi!')
 
-#### File format
+
+### NO TAB CHARACTERS, EVER.
+
+4 spaces or die.
+
+
+### File format
 
 All files should be in Unix format in UTF-8.
 
@@ -43,7 +49,3 @@ Each python file should have the following header:
     # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
     from __future__ import with_statement, print_function
-
-### NO TAB CHARACTERS, EVER.
-
-4 spaces or die.
