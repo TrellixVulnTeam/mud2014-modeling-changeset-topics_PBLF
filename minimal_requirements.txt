@@ -1,0 +1,5 @@
+numpy
+dulwich
+gensim
+scipy
+whatthepatch
