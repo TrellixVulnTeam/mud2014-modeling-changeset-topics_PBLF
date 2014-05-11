@@ -3,6 +3,8 @@ Topic of Change
 
 Basic idea: compare LDA models built with two different sources of documents. The first being a traditional source code snapshot, and the second being variations on a changeset snapshot.
 
+Be sure to read `CONTRIBUTING.md` and `READING.md`.
+
 ### Model sources
 
 1. Traditional source code snapshot:
