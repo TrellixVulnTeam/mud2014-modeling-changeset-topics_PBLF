@@ -17,16 +17,17 @@ Basic idea: compare LDA models built with two different sources of documents. Th
           - all combinations of the above 3
     - This will produce several sets of documents, each of which can be compared to the traditional documents
     - The 'pilot' study can just use all of the lines: added & removed & context
-    - The 'extended' study will look at which combination is better is the pilot seems successful
+    - The 'extended' study will look at which combination is better if the pilot seems promising
 
 ### Preprocessing
 
 All documents in from all sources will need some pre-processing:
-    - All punctuation removed
-    - English stop words removed
-    - Programming language keywords removed (e.g. if, while, for, &c)
-    - camelCase and under_score words are split into: camel, case, under, score
-    - All words converted into lowercase utf-8 strings
+
+- All punctuation removed
+- English stop words removed
+- Programming language keywords removed (e.g. if, while, for, &c)
+- camelCase and under_score words are split into: camel, case, under, score
+- All words converted into lowercase utf-8 strings
 
 ### Training the models
 
