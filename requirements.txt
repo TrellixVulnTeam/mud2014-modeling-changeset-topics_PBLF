@@ -1,0 +1,14 @@
+Jinja2
+MarkupSafe
+dulwich
+gensim
+ipython
+matplotlib
+nose
+numpy
+pyparsing
+python-dateutil
+pyzmq
+scipy
+tornado
+whatthepatch
