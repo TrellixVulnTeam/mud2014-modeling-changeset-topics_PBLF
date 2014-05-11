@@ -6,7 +6,7 @@ sure we are ready.
 
 ### Coding standards
 
-In general, follow [PEP 8](http://legacy.python.org/dev/peps/pep-0008/).
+##### In general, just follow [PEP 8](http://legacy.python.org/dev/peps/pep-0008/).
 
 If you don't need absolutely need a  class, then don't write a damned
 class. Use functions as much as possible.
