@@ -47,3 +47,9 @@ Can use a query-based evaluation system similar to Bassett & Kraft (ICPC'13). No
 ### Idea box:
 
 - We could extend the comparison to include LSI
+
+### Using the Wiki to log your progress
+
+Log all progress in the [wiki](https://github.com/cscorley/topic-of-change/wiki) (on left).
+
+Try to keep daily notes.
