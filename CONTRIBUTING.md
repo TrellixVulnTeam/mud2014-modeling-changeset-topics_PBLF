@@ -18,14 +18,14 @@ function.
 
 1. Use the `with` statement:
 
-    from __future__ import with_statement
-    with open('input.txt') as f:
-        text = f.read()
+        from __future__ import with_statement
+        with open('input.txt') as f:
+            text = f.read()
 
 2. Use the `print()` function:
-
-    from __future__ import print_function
-    print('Hi!')
+    
+        from __future__ import print_function
+        print('Hi!')
 
 #### File format
 
