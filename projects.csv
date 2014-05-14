@@ -1,0 +1,3 @@
+project,short_name,url,release,commit,tag
+"Apache Ant",ant,https://github.com/apache/ant,1.9.4,90653089548cd37d9f0d30631fbefb504b02dbc2,ANT_194
+"Apache Ant",ant,https://github.com/apache/ant,1.9.3,8ed3120715de8457f74fb58a234f7cdef2bedc32,ANT_193
