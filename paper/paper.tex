@@ -1,0 +1,74 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{balance}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{color}
+\usepackage{comment}
+\usepackage[pdftex]{graphicx}
+\usepackage{url}
+
+\hyphenation{}
+
+
+\newcommand{\attn}[1]{{\color{red}#1}}
+\newcommand{\desc}[1]{{\emph{\color{blue}#1}}}
+\newcommand{\needcite}{\attn{\tiny{[cite]}}}
+
+\begin{document}
+\title{Modeling Changeset Topics: clever subtitle here}
+\author{\IEEEauthorblockN{Christopher S. Corley, Nicholas A. Kraft}
+\IEEEauthorblockA{%
+   Department of Computer Science\\
+   The University of Alabama\\
+   Tuscaloosa, AL 35487-0290\\
+   cscorley@ua.edu, nkraft@cs.ua.edu
+   }
+}
+
+\maketitle
+
+\begin{abstract}
+
+    abstract
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+\end{IEEEkeywords}
+
+\section{Introduction}
+\label{sec:intro}
+\input{sec_intro}
+
+\section{Background \& Related Work}
+\label{sec:related}
+\input{sec_related}
+
+\section{Methodology}
+\label{sec:methodology}
+\input{sec_methodology}
+
+\section{Case Study}
+\label{sec:study}
+\input{sec_study}
+
+\section{Threats To Validity}
+\label{sec:threats}
+\input{sec_threats}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sec_conclusion}
+
+\section*{Acknowledgment}
+% We thank the anonymous reviewers for their insightful comments and helpful suggestions.
+This material is based upon work supported
+by the U.S. Department of Education under Grant No.\ P200A100182 and
+by the National Science Foundation under Grant No.\ 1156563.
+
+%\IEEEtriggeratref{21}
+\bibliographystyle{IEEEtran}
+\bibliography{paper}
+
+\end{document}

@@ -54,3 +54,12 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+
+# Latex
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.pdf
