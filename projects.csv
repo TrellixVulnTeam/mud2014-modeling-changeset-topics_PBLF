@@ -1,3 +1,8 @@
-project,short_name,url,release,commit,tag
-"Apache Ant",ant,https://github.com/apache/ant,1.9.4,90653089548cd37d9f0d30631fbefb504b02dbc2,ANT_194
-"Apache Ant",ant,https://github.com/apache/ant,1.9.3,8ed3120715de8457f74fb58a234f7cdef2bedc32,ANT_193
+project,short_name,url,release,commit
+"Apache Ant",ant,https://github.com/apache/ant,1.9.4,90653089548cd37d9f0d30631fbefb504b02dbc2
+"JabRef",jabref,https://github.com/JabRef/jabref,2.10,d9ba745225f56faf878b6538bda25969a996c968
+"JabRef-bassett",jabref,https://github.com/JabRef/jabref,2.6,55e2db1a27a6551c462a6067f196a82ebb7124a6
+"jEdit-bassett",jedit,http://git.code.sf.net/p/jedit/jEdit.bak,4.3,de36dc8f25160c7c7d8a6bc2317940b37e60f6e7
+"Netflix Hystrix",hystrix,https://github.com/Netflix/Hystrix,1.3.16,aa8224215a9f4d68ffb851fdb68c656eab8edadc
+"NASA MCT",mct,https://github.com/nasa/mct,1.7.0,b2f5333dbad00393d6cae85b7a7941418d9a78e2
+"Square OkHttp",okhttp,https://github.com/square/okhttp,1.5.4,e5cb379d09a5a26f194895fed3cd8aea20a1c6c8
