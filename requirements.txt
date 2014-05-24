@@ -1,14 +1,6 @@
-Jinja2
-MarkupSafe
-dulwich
-gensim
-ipython
-matplotlib
 nose
 numpy
-pyparsing
-python-dateutil
-pyzmq
+dulwich
+gensim
 scipy
-tornado
 whatthepatch
