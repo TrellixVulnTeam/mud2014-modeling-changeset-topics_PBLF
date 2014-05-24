@@ -1,6 +1,18 @@
 from io import StringIO
 
-
+def read_in_files(): 
+    path = '/Users/kellykashuda/REU/topic-of-change/data/ant_files.txt' 
+    # or
+    #path = '../data/ant_files.txt' 
+    list_of_files = [] 
+    with open(path) as f:
+        for line in f:
+            stripped = line.strip()
+            stuff = '../data/' + stripped
+            list_of_files.append(stuff) 
+    print(list_of_files[0:3])
+read_in_files()
+    
 def read_fname(lyst, fname_out): 
     with open(fname_out, 'w') as g:
         for fname in lyst:
@@ -34,4 +46,4 @@ def test_generate():
     assert result == expected
 
 
-
+    
