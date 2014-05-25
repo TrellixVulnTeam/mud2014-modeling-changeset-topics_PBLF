@@ -49,7 +49,7 @@ class TestGeneration(unittest.TestCase):
         corpus.metadata = True
         docs = list(corpus)
         self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11) # the deerwester corpus always has nine documents, no matter what format
+        self.assertEqual(len(docs), 11)
 
         documents = [
                 ([u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'], 
@@ -78,7 +78,7 @@ class TestGeneration(unittest.TestCase):
 
         for docmeta in corpus.get_texts():
             doc, meta = docmeta
-            doc = list(doc)
-            docmeta = doc, meta
+            doc = list(doc) # generators, woo?
+            docmeta = doc, meta # get a non (generator, metadata) pair
             self.assertIn(docmeta, documents)
 
