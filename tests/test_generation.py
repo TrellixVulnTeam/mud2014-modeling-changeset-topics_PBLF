@@ -26,24 +26,7 @@ class TestGeneration(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_generate_docs(self):
-        fname = u'butts.txt'
-        expected = u'butts.txt en burgers cats dogs hotdogs\n'
-        with StringIO(u'burgers\ncats\ndogs hotdogs\n') as i:
-            with StringIO() as o:
-                generation.generate_docs(fname, i, o)
-                result = o.getvalue()
-
-        self.assertEqual(result, expected)
-
-        i = "burgers\ncats\ndogs hotdogs\n".splitlines()
-        with StringIO() as o:
-            generation.generate_docs(fname, i, o)
-            result = o.getvalue()
-
-        self.assertEqual(result, expected)
-
-    def test_multitext_corpus(self):
+    def test_multitext_metadata_get_texts(self):
         basepath = datapath(u'multitext/')
         corpus = generation.MultiTextCorpus(basepath)
         corpus.metadata = True
@@ -81,4 +64,40 @@ class TestGeneration(unittest.TestCase):
             doc = list(doc) # generators, woo?
             docmeta = doc, meta # get a non (generator, metadata) pair
             self.assertIn(docmeta, documents)
+
+    def test_multitext_get_texts(self):
+        basepath = datapath(u'multitext/')
+        corpus = generation.MultiTextCorpus(basepath)
+        docs = list(corpus)
+        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
+        self.assertEqual(len(docs), 11)
+
+        documents = [
+                [u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'], 
+                [u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
+                [u'the', u'eps', u'user', u'interface', u'management', u'system'],
+                [u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
+                [u'relation', u'of', u'user', u'perceived', u'response', u'time', u'to', u'error', u'measurement'],
+                [u'the', u'generation', u'of', u'random', u'binary', u'unordered', u'trees'],
+                [u'the', u'intersection', u'graph', u'of', u'paths', u'in', u'trees'],
+                [u'graph', u'minors', u'iv', u'widths', u'of', u'trees', u'and', u'well', u'quasi', u'ordering'],
+                [u'graph', u'minors', u'a', u'survey'],
+                [u'graph', u'minors', u'a', u'survey'],
+                [u'graph', u'minors', u'a', u'survey'],
+                ]
+
+        for doc in corpus.get_texts():
+            doc = list(doc) # generators, woo?
+            self.assertIn(doc, documents)
+
+    def test_multitext_docs(self):
+        basepath = datapath(u'multitext/')
+        corpus = generation.MultiTextCorpus(basepath)
+        docs = list(corpus)
+        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
+        self.assertEqual(len(docs), 11)
+
+        # terrible test, need to calculate each doc like other two tests
+        for doc in corpus:
+            self.assertGreater(len(doc), 0)
 

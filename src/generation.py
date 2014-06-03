@@ -26,7 +26,11 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
     def __init__(self, top_dir):
         # set top_dir first so get_texts doesn't get lost during TextCorpus.__init__
         self.top_dir = top_dir
-        super(MultiTextCorpus, self).__init__()
+
+        # giving it top_dir doesn't matter;
+        # just forces TextCorpus to build a dictionary so docs aren't garbage
+        # might be worthwhile to build the dictionary within get_texts
+        super(MultiTextCorpus, self).__init__(top_dir)
 
     def get_texts(self, filter_by=lambda x: True):
         self.length = 0
@@ -44,34 +48,4 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
                     yield gensim.utils.tokenize(document, lower=True), (fpath,)
                 else:
                     yield gensim.utils.tokenize(document, lower=True)
-
-
-def read_in_files():
-    path = '/Users/kellykashuda/REU/topic-of-change/data/ant_files.txt'
-    # or
-    #path = '../data/ant_files.txt'
-    list_of_files = []
-    with open(path) as f:
-        for line in f:
-            stripped = line.strip()
-            stuff = '../data/' + stripped
-            list_of_files.append(stuff)
-    print(list_of_files[0:3])
-
-def read_fname(lyst, fname_out):
-    with open(fname_out, 'w') as g:
-        for fname in lyst:
-            with open(fname, 'r') as f:
-                generate_docs(fname, f, g)
-
-def generate_docs(fname, infile, outfile):
-    outfile.write(fname + " en")
-    for line in infile:
-        line = unicode(line)
-        line = line.strip().split()
-        for word in line:
-            outfile.write(u" ")
-            outfile.write(word)
-    outfile.write(u'\n')
-
 
