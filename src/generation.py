@@ -45,7 +45,7 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
                     document = f.read()
 
                 if self.metadata:
-                    yield gensim.utils.tokenize(document, lower=True), (fpath,)
+                    yield gensim.utils.tokenize(document, lower=True), (fpath, 'en')
                 else:
                     yield gensim.utils.tokenize(document, lower=True)
 
