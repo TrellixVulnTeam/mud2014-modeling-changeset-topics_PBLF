@@ -11,15 +11,17 @@ if __name__ == '__main__':
     import nose
     nose.main()
 
-from nose.tools import *
 import unittest
-
 import os.path
-module_path = os.path.dirname(__file__) # needed because sample data files are located in the same folder
-datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
-
 from io import StringIO
+
+from nose.tools import *
+
 from src import generation
+
+# datapath is now a useful function for building paths to test files
+module_path = os.path.dirname(__file__)
+datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 
 class TestGeneration(unittest.TestCase):
     def setUp(self):
@@ -194,5 +196,26 @@ class TestGeneration(unittest.TestCase):
 
     def test_git_test_extraction(self):
         assert os.path.exists(datapath('multitext_git'))
+
+    def test_changeset_get_texts(self):
+        basepath = datapath(u'multitext_git/')
+        corpus = generation.ChangesetCorpus(basepath)
+        docs = list(corpus)
+        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
+        self.assertEqual(len(docs), 11)
+
+    def test_changeset_docs(self):
+        basepath = datapath(u'multitext_git/')
+        corpus = generation.ChangesetCorpus(basepath)
+        docs = list(corpus)
+        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
+        self.assertEqual(len(docs), 11)
+
+    def test_changeset_metadata_get_texts(self):
+        basepath = datapath(u'multitext_git/')
+        corpus = generation.ChangesetCorpus(basepath)
+        docs = list(corpus)
+        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
+        self.assertEqual(len(docs), 11)
 
 
