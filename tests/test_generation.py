@@ -23,62 +23,51 @@ from src import generation
 module_path = os.path.dirname(__file__)
 datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 
-class TestGeneration(unittest.TestCase):
+class TestMultitextCorpus(unittest.TestCase):
     def setUp(self):
-        if not os.path.exists(datapath('multitext_git')):
-            extraction_path = datapath('')
-            gz = datapath('multitext_git.tar.gz')
+        self.basepath = datapath(u'multitext/')
+        self.corpus = generation.MultiTextCorpus(self.basepath)
+        self.docs = list(self.corpus)
 
-            import tarfile
-            with tarfile.open(gz) as tar:
-                tar.extractall(extraction_path)
+    def test_length(self):
+        self.assertEqual(len(self.corpus), 11)
+        self.assertEqual(len(self.docs), 11)
 
-    def test_multitext_metadata_get_texts(self):
-        basepath = datapath(u'multitext/')
-        corpus = generation.MultiTextCorpus(basepath)
-        corpus.metadata = True
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
+    def test_metadata_get_texts(self):
+        self.corpus.metadata = True
 
         documents = [
                 ([u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
-                    (basepath + 'a/0.txt', u'en')),
+                    (self.basepath + 'a/0.txt', u'en')),
                 ([u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
-                    (basepath + 'a/1.txt', u'en')),
+                    (self.basepath + 'a/1.txt', u'en')),
                 ([u'the', u'eps', u'user', u'interface', u'management', u'system'],
-                    (basepath + 'b/2.txt', u'en')),
+                    (self.basepath + 'b/2.txt', u'en')),
                 ([u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
-                    (basepath + 'b/3.txt', u'en')),
+                    (self.basepath + 'b/3.txt', u'en')),
                 ([u'relation', u'of', u'user', u'perceived', u'response', u'time', u'to', u'error', u'measurement'],
-                    (basepath + 'c/4.txt', u'en')),
+                    (self.basepath + 'c/4.txt', u'en')),
                 ([u'the', u'generation', u'of', u'random', u'binary', u'unordered', u'trees'],
-                    (basepath + 'c/e/5.txt', u'en')),
+                    (self.basepath + 'c/e/5.txt', u'en')),
                 ([u'the', u'intersection', u'graph', u'of', u'paths', u'in', u'trees'],
-                    (basepath + 'c/f/6.txt', u'en')),
+                    (self.basepath + 'c/f/6.txt', u'en')),
                 ([u'graph', u'minors', u'iv', u'widths', u'of', u'trees', u'and', u'well', u'quasi', u'ordering'],
-                    (basepath + '7.txt', u'en')),
+                    (self.basepath + '7.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'dos.txt', u'en')),
+                    (self.basepath + 'dos.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'mac.txt', u'en')),
+                    (self.basepath + 'mac.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'unix.txt', u'en')),
+                    (self.basepath + 'unix.txt', u'en')),
                 ]
 
-        for docmeta in corpus.get_texts():
+        for docmeta in self.corpus.get_texts():
             doc, meta = docmeta
             doc = list(doc) # generators, woo?
             docmeta = doc, meta # get a non (generator, metadata) pair
             self.assertIn(docmeta, documents)
 
-    def test_multitext_get_texts(self):
-        basepath = datapath(u'multitext/')
-        corpus = generation.MultiTextCorpus(basepath)
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
-
+    def test_get_texts(self):
         documents = [
                 [u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
                 [u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
@@ -93,17 +82,11 @@ class TestGeneration(unittest.TestCase):
                 [u'graph', u'minors', u'a', u'survey'],
                 ]
 
-        for doc in corpus.get_texts():
+        for doc in self.corpus.get_texts():
             doc = list(doc) # generators, woo?
             self.assertIn(doc, documents)
 
-    def test_multitext_docs(self):
-        basepath = datapath(u'multitext/')
-        corpus = generation.MultiTextCorpus(basepath)
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
-
+    def test_docs(self):
         documents = [
                 [(u'human', 1),
                     (u'machine', 1),
@@ -186,36 +169,39 @@ class TestGeneration(unittest.TestCase):
 
 
         # terrible test, need to calculate each doc like other two tests
-        for doc in corpus:
+        for doc in self.corpus:
             self.assertGreater(len(doc), 0)
 
             # convert the document to text freq since we don't know the
             # term ids ahead of time for testing.
-            textdoc = set((unicode(corpus.dictionary[x[0]]), x[1]) for x in doc)
+            textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)
 
-    def test_git_test_extraction(self):
-        assert os.path.exists(datapath('multitext_git'))
+
+class TestChangesetCorpus(unittest.TestCase):
+    def setUp(self):
+        self.basepath = datapath(u'multitext_git/')
+        if not os.path.exists(self.basepath):
+            extraction_path = datapath('')
+            gz = datapath(u'multitext_git.tar.gz')
+
+            import tarfile
+            with tarfile.open(gz) as tar:
+                tar.extractall(extraction_path)
+
+        self.corpus = generation.ChangesetCorpus(self.basepath)
+        self.docs = list(self.corpus)
+
+    def tset_corpus_lengths(self):
+        self.assertEqual(len(self.corpus), 5) # check the corpus builds correctly
+        self.assertEqual(len(self.docs), 5)
 
     def test_changeset_get_texts(self):
-        basepath = datapath(u'multitext_git/')
-        corpus = generation.ChangesetCorpus(basepath)
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
+        pass
 
     def test_changeset_docs(self):
-        basepath = datapath(u'multitext_git/')
-        corpus = generation.ChangesetCorpus(basepath)
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
+        pass
 
     def test_changeset_metadata_get_texts(self):
-        basepath = datapath(u'multitext_git/')
-        corpus = generation.ChangesetCorpus(basepath)
-        docs = list(corpus)
-        self.assertEqual(len(corpus), 11) # check the corpus builds correctly
-        self.assertEqual(len(docs), 11)
-
+        pass
 
