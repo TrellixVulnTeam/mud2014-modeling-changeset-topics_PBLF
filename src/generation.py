@@ -63,4 +63,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
 
     def get_texts(self):
         self.length = 0
-        yield ['']
+        if self.metadata:
+            yield [''], ('', '')
+        else:
+            yield ['']
