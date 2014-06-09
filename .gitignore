@@ -1,6 +1,9 @@
 .DS_Store
 data/
 
+# custom test dir
+tests/test_data/multitext_git/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

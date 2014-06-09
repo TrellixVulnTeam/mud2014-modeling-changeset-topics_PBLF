@@ -21,10 +21,15 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 from io import StringIO
 from src import generation
 
-
 class TestGeneration(unittest.TestCase):
     def setUp(self):
-        pass
+        if not os.path.exists(datapath('multitext_git')):
+            extraction_path = datapath('')
+            gz = datapath('multitext_git.tar.gz')
+
+            import tarfile
+            with tarfile.open(gz) as tar:
+                tar.extractall(extraction_path)
 
     def test_multitext_metadata_get_texts(self):
         basepath = datapath(u'multitext/')
@@ -36,27 +41,27 @@ class TestGeneration(unittest.TestCase):
 
         documents = [
                 ([u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
-                    (basepath + 'a/0.txt',)),
+                    (basepath + 'a/0.txt', u'en')),
                 ([u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
-                    (basepath + 'a/1.txt',)),
+                    (basepath + 'a/1.txt', u'en')),
                 ([u'the', u'eps', u'user', u'interface', u'management', u'system'],
-                    (basepath + 'b/2.txt',)),
+                    (basepath + 'b/2.txt', u'en')),
                 ([u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
-                    (basepath + 'b/3.txt',)),
+                    (basepath + 'b/3.txt', u'en')),
                 ([u'relation', u'of', u'user', u'perceived', u'response', u'time', u'to', u'error', u'measurement'],
-                    (basepath + 'c/4.txt',)),
+                    (basepath + 'c/4.txt', u'en')),
                 ([u'the', u'generation', u'of', u'random', u'binary', u'unordered', u'trees'],
-                    (basepath + 'c/e/5.txt',)),
+                    (basepath + 'c/e/5.txt', u'en')),
                 ([u'the', u'intersection', u'graph', u'of', u'paths', u'in', u'trees'],
-                    (basepath + 'c/f/6.txt',)),
+                    (basepath + 'c/f/6.txt', u'en')),
                 ([u'graph', u'minors', u'iv', u'widths', u'of', u'trees', u'and', u'well', u'quasi', u'ordering'],
-                    (basepath + '7.txt',)),
+                    (basepath + '7.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'dos.txt',)),
+                    (basepath + 'dos.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'mac.txt',)),
+                    (basepath + 'mac.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (basepath + 'unix.txt',)),
+                    (basepath + 'unix.txt', u'en')),
                 ]
 
         for docmeta in corpus.get_texts():
@@ -186,3 +191,8 @@ class TestGeneration(unittest.TestCase):
             # term ids ahead of time for testing.
             textdoc = set((unicode(corpus.dictionary[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)
+
+    def test_git_test_extraction(self):
+        assert os.path.exists(datapath('multitext_git'))
+
+
