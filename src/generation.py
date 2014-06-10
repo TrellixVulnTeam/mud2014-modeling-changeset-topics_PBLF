@@ -35,13 +35,13 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
         super(MultiTextCorpus, self).__init__(top_dir)
 
     def get_texts(self):
-        self.length = 0
+        length = 0
 
         for root, dirs, files in os.walk(self.top_dir):
             # walk all files and subdirectories, yielding the contents of each
             for fname in files:
                 fpath = os.path.join(root, fname)
-                self.length += 1
+                length += 1
 
                 with open(fpath) as f:
                     document = f.read()
@@ -50,6 +50,8 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
                     yield gensim.utils.tokenize(document, lower=True), (fpath, u'en')
                 else:
                     yield gensim.utils.tokenize(document, lower=True)
+
+        self.length = length # only reset after iteration is done.
 
 class ChangesetCorpus(gensim.corpora.TextCorpus):
     """ Iterates over all files within `top_dir`, yielding each file as
@@ -95,7 +97,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                     yield commit, parent, diff
 
     def get_texts(self):
-        self.length = 0
+        length = 0
         unified = re.compile(r'^[+ -].*')
         current = None
         low = list()
@@ -111,7 +113,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                     yield low, (current.id, u'en')
                 else:
                     yield low
-                self.length += 1
+                length += 1
                 current = commit
                 low = list()
 
@@ -133,8 +135,10 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
             words = gensim.utils.tokenize(document, lower=True)
             low.extend(words)
 
-        self.length += 1
+        length += 1
         if self.metadata:
             yield low, (current.id, u'en')
         else:
             yield low
+
+        self.length = length # only reset after iteration is done.
