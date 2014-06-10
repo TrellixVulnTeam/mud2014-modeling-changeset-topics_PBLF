@@ -33,6 +33,10 @@ class TestMultitextCorpus(unittest.TestCase):
         self.assertEqual(len(self.corpus), 11)
         self.assertEqual(len(self.docs), 11)
 
+        l = len(self.corpus)
+        for _ in self.corpus:
+            self.assertEqual(l, len(self.corpus))
+
     def test_get_texts(self):
         documents = [
                 [u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
@@ -212,6 +216,10 @@ class TestChangesetCorpus(unittest.TestCase):
     def test_length(self):
         self.assertEqual(len(self.corpus), 5)
         self.assertEqual(len(self.docs), 5)
+
+        l = len(self.corpus)
+        for _ in self.corpus:
+            self.assertEqual(l, len(self.corpus))
 
 
     def test_changeset_get_texts(self):
