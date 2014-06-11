@@ -1,33 +1,11 @@
 import re, string
 
-def openf(fname):
-    unfiltered = [] 
-    with open(fname, 'r') as f:
-        for line in f:
-            line = line.strip().split() 
-            for word in line:
-                unfiltered.append(word) 
-    return unfiltered
-
-
-def generator(lyst): 
-    for word in lyst:
-        yield word 
-
-def remove_stops(g):
-    stopwords = ['and','the']
-    important_words = []
+def remove_stops(iterator, stopwords):
+    filtered_words = []
     for word in g:
-        c = str(word) 
-        out = re.sub('[%s]' % re.escape(string.punctuation), '', c)
+        word = str(word) 
+        filtered_w = re.sub('[%s]' % re.escape(string.punctuation), '', word)
         if out not in stopwords:
-            important_words.append(out) 
-    return important_words                
+            important_words.append(filtered_w) 
+    return filtered_words                
 
-
-def main(): 
-    unfilter_w = openf('txt.txt') 
-    g = generator(unfilter_w) 
-    print(remove_stops(g)) 
-
-main()
