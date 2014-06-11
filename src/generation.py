@@ -46,10 +46,11 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
                 with open(fpath) as f:
                     document = f.read()
 
+                words = gensim.utils.tokenize(document, lower=True)
                 if self.metadata:
-                    yield gensim.utils.tokenize(document, lower=True), (fpath, u'en')
+                    yield words, (fpath, u'en')
                 else:
-                    yield gensim.utils.tokenize(document, lower=True)
+                    yield words
 
         self.length = length # only reset after iteration is done.
 
@@ -65,14 +66,20 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
 
 
     def _get_diff(self, changeset):
+        """ Return a text representing a `git diff` for the files in the
+        changeset.
+
+        """
         patch_file = StringIO()
-        dulwich.patch.write_object_diff(patch_file, self.repo.object_store,
-                (changeset.old.path, changeset.old.mode, changeset.old.sha),
-                (changeset.new.path, changeset.new.mode, changeset.new.sha))
+        dulwich.patch.write_object_diff(patch_file,
+                self.repo.object_store,
+                changeset.old, changeset.new)
         return patch_file.getvalue()
 
     def _walk_changes(self, reverse=False):
-        """ Returns one file change at a time, not the entire diff. """
+        """ Returns one file change at a time, not the entire diff.
+
+        """
 
         for walk_entry in self.repo.get_walker(reverse=reverse):
             commit = walk_entry.commit
@@ -100,15 +107,17 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
         length = 0
         unified = re.compile(r'^[+ -].*')
         current = None
-        low = list()
+        low = list() # collecting the list of words
 
         for commit, parent, diff in self._walk_changes():
             # write out once all diff lines for commit have been collected
             # this is over all parents and all files of the commit
             if current is None:
+                # set current for the first commit, clear low
                 current = commit
                 low = list()
             elif current != commit:
+                # new commit seen, yield the collected low
                 if self.metadata:
                     yield low, (current.id, u'en')
                 else:
@@ -117,10 +126,16 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                 current = commit
                 low = list()
 
+
+            # to process out whitespace only changes, the rest of this
+            # loop will need to be structured differently. possibly need
+            # to actually parse the diff to gain structure knowledge
+            # (ie, line numbers of the changes).
+
             diff_lines = filter(lambda x: unified.match(x),
                                 diff.splitlines())
             if len(diff_lines) < 2:
-                continue
+                continue # useful for not worrying with binary files
 
             # sanity?
             assert diff_lines[0].startswith('--- '), diff_lines[0]
@@ -132,11 +147,13 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
             lines = [line[1:] for line in diff_lines] # remove unified markers
             document = ' '.join(lines)
 
+            # call the tokenizer
             words = gensim.utils.tokenize(document, lower=True)
             low.extend(words)
 
         length += 1
         if self.metadata:
+            # have reached the end, yield whatever was collected last
             yield low, (current.id, u'en')
         else:
             yield low
