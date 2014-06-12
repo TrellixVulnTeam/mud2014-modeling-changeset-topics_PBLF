@@ -16,6 +16,9 @@ with open('README.md') as f:
 with open('LICENSE') as f:
     license = f.read()
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='Topic of Change',
     version='0.0.1',
@@ -25,7 +28,7 @@ setup(
     author_email='cscorley@crimson.ua.edu',
     url='https://github.com/cscorley/topic-of-change',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs')),
+    packages=find_packages(exclude=('tests', 'docs', 'data', 'paper', 'lib')),
     keywords = [],
     classifiers=[
         "Programming Language :: Python",
@@ -36,11 +39,11 @@ setup(
         "Topic :: Text Processing",
         ],
     py_modules=['topicofchange'],
-    install_requires=['Click',
-        ],
+    install_requires=['Click', ],
+    requires=requirements,
     entry_points='''
         [console_scripts]
         topicofchange=src:cli
-    '''
+    ''',
 )
 
