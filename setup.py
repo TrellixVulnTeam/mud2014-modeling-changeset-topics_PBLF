@@ -35,12 +35,12 @@ setup(
         "Topic :: Software Development :: Version Control",
         "Topic :: Text Processing",
         ],
-    py_module=['topicofchange'],
+    py_modules=['topicofchange'],
     install_requires=['Click',
         ],
     entry_points='''
         [console_scripts]
-        topicofchange=src:cli:cli
+        topicofchange=src:cli
     '''
 )
 
