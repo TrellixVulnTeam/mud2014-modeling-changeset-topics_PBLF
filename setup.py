@@ -17,7 +17,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
+    requirementstxt = f.read().splitlines()
 
 setup(
     name='Modeling Changeset Topics',
@@ -39,8 +39,7 @@ setup(
         "Topic :: Text Processing",
         ],
     py_modules=['mct'],
-    install_requires=['Click', ],
-    requires=requirements,
+    install_requires=requirementstxt,
     entry_points='''
         [console_scripts]
         mct=src:cli
