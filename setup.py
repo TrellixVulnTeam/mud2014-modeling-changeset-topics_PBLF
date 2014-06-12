@@ -35,12 +35,12 @@ setup(
         "Topic :: Software Development :: Version Control",
         "Topic :: Text Processing",
         ],
-    py_module=['mct'],
+    py_modules=['mct'],
     install_requires=['Click',
         ],
     entry_points='''
         [console_scripts]
-        mct=src:cli:cli
+        mct=src:cli
     '''
 )
 
