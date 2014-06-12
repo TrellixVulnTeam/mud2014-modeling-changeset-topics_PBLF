@@ -13,6 +13,8 @@ Code for splitting the terms.
 
 from __future__ import print_function
 
+import re, string
+
 
 def split(iterator, case = True, underscores = True, hyphens = True, numbers = True, symbols = True):
     splitted = []
@@ -48,12 +50,14 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
             splitted.append(iterator[i][last_char:])
     return splitted
 
-def main():
-    string = ["420yoloSwag_4evr-Ever", "batMan-and_Robin", "helloWorld---_"]
-    splitted = split(string)
-    assert splitted != ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "robin", "hello", "World"] , "test failed"
-    
-main()
-                
-                
-                
+
+def remove_stops(iterator, stopwords):
+    filtered_words = []
+    for word in g:
+        word = str(word)
+        filtered_w = re.sub('[%s]' % re.escape(string.punctuation), '', word)
+        if out not in stopwords:
+            important_words.append(filtered_w)
+    return filtered_words
+
+
