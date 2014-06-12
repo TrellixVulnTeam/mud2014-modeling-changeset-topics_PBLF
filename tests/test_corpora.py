@@ -17,7 +17,7 @@ from io import StringIO
 
 from nose.tools import *
 
-from src import generation
+from src.corpora import MultiTextCorpus, ChangesetCorpus
 
 # datapath is now a useful function for building paths to test files
 module_path = os.path.dirname(__file__)
@@ -26,7 +26,7 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 class TestMultitextCorpus(unittest.TestCase):
     def setUp(self):
         self.basepath = datapath(u'multitext/')
-        self.corpus = generation.MultiTextCorpus(self.basepath)
+        self.corpus = MultiTextCorpus(self.basepath)
         self.docs = list(self.corpus)
 
     def test_length(self):
@@ -209,7 +209,7 @@ class TestChangesetCorpus(unittest.TestCase):
             with tarfile.open(gz) as tar:
                 tar.extractall(extraction_path)
 
-        self.corpus = generation.ChangesetCorpus(self.basepath)
+        self.corpus = ChangesetCorpus(self.basepath)
         self.docs = list(self.corpus)
 
 
