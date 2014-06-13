@@ -13,15 +13,11 @@ The project description can be found there, as well.
 
 ### Installing
 
-You will need to install a few libraries before you can begin work on
-this project. 
+Install everything using make:
 
-    $ pip install -r requirements.txt
+    $ make install
 
-This *should* take care of everything you'll need. Next, install this
-project as an 'editable' version (changes propagate without reinstall).
-
-    $ pip install --editable .
+Or, if you use virtualenv, you can `make init` instead.
 
 Now, you should be able to run commands:
 
