@@ -1,0 +1,9 @@
+[submodule "lib/gittle"]
+	path = lib/gittle
+	url = https://github.com/cscorley/gittle.git
+[submodule "lib/gensim"]
+	path = lib/gensim
+	url = https://github.com/cscorley/gensim.git
+[submodule "lib/whatthepatch"]
+	path = lib/whatthepatch
+	url = https://github.com/cscorley/whatthepatch.git
