@@ -1,8 +1,6 @@
 all:
 	nosetests
 
-install: submodules
-
 submodules:
 	git submodule init
 	git submodule update
@@ -10,7 +8,7 @@ submodules:
 update:
 	git submodule foreach git pull origin master
 
-init:
+init: submodules
 	virtualenv --python=python2 env
 	. env/bin/activate && pip install numpy
 	. env/bin/activate && pip install --editable lib/gittle
