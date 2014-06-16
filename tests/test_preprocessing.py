@@ -78,3 +78,11 @@ class PreprocessTests(unittest.TestCase):
         result = split('butts')
         self.assertIs(result, type(x for x in xrange(1)))
 
+
+    def test_stops(self): 
+        input = ['test', 'the']
+        expected = ['test']
+        stops = ['the']
+        result = remove_stops(input, stops)
+        self.assertEqual(list(result), expected)
+
