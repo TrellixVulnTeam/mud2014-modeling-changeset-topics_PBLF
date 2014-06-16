@@ -74,7 +74,7 @@ class PreprocessTests(unittest.TestCase):
             self.assertEqual(tuple(result), expected)
 
     def test_split_creates_generator(self):
-        """ Split tokens and creates a generator """
+        """ Split tokens creates a generator """
         result = split('butts')
         self.assertIs(result, type(x for x in xrange(1)))
 
@@ -86,3 +86,10 @@ class PreprocessTests(unittest.TestCase):
         result = remove_stops(input, stops)
         self.assertEqual(list(result), expected)
 
+    def test_stops_creates_generator(self):
+        """ Remove stops creates a generator """
+        input = ['test', 'the']
+        expected = ['test']
+        stops = ['the']
+        result = remove_stops(input, stops)
+        self.assertIs(result, type(x for x in xrange(1)))
