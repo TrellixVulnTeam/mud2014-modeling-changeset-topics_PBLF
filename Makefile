@@ -1,5 +1,5 @@
 all:
-	nosetests -w tests/
+	nosetests
 
 install: submodules requirements
 	pip install --editable .
