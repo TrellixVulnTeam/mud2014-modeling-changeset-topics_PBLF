@@ -22,8 +22,15 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
         last_char = 0
         for j in range(len(iterator[i])):
             if(case):
-                # does not handle case when all letters are capital
                 if(iterator[i][j].isupper()):
+                    if(j+1 != len(iterator[i]) and j != 0): # not at end or beginning
+                        # test if in sequence of uppercase
+                        if(iterator[i][j-1].isupper()):
+                            if(not iterator[i][j+1].islower()):
+                                continue
+                    elif(j+1 == len(iterator[i])):
+                        break
+                    
                     if iterator[i][last_char:j] != "":
                         splitted.append(iterator[i][last_char:j])
                     last_char = j
