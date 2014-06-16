@@ -59,12 +59,10 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
 
 
 def remove_stops(iterator, stopwords):
-    filtered_words = []
     for word in iterator:
         word = str(word)
         filtered_w = re.sub('[%s]' % re.escape(string.punctuation), '', word)
         if filtered_w not in stopwords:
-            filtered_words.append(filtered_w)
-    return filtered_words
+            yield filtered_w
 
 
