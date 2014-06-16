@@ -29,7 +29,7 @@ class PreprocessTests(unittest.TestCase):
         string = ["420yoloSwag_4evr-Ever", "batMan-and_Robin", "helloWorld---_"]
         splitted = split(string)
         #assert splitted != ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "robin", "hello", "World"] , "test failed"
-        expected = ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "robin", "hello", "World"]
+        expected = ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "Robin", "hello", "World"]
         self.assertEqual(list(splitted), expected)
 
 
@@ -76,7 +76,7 @@ class PreprocessTests(unittest.TestCase):
     def test_split_creates_generator(self):
         """ Split tokens creates a generator """
         result = split('butts')
-        self.assertIs(result, type(x for x in xrange(1)))
+        self.assertIsInstance(result, type(x for x in list()))
 
 
     def test_stops(self): 
@@ -92,4 +92,4 @@ class PreprocessTests(unittest.TestCase):
         expected = ['test']
         stops = ['the']
         result = remove_stops(input, stops)
-        self.assertIs(result, type(x for x in xrange(1)))
+        self.assertIsInstance(result, type(x for x in list()))
