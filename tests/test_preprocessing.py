@@ -25,6 +25,7 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 
 class PreprocessTests(unittest.TestCase):
     def test_split(self):
+        """ Basic splitting works """
         string = ["420yoloSwag_4evr-Ever", "batMan-and_Robin", "helloWorld---_"]
         splitted = split(string)
         #assert splitted != ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "robin", "hello", "World"] , "test failed"
@@ -41,7 +42,7 @@ class PreprocessTests(unittest.TestCase):
                 a. One or more uc letters
                 b. One or more lc letters
 
-    """
+        """
         cases = dict({
                 'camelCase': ('camel', 'Case'),
                 'CamelCase': ('Camel', 'Case'),
@@ -71,3 +72,9 @@ class PreprocessTests(unittest.TestCase):
         for term, expected in cases.items():
             result = split(term)
             self.assertEqual(tuple(result), expected)
+
+    def test_split_creates_generator(self):
+        """ Split tokens and creates a generator """
+        result = split('butts')
+        self.assertIs(result, type(x for x in xrange(1)))
+
