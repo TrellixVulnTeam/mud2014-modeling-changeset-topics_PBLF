@@ -25,8 +25,8 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 
 class TestMultitextCorpus(unittest.TestCase):
     def setUp(self):
-        self.basepath = datapath(u'multitext/')
-        self.corpus = MultiTextCorpus(self.basepath)
+        self.basepath = datapath(u'multitext_git/')
+        self.corpus = MultiTextCorpus(self.basepath, 'HEAD')
         self.docs = list(self.corpus)
 
     def test_length(self):
@@ -61,27 +61,27 @@ class TestMultitextCorpus(unittest.TestCase):
 
         documents = [
                 ([u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
-                    (self.basepath + 'a/0.txt', u'en')),
+                    ('a/0.txt', u'en')),
                 ([u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
-                    (self.basepath + 'a/1.txt', u'en')),
+                    ('a/1.txt', u'en')),
                 ([u'the', u'eps', u'user', u'interface', u'management', u'system'],
-                    (self.basepath + 'b/2.txt', u'en')),
+                    ('b/2.txt', u'en')),
                 ([u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
-                    (self.basepath + 'b/3.txt', u'en')),
+                    ('b/3.txt', u'en')),
                 ([u'relation', u'of', u'user', u'perceived', u'response', u'time', u'to', u'error', u'measurement'],
-                    (self.basepath + 'c/4.txt', u'en')),
+                    ('c/4.txt', u'en')),
                 ([u'the', u'generation', u'of', u'random', u'binary', u'unordered', u'trees'],
-                    (self.basepath + 'c/e/5.txt', u'en')),
+                    ('c/e/5.txt', u'en')),
                 ([u'the', u'intersection', u'graph', u'of', u'paths', u'in', u'trees'],
-                    (self.basepath + 'c/f/6.txt', u'en')),
+                    ('c/f/6.txt', u'en')),
                 ([u'graph', u'minors', u'iv', u'widths', u'of', u'trees', u'and', u'well', u'quasi', u'ordering'],
-                    (self.basepath + '7.txt', u'en')),
+                    ('7.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (self.basepath + 'dos.txt', u'en')),
+                    ('dos.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (self.basepath + 'mac.txt', u'en')),
+                    ('mac.txt', u'en')),
                 ([u'graph', u'minors', u'a', u'survey'],
-                    (self.basepath + 'unix.txt', u'en')),
+                    ('unix.txt', u'en')),
                 ]
 
         for docmeta in self.corpus.get_texts():
