@@ -26,10 +26,10 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 class PreprocessTests(unittest.TestCase):
     def test_split(self):
         """ Basic splitting works """
-        string = ["420yoloSwag_4evr-Ever", "batMan-and_Robin", "helloWorld---_"]
+        string = [u'420yoloSwag_4evr-Ever', u'batMan-and_Robin', u'helloWorld---_']
         splitted = split(string)
-        #assert splitted != ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "robin", "hello", "World"] , "test failed"
-        expected = ["yolo", "Swag", "evr", "Ever", "bat", "Man", "and", "Robin", "hello", "World"]
+        #assert splitted != [u'yolo', u'Swag', u'evr', u'Ever', u'bat', u'Man', u'and', u'robin', u'hello', u'World'] , u'test failed'
+        expected = [u'yolo', u'Swag', u'evr', u'Ever', u'bat', u'Man', u'and', u'Robin', u'hello', u'World']
         self.assertEqual(list(splitted), expected)
 
 
@@ -44,30 +44,30 @@ class PreprocessTests(unittest.TestCase):
 
         """
         cases = dict({
-                'camelCase': ('camel', 'Case'),
-                'CamelCase': ('Camel', 'Case'),
-                'camel2case': ('camel', 'case'),
-                'camel2Case': ('camel', 'Case'),
-                'word': ('word'),
-                'HTML': ('HTML'),
-                'readXML': ('read', 'XML'),
-                'XMLRead': ('XML', 'Read'),
-                'firstMIDDLELast': ('first', 'MIDDLE', 'Last'),
-                'CFile': ('C', 'File'),
-                'Word2Word34': ('Word', 'Word'),
-                'WORD123Word': ('WORD', 'Word'),
-                'c_amelCase': ('c', 'amel', 'Case'),
-                'CamelC_ase': ('Camel', 'C', 'ase'),
-                'camel2_case': ('camel', 'case'),
-                'camel_2Case': ('camel', 'Case'),
-                'word': ('word'),
-                'HTML': ('HTML'),
-                'read_XML': ('read', 'XML'),
-                'XML_Read': ('XML', 'Read'),
-                'firstM_IDDL_ELast': ('first', 'M', 'IDDL', 'E', 'Last'),
-                'the_CFile': ('the', 'C', 'File'),
-                'Word_2_Word3_4': ('Word', 'Word'),
-                'WO_RD123W_or_d': ('WO', 'RD', 'W', 'or', 'd'),
+                u'camelCase': (u'camel', u'Case'),
+                u'CamelCase': (u'Camel', u'Case'),
+                u'camel2case': (u'camel', u'case'),
+                u'camel2Case': (u'camel', u'Case'),
+                u'word': (u'word'),
+                u'HTML': (u'HTML'),
+                u'readXML': (u'read', u'XML'),
+                u'XMLRead': (u'XML', u'Read'),
+                u'firstMIDDLELast': (u'first', u'MIDDLE', u'Last'),
+                u'CFile': (u'C', u'File'),
+                u'Word2Word34': (u'Word', u'Word'),
+                u'WORD123Word': (u'WORD', u'Word'),
+                u'c_amelCase': (u'c', u'amel', u'Case'),
+                u'CamelC_ase': (u'Camel', u'C', u'ase'),
+                u'camel2_case': (u'camel', u'case'),
+                u'camel_2Case': (u'camel', u'Case'),
+                u'word': (u'word'),
+                u'HTML': (u'HTML'),
+                u'read_XML': (u'read', u'XML'),
+                u'XML_Read': (u'XML', u'Read'),
+                u'firstM_IDDL_ELast': (u'first', u'M', u'IDDL', u'E', u'Last'),
+                u'the_CFile': (u'the', u'C', u'File'),
+                u'Word_2_Word3_4': (u'Word', u'Word'),
+                u'WO_RD123W_or_d': (u'WO', u'RD', u'W', u'or', u'd'),
                 })
         for term, expected in cases.items():
             result = split(term)
@@ -75,21 +75,21 @@ class PreprocessTests(unittest.TestCase):
 
     def test_split_creates_generator(self):
         """ Split tokens creates a generator """
-        result = split('butts')
+        result = split(u'butts')
         self.assertIsInstance(result, type(x for x in list()))
 
 
     def test_stops(self): 
-        input = ['test', 'the']
-        expected = ['test']
-        stops = ['the']
+        input = [u'test', u'the']
+        expected = [u'test']
+        stops = [u'the']
         result = remove_stops(input, stops)
         self.assertEqual(list(result), expected)
 
     def test_stops_creates_generator(self):
         """ Remove stops creates a generator """
-        input = ['test', 'the']
-        expected = ['test']
-        stops = ['the']
+        input = [u'test', u'the']
+        expected = [u'test']
+        stops = [u'the']
         result = remove_stops(input, stops)
         self.assertIsInstance(result, type(x for x in list()))
