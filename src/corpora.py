@@ -18,47 +18,32 @@ import re
 
 import gensim
 import dulwich, dulwich.repo, dulwich.patch
+import gittle
 
 class MultiTextCorpus(gensim.corpora.TextCorpus):
-    """ Iterates over all files within `top_dir`, yielding each file as
-    a document and the fully qualified name of the file as the metadata.
-
-    """
-
-    def __init__(self, top_dir):
-        # set top_dir first so get_texts doesn't get lost during TextCorpus.__init__
-        self.top_dir = top_dir
-
-        # giving it top_dir doesn't matter;
-        # just forces TextCorpus to build a dictionary so docs aren't garbage
-        # might be worthwhile to build the dictionary within get_texts
-        super(MultiTextCorpus, self).__init__(top_dir)
+    def __init__(self, git_dir, ref='HEAD'):
+        self.ref = ref
+        self.repo = gittle.Gittle(git_dir)
+        super(MultiTextCorpus, self).__init__(git_dir)
 
     def get_texts(self):
         length = 0
 
-        for root, dirs, files in os.walk(self.top_dir):
-            # walk all files and subdirectories, yielding the contents of each
-            for fname in files:
-                fpath = os.path.join(root, fname)
-                length += 1
+        for fname in self.repo.tracked_files:
+            length += 1
 
-                with open(fpath) as f:
-                    document = f.read()
+            file_info = self.repo.commit_file(self.ref, fname)
+            document = file_info['data']
 
-                words = gensim.utils.tokenize(document, lower=True)
-                if self.metadata:
-                    yield words, (fpath, u'en')
-                else:
-                    yield words
+            words = gensim.utils.tokenize(document, lower=True)
+            if self.metadata:
+                yield words, (fname, u'en')
+            else:
+                yield words
 
         self.length = length # only reset after iteration is done.
 
 class ChangesetCorpus(gensim.corpora.TextCorpus):
-    """ Iterates over all files within `top_dir`, yielding each file as
-    a document and the fully qualified name of the file as the metadata.
-
-    """
 
     def __init__(self, git_dir):
         self.repo = dulwich.repo.Repo(git_dir)
