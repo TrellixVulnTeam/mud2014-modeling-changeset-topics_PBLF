@@ -17,7 +17,6 @@ import re, string
 
 
 def split(iterator, case = True, underscores = True, hyphens = True, numbers = True, symbols = True):
-    splitted = []
     for i in range(len(iterator)):
         last_char = 0
         for j in range(len(iterator[i])):
@@ -30,32 +29,31 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
                                 continue
                     elif(j+1 == len(iterator[i])):
                         break
-                    
+
                     if iterator[i][last_char:j] != "":
-                        splitted.append(iterator[i][last_char:j])
+                        yield iterator[i][last_char:j]
                     last_char = j
                     continue
             if(underscores):
                 if(iterator[i][j] == "_"):
                     if iterator[i][last_char:j] != '':
-                        splitted.append(iterator[i][last_char:j])
+                        yield iterator[i][last_char:j]
                     last_char = j+1
                     continue
             if(hyphens):
                 if(iterator[i][j] == "-"):
                     if iterator[i][last_char:j] != '':
-                        splitted.append(iterator[i][last_char:j])
+                        yield iterator[i][last_char:j]
                     last_char = j+1
                     continue
             if(numbers):
                 if(iterator[i][j] in "0123456789"):
                     if iterator[i][last_char:j] != '':
-                        splitted.append(iterator[i][last_char:j])
+                        yield iterator[i][last_char:j]
                     last_char = j+1
                     continue
         if iterator[i][last_char:] != "":
-            splitted.append(iterator[i][last_char:])
-    return splitted
+            yield iterator[i][last_char:]
 
 
 def remove_stops(iterator, stopwords):
