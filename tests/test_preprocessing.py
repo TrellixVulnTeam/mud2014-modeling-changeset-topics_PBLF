@@ -48,8 +48,8 @@ class PreprocessTests(unittest.TestCase):
                 u'CamelCase': (u'Camel', u'Case'),
                 u'camel2case': (u'camel', u'case'),
                 u'camel2Case': (u'camel', u'Case'),
-                u'word': (u'word'),
-                u'HTML': (u'HTML'),
+                u'word': (u'word', ),
+                u'HTML': (u'HTML', ),
                 u'readXML': (u'read', u'XML'),
                 u'XMLRead': (u'XML', u'Read'),
                 u'firstMIDDLELast': (u'first', u'MIDDLE', u'Last'),
@@ -60,18 +60,25 @@ class PreprocessTests(unittest.TestCase):
                 u'CamelC_ase': (u'Camel', u'C', u'ase'),
                 u'camel2_case': (u'camel', u'case'),
                 u'camel_2Case': (u'camel', u'Case'),
-                u'word': (u'word'),
-                u'HTML': (u'HTML'),
+                u'word': (u'word', ),
+                u'HTML': (u'HTML', ),
                 u'read_XML': (u'read', u'XML'),
                 u'XML_Read': (u'XML', u'Read'),
                 u'firstM_IDDL_ELast': (u'first', u'M', u'IDDL', u'E', u'Last'),
                 u'the_CFile': (u'the', u'C', u'File'),
                 u'Word_2_Word3_4': (u'Word', u'Word'),
                 u'WO_RD123W_or_d': (u'WO', u'RD', u'W', u'or', u'd'),
+                u'hypen-ation': (u'hypen', u'ation'),
+        #        u'email@address.com': (u'email', u'address', u'com'),
                 })
         for term, expected in cases.items():
-            result = split(term)
+            result = split([term])
             self.assertEqual(tuple(result), expected)
+
+        terms = cases.keys()
+        expected = sum(list(map(list, cases.values())), [])
+        result = split(terms)
+        self.assertEqual(list(result), expected)
 
     def test_split_creates_generator(self):
         """ Split tokens creates a generator """
