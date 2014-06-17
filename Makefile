@@ -1,5 +1,6 @@
 all:
-	nosetests
+	nosetests || true
+	find src tests -name '*.pyc' -exec rm {} \;
 
 install: submodules requirements
 	pip install --editable .
