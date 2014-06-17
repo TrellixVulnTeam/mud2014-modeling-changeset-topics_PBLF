@@ -55,7 +55,6 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
         if iterator[i][last_char:] != "":
             yield iterator[i][last_char:]
 
-
 def remove_stops(iterator, stopwords):
     for word in iterator:
         word = str(word)
