@@ -56,11 +56,11 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
             yield iterator[i][last_char:]
 
 def remove_stops(iterator, stopwords):
-    for word in iterator:
-        word = str(word)
-        filtered_w = re.sub('[%s]' % re.escape(string.punctuation), '', word)
-        filtered_w = ''.join([i for i in filtered_w if not i.isdigit()])
-        if filtered_w not in stopwords:
-            yield filtered_w
-
-
+    for word in iterator: 
+        if word not in stopwords:
+            word = re.sub('[%s]' % re.escape(string.punctuation), '', word)
+            try:
+                int(word)
+                continue
+            except ValueError:
+                yield word
