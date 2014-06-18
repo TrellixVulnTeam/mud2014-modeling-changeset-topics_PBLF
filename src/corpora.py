@@ -21,18 +21,23 @@ import dulwich, dulwich.repo, dulwich.patch
 import gittle
 
 class MultiTextCorpus(gensim.corpora.TextCorpus):
-    def __init__(self, git_dir, ref='HEAD'):
-        self.ref = ref
+    def __init__(self, git_dir, ref=u'HEAD'):
         self.repo = gittle.Gittle(git_dir)
+        if type(ref) is unicode:
+            self.ref = ref.encode('utf-8')
+        else:
+            self.ref = ref
+
+        assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
+
         super(MultiTextCorpus, self).__init__(git_dir)
 
     def get_texts(self):
         length = 0
 
-        for fname in self.repo.tracked_files:
+        for k, file_info in self.repo.get_commit_files(self.ref).items():
             length += 1
-
-            file_info = self.repo.commit_file(self.ref, fname)
+            fname = file_info['path']
             document = file_info['data']
 
             words = gensim.utils.tokenize(document, lower=True)
@@ -76,7 +81,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                         None,
                         commit.tree):
                     diff = self._get_diff(changes)
-                    yield commit, None, diff
+                    yield commit.id, None, diff
 
             for parent in commit.parents:
                 # do I need to know the parent id?
@@ -86,7 +91,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                         self.repo[parent].tree,
                         commit.tree):
                     diff = self._get_diff(changes)
-                    yield commit, parent, diff
+                    yield commit.id, parent, diff
 
     def get_texts(self):
         length = 0
@@ -104,7 +109,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
             elif current != commit:
                 # new commit seen, yield the collected low
                 if self.metadata:
-                    yield low, (current.id, u'en')
+                    yield low, (current, u'en')
                 else:
                     yield low
                 length += 1
@@ -139,7 +144,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
         length += 1
         if self.metadata:
             # have reached the end, yield whatever was collected last
-            yield low, (current.id, u'en')
+            yield low, (current, u'en')
         else:
             yield low
 

@@ -197,6 +197,124 @@ class TestMultitextCorpus(unittest.TestCase):
             textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)
 
+class TestMultitextCorpusAtRef(unittest.TestCase):
+    def setUp(self):
+        self.basepath = datapath(u'multitext_git/')
+        self.ref = u'f33a0fb070a34fc1b9105453b3ffb4edc49131d9'
+        self.corpus = MultiTextCorpus(self.basepath, self.ref)
+        self.docs = list(self.corpus)
+
+    def test_length(self):
+        self.assertEqual(len(self.corpus), 7)
+        self.assertEqual(len(self.docs), 7)
+
+        l = len(self.corpus)
+        for _ in self.corpus:
+            self.assertEqual(l, len(self.corpus))
+
+    def test_get_texts(self):
+        documents = [
+                [u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
+                [u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
+                [u'the', u'eps', u'user', u'interface', u'management', u'system'],
+                [u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
+                [u'graph', u'minors', u'a', u'survey'],
+                [u'graph', u'minors', u'a', u'survey'],
+                [u'graph', u'minors', u'a', u'survey'],
+                ]
+
+        for doc in self.corpus.get_texts():
+            doc = list(doc) # generators, woo?
+            self.assertIn(doc, documents)
+
+    def test_metadata_get_texts(self):
+        self.corpus.metadata = True
+
+        documents = [
+                ([u'human', u'machine', u'interface', u'for', u'lab', u'abc', u'computer', u'applications'],
+                    ('a/0.txt', u'en')),
+                ([u'a', u'survey', u'of', u'user', u'opinion', u'of', u'computer', u'system', u'response', u'time'],
+                    ('a/1.txt', u'en')),
+                ([u'the', u'eps', u'user', u'interface', u'management', u'system'],
+                    ('b/2.txt', u'en')),
+                ([u'system', u'and', u'human', u'system', u'engineering', u'testing', u'of', u'eps'],
+                    ('b/3.txt', u'en')),
+                ([u'graph', u'minors', u'a', u'survey'],
+                    ('dos.txt', u'en')),
+                ([u'graph', u'minors', u'a', u'survey'],
+                    ('mac.txt', u'en')),
+                ([u'graph', u'minors', u'a', u'survey'],
+                    ('unix.txt', u'en')),
+                ]
+
+        for docmeta in self.corpus.get_texts():
+            doc, meta = docmeta
+            doc = list(doc) # generators, woo?
+            docmeta = doc, meta # get a non (generator, metadata) pair
+            self.assertIn(docmeta, documents)
+
+    def test_docs(self):
+        documents = [
+                [
+                    (u'human', 1),
+                    (u'machine', 1),
+                    (u'interface', 1),
+                    (u'for', 1),
+                    (u'lab', 1),
+                    (u'abc', 1),
+                    (u'computer', 1),
+                    (u'applications', 1),
+                    ],
+
+                [
+                    (u'a', 1),
+                    (u'survey', 1),
+                    (u'of', 2),
+                    (u'user', 1),
+                    (u'opinion', 1),
+                    (u'computer', 1),
+                    (u'system', 1),
+                    (u'response', 1),
+                    (u'time', 1),
+                    ],
+
+                [
+                    (u'the', 1),
+                    (u'eps', 1),
+                    (u'user', 1),
+                    (u'interface', 1),
+                    (u'management', 1),
+                    (u'system', 1),
+                    ],
+
+                [
+                    (u'system', 2),
+                    (u'and', 1),
+                    (u'human', 1),
+                    (u'engineering', 1),
+                    (u'testing', 1),
+                    (u'of', 1),
+                    (u'eps', 1),
+                    ],
+
+                [
+                    (u'graph', 1),
+                    (u'minors', 1),
+                    (u'a', 1),
+                    (u'survey', 1),
+                    ],
+                ]
+
+        documents = [set(x) for x in documents]
+
+        for doc in self.corpus:
+            self.assertGreater(len(doc), 0)
+
+            # convert the document to text freq since we don't know the
+            # term ids ahead of time for testing.
+            textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
+            self.assertIn(textdoc, documents)
+
 
 class TestChangesetCorpus(unittest.TestCase):
     def setUp(self):
