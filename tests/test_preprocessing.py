@@ -87,7 +87,7 @@ class PreprocessTests(unittest.TestCase):
 
 
     def test_stops(self): 
-        input = [u'test', u'the']
+        input = [u'test123.', u'the']
         expected = [u'test']
         stops = [u'the']
         result = remove_stops(input, stops)
