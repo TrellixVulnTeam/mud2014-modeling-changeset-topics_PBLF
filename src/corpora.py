@@ -16,9 +16,25 @@ from StringIO import StringIO
 import os
 import re
 
+import nltk
 import gensim
 import dulwich, dulwich.repo, dulwich.patch
 import gittle
+
+CODECS = ['utf8', 'latin1', 'ascii']
+tokenize = nltk.word_tokenize
+
+def to_unicode(document, info=str()):
+    document = document.replace('\x00', ' ') #remove nulls
+    document = document.strip()
+    if not isinstance(document, unicode):
+        for codec in CODECS:
+            try:
+                return unicode(document, encoding=codec)
+            except UnicodeDecodeError as e:
+                logger.debug('%s %s %s' %(codec, str(e), info))
+
+    return document
 
 class MultiTextCorpus(gensim.corpora.TextCorpus):
     def __init__(self, repo, ref=u'HEAD'):
@@ -36,11 +52,18 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
         length = 0
 
         for k, file_info in self.repo.get_commit_files(self.ref).items():
-            length += 1
             fname = file_info['path']
             document = file_info['data']
+            if dulwich.patch.is_binary(document):
+                continue
+            document = to_unicode(document, ' '.join([fname, self.ref]))
+            length += 1
 
-            words = gensim.utils.tokenize(document, lower=True)
+            words = tokenize(document)
+            # split
+            # lower
+            words = (word.lower() for word in words)
+            # remove
             if self.metadata:
                 yield words, (fname, u'en')
             else:
@@ -136,16 +159,23 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
             diff_lines = diff_lines[2:] # chop off file names hashtag rebel
             lines = [line[1:] for line in diff_lines] # remove unified markers
             document = ' '.join(lines)
+            if dulwich.patch.is_binary(document):
+                continue
+            document = to_unicode(document, ' '.join([commit, str(parent), diff]))
 
             # call the tokenizer
-            words = gensim.utils.tokenize(document, lower=True)
+            words = tokenize(document)
+            # split
+            # lower
+            words = (word.lower() for word in words)
+            # remove
             low.extend(words)
 
-        length += 1
         if self.metadata:
             # have reached the end, yield whatever was collected last
             yield low, (current, u'en')
         else:
             yield low
+        length += 1
 
         self.length = length # only reset after iteration is done.
