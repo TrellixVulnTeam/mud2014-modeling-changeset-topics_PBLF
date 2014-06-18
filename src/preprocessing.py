@@ -59,6 +59,7 @@ def remove_stops(iterator, stopwords):
     for word in iterator:
         word = str(word)
         filtered_w = re.sub('[%s]' % re.escape(string.punctuation), '', word)
+        filtered_w = ''.join([i for i in filtered_w if not i.isdigit()])
         if filtered_w not in stopwords:
             yield filtered_w
 
