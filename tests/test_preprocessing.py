@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
 import unittest
 import os.path
+import string
 from io import StringIO
 
 from nose.tools import *
@@ -87,16 +88,17 @@ class PreprocessTests(unittest.TestCase):
 
 
     def test_stops(self): 
-        input = [u'test.', u'the', u'123']
+        inputs = [u'test', u'the', u'123', u'2.5']
+        inputs.extend(string.punctuation)
         expected = [u'test']
         stops = [u'the']
-        result = remove_stops(input, stops)
+        result = remove_stops(inputs, stops)
         self.assertEqual(list(result), expected)
 
     def test_stops_creates_generator(self):
         """ Remove stops creates a generator """
-        input = [u'test', u'the']
+        inputs = [u'test', u'the']
         expected = [u'test']
         stops = [u'the']
-        result = remove_stops(input, stops)
+        result = remove_stops(inputs, stops)
         self.assertIsInstance(result, type(x for x in list()))
