@@ -32,8 +32,8 @@ class TestMultitextCorpus(unittest.TestCase):
         self.docs = list(self.corpus)
 
     def test_length(self):
-        self.assertEqual(len(self.corpus), 11)
-        self.assertEqual(len(self.docs), 11)
+        self.assertEqual(len(self.corpus), 10)
+        self.assertEqual(len(self.docs), 10)
 
         l = len(self.corpus)
         for _ in self.corpus:
