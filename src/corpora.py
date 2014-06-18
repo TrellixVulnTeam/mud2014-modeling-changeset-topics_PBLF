@@ -21,8 +21,8 @@ import dulwich, dulwich.repo, dulwich.patch
 import gittle
 
 class MultiTextCorpus(gensim.corpora.TextCorpus):
-    def __init__(self, git_dir, ref=u'HEAD'):
-        self.repo = gittle.Gittle(git_dir)
+    def __init__(self, repo, ref=u'HEAD'):
+        self.repo = repo
         if type(ref) is unicode:
             self.ref = ref.encode('utf-8')
         else:
@@ -30,7 +30,7 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
 
         assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
 
-        super(MultiTextCorpus, self).__init__(git_dir)
+        super(MultiTextCorpus, self).__init__('.')
 
     def get_texts(self):
         length = 0
@@ -50,9 +50,9 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
 
 class ChangesetCorpus(gensim.corpora.TextCorpus):
 
-    def __init__(self, git_dir):
-        self.repo = dulwich.repo.Repo(git_dir)
-        super(ChangesetCorpus, self).__init__(git_dir)
+    def __init__(self, repo):
+        self.repo = repo
+        super(ChangesetCorpus, self).__init__('.')
 
 
     def _get_diff(self, changeset):
@@ -62,7 +62,7 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
         """
         patch_file = StringIO()
         dulwich.patch.write_object_diff(patch_file,
-                self.repo.object_store,
+                self.repo.repo.object_store,
                 changeset.old, changeset.new)
         return patch_file.getvalue()
 
@@ -71,13 +71,13 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
 
         """
 
-        for walk_entry in self.repo.get_walker(reverse=reverse):
+        for walk_entry in self.repo.repo.get_walker(reverse=reverse):
             commit = walk_entry.commit
 
             # initial revision, has no parent
             if len(commit.parents) == 0:
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.object_store,
+                        self.repo.repo.object_store,
                         None,
                         commit.tree):
                     diff = self._get_diff(changes)
@@ -87,8 +87,8 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
                 # do I need to know the parent id?
 
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.object_store,
-                        self.repo[parent].tree,
+                        self.repo.repo.object_store,
+                        self.repo.repo[parent].tree,
                         commit.tree):
                     diff = self._get_diff(changes)
                     yield commit.id, parent, diff
