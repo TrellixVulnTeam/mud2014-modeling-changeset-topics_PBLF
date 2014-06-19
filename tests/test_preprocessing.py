@@ -88,7 +88,7 @@ class PreprocessTests(unittest.TestCase):
 
 
     def test_stops(self): 
-        inputs = [u'test', u'the', u'123', u'2.5']
+        inputs = [u'test', u'the', u'123']
         inputs.extend(string.punctuation)
         expected = [u'test']
         stops = [u'the']
