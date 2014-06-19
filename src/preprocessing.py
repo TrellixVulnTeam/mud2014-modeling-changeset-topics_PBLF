@@ -55,12 +55,16 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
         if iterator[i][last_char:] != "":
             yield iterator[i][last_char:]
 
+def generator(word):
+    yield word
+
 def remove_stops(iterator, stopwords):
     for word in iterator: 
-        if word not in stopwords:
-            word = re.sub('[%s]' % re.escape(string.punctuation), '', word)
+        if word not in stopwords and word != "" and word not in string.punctuation:
             try:
                 int(word)
                 continue
             except ValueError:
-                yield word
+                yield word 
+
+
