@@ -21,24 +21,33 @@ import gensim
 import dulwich, dulwich.repo, dulwich.patch
 import gittle
 
-CODECS = ['utf8', 'latin1', 'ascii']
-tokenize = nltk.word_tokenize
+from preprocessing import tokenize, split, remove_stops, read_stops, to_unicode
 
-def to_unicode(document, info=str()):
-    document = document.replace('\x00', ' ') #remove nulls
-    document = document.strip()
-    if not isinstance(document, unicode):
-        for codec in CODECS:
-            try:
-                return unicode(document, encoding=codec)
-            except UnicodeDecodeError as e:
-                logger.debug('%s %s %s' %(codec, str(e), info))
+STOPS = read_stops([
+                    'data/english_stops.txt',
+                    'data/java_reserved.txt',
+                    ])
 
-    return document
+class Corpus(gensim.corpora.TextCorpus):
+    def __len__(self):
+        return self.length
 
-class MultiTextCorpus(gensim.corpora.TextCorpus):
+    def __iter__(self):
+        return self.get_texts()
+
+    def preprocess(self, document, info=[]):
+        document = to_unicode(document, info)
+        words = tokenize(document)
+        words = split(words)
+        words = (word.lower() for word in words)
+        words = remove_stops(words, STOPS)
+        words = (word for word in words if len(word) > 1)
+        return words
+
+class MultiTextCorpus(Corpus):
     def __init__(self, repo, ref=u'HEAD'):
         self.repo = repo
+        self.metadata = False
         if type(ref) is unicode:
             self.ref = ref.encode('utf-8')
         else:
@@ -46,24 +55,16 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
 
         assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
 
-        super(MultiTextCorpus, self).__init__('.')
-
     def get_texts(self):
         length = 0
 
-        for k, file_info in self.repo.get_commit_files(self.ref).items():
-            fname = file_info['path']
+        for fname, file_info in self.repo.get_commit_files(self.ref).items():
             document = file_info['data']
             if dulwich.patch.is_binary(document):
                 continue
-            document = to_unicode(document, ' '.join([fname, self.ref]))
-            length += 1
 
-            words = tokenize(document)
-            # split
-            # lower
-            words = (word.lower() for word in words)
-            # remove
+            words = self.preprocess(document, [fname, self.ref])
+            length += 1
             if self.metadata:
                 yield words, (fname, u'en')
             else:
@@ -71,12 +72,11 @@ class MultiTextCorpus(gensim.corpora.TextCorpus):
 
         self.length = length # only reset after iteration is done.
 
-class ChangesetCorpus(gensim.corpora.TextCorpus):
+class ChangesetCorpus(Corpus):
 
     def __init__(self, repo):
         self.repo = repo
-        super(ChangesetCorpus, self).__init__('.')
-
+        self.metadata = False
 
     def _get_diff(self, changeset):
         """ Return a text representing a `git diff` for the files in the
@@ -156,26 +156,19 @@ class ChangesetCorpus(gensim.corpora.TextCorpus):
             #parent_fn = diff_lines[0][4:]
             #commit_fn = diff_lines[1][4:]
 
-            diff_lines = diff_lines[2:] # chop off file names hashtag rebel
-            lines = [line[1:] for line in diff_lines] # remove unified markers
+            lines = diff_lines[2:] # chop off file names hashtag rebel
+            lines = [line[1:] for line in lines] # remove unified markers
             document = ' '.join(lines)
-            if dulwich.patch.is_binary(document):
-                continue
-            document = to_unicode(document, ' '.join([commit, str(parent), diff]))
 
             # call the tokenizer
-            words = tokenize(document)
-            # split
-            # lower
-            words = (word.lower() for word in words)
-            # remove
+            words = self.preprocess(document, [commit, str(parent), diff_lines[0]])
             low.extend(words)
 
+        length += 1
         if self.metadata:
             # have reached the end, yield whatever was collected last
             yield low, (current, u'en')
         else:
             yield low
-        length += 1
 
         self.length = length # only reset after iteration is done.

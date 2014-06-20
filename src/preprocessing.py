@@ -13,8 +13,24 @@ Code for splitting the terms.
 
 from __future__ import print_function
 
-import re, string
+import re
+import string
 
+import nltk
+
+tokenize = nltk.word_tokenize
+
+def to_unicode(document, info=[]):
+    document = document.replace('\x00', ' ') #remove nulls
+    document = document.strip()
+    if not isinstance(document, unicode):
+        for codec in ['utf8', 'latin1', 'ascii']:
+            try:
+                return unicode(document, encoding=codec)
+            except UnicodeDecodeError as e:
+                logger.debug('%s %s %s' %(codec, str(e), ' '.join(info)))
+
+    return document
 
 def split(iterator, case = True, underscores = True, hyphens = True, numbers = True, symbols = True):
     for i in range(len(iterator)):
@@ -55,16 +71,22 @@ def split(iterator, case = True, underscores = True, hyphens = True, numbers = T
         if iterator[i][last_char:] != "":
             yield iterator[i][last_char:]
 
-def generator(word):
-    yield word
-
-def remove_stops(iterator, stopwords):
-    for word in iterator: 
-        if word not in stopwords and word != "" and word not in string.punctuation:
+def remove_stops(iterator, stopwords=[]):
+    stopwords.extend(string.punctuation)
+    stopwords.extend(string.digits)
+    stopwords.extend(string.whitespace)
+    for word in iterator:
+        if word not in stopwords and len(word) > 0:
             try:
                 int(word)
-                continue
+                float(word)
             except ValueError:
-                yield word 
+                yield word
 
+def read_stops(l):
+    stops = list()
+    for each in l:
+        with open(each) as f:
+            stops.extend(f.readlines())
 
+    return [word.strip() for word in stops]
