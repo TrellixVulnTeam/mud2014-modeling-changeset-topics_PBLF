@@ -1,5 +1,7 @@
 from __future__ import print_function
 import click
+import csv
+import sys
 
 class Config:
     def __init__(self):
@@ -21,21 +23,29 @@ def cli(config, verbose, base_path, project):
     """
     Modeling Changeset Topics
     """
-    
+
     # Only set config items here, this function is unused otherwise.
     config.verbose = verbose
     config.base_path = base_path
     with open("projects.csv", 'r') as f:
-        next(f)
-        for line in f:
-            line = line.strip().split(",") 
-            proj = line[0]
-            parts = line[1:] 
-            if proj not in config.project:
-                config.project[proj] = list()
-                for part in parts:
-                    config.project[proj].append(part) 
+        reader = csv.reader(f)
+        header = next(reader)
+        # figure out which column index contains the project name
+        name_idx = header.index("short_name")
 
+        found = False
+        # find the project in the csv, adding it's info to config
+        for row in reader:
+            if project == row[name_idx]:
+                for i, column in enumerate(header):
+                    # now config.project["url"] => "http://[...]"
+                    config.project[column] = row[i]
+                found = True
+                break
+
+        if not found:
+            print("Could not find the project '%s' in 'projects.csv'!" % project, file=sys.stderr)
+            sys.exit(1)
 
 @cli.command()
 @pass_config
@@ -46,12 +56,9 @@ def clone(config):
     if config.verbose:
         print('We are in verbose mode.')
 
-    print('Cloning repo for: %s' % config.project)
+    print('Cloning repo for: %s' % config.project["name"])
 
 @cli.command()
-#@click.option('--repeat', default=1,
-#        help='How many times to greet the thing.')
-@click.argument('project')
 @pass_config
 def corpora(config):
     """
@@ -60,7 +67,7 @@ def corpora(config):
     if config.verbose:
         print('We are in verbose mode.')
 
-    print('Creating corpus for: %s' % config.project)
+    print('Creating corpus for: %s' % config.project["name"])
 
 
 @cli.command()
@@ -69,7 +76,7 @@ def preprocess(config):
     """
     Runs the preprocessing steps on a corpus
     """
-    print('Preproccessing corpus for: %s' % config.project)
+    print('Preproccessing corpus for: %s' % config.project["name"])
 
 
 @cli.command()
@@ -78,7 +85,7 @@ def model(config):
     """
     Builds a model for the corpora
     """
-    print('Building topic models for: %s' % config.project)
+    print('Building topic models for: %s' % config.project["name"])
 
 
 @cli.command()
@@ -87,7 +94,7 @@ def evaluate(config):
     """
     Evalutates the models
     """
-    print('Evalutating models for: %s' % config.project)
+    print('Evalutating models for: %s' % config.project["name"])
 
 
 @cli.command()
@@ -97,7 +104,7 @@ def run_all(context, config):
     """
     Runs corpora, preprocess, model, and evaluate in one shot.
     """
-    print('Doing everything for: %s' % config.project)
+    print('Doing everything for: %s' % config.project["name"])
     context.forward(clone)
     context.forward(corpora)
     context.forward(preprocess)
