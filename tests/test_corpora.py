@@ -28,7 +28,11 @@ class TestMultitextCorpus(unittest.TestCase):
     def setUp(self):
         self.basepath = datapath(u'multitext_git/')
         self.repo = gittle.Gittle(self.basepath)
-        self.corpus = MultiTextCorpus(self.repo)
+        self.corpus = MultiTextCorpus(self.repo,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0)
         self.docs = list(self.corpus)
 
     def test_length(self):
@@ -204,7 +208,11 @@ class TestMultitextCorpusAtRef(unittest.TestCase):
         self.basepath = datapath(u'multitext_git/')
         self.ref = u'f33a0fb070a34fc1b9105453b3ffb4edc49131d9'
         self.repo = gittle.Gittle(self.basepath)
-        self.corpus = MultiTextCorpus(self.repo, self.ref)
+        self.corpus = MultiTextCorpus(self.repo, self.ref,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0)
         self.docs = list(self.corpus)
 
     def test_length(self):
@@ -331,7 +339,11 @@ class TestChangesetCorpus(unittest.TestCase):
                 tar.extractall(extraction_path)
 
         self.repo = gittle.Gittle(self.basepath)
-        self.corpus = ChangesetCorpus(self.repo)
+        self.corpus = ChangesetCorpus(self.repo,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0)
         self.docs = list(self.corpus)
 
 
