@@ -32,44 +32,48 @@ def to_unicode(document, info=[]):
 
     return document
 
-def split(iterator, case = True, underscores = True, hyphens = True, numbers = True, symbols = True):
-    for i in range(len(iterator)):
-        last_char = 0
-        for j in range(len(iterator[i])):
-            if(case):
-                if(iterator[i][j].isupper()):
-                    if(j+1 != len(iterator[i]) and j != 0): # not at end or beginning
-                        # test if in sequence of uppercase
-                        if(iterator[i][j-1].isupper()):
-                            if(not iterator[i][j+1].islower()):
-                                continue
-                    elif(j+1 == len(iterator[i])):
-                        break
+def split(iterator):
+    for token in iterator:
+        word = u''
+        for char in token:
+            if char.isupper() and all(map(lambda x: x.isupper(), word)):
+                # keep building if word is currently all uppercase
+                word += char
 
-                    if iterator[i][last_char:j] != "":
-                        yield iterator[i][last_char:j]
-                    last_char = j
-                    continue
-            if(underscores):
-                if(iterator[i][j] == "_"):
-                    if iterator[i][last_char:j] != '':
-                        yield iterator[i][last_char:j]
-                    last_char = j+1
-                    continue
-            if(hyphens):
-                if(iterator[i][j] == "-"):
-                    if iterator[i][last_char:j] != '':
-                        yield iterator[i][last_char:j]
-                    last_char = j+1
-                    continue
-            if(numbers):
-                if(iterator[i][j] in "0123456789"):
-                    if iterator[i][last_char:j] != '':
-                        yield iterator[i][last_char:j]
-                    last_char = j+1
-                    continue
-        if iterator[i][last_char:] != "":
-            yield iterator[i][last_char:]
+            elif char.islower() and all(map(lambda x: x.isupper(), word)):
+                # stop building if word is currently all uppercase,
+                # but be sure to take the first letter back
+                if len(word) > 1:
+                    yield word[:-1]
+                    word = word[-1]
+
+                word += char
+
+            elif char.islower() and any(map(lambda x: x.islower(), word)):
+                # keep building if the word is has any lowercase
+                # (word came from above case)
+                word += char
+
+            elif char.isdigit() and all(map(lambda x: x.isdigit(), word)):
+                # keep building if all of the word is a digit so far
+                word += char
+
+            elif char in string.punctuation:
+                if len(word) > 0:
+                    yield word
+                    word = u''
+
+                # always yield punctuation as a single token
+                yield char
+
+            else:
+                if len(word) > 0:
+                    yield word
+
+                word = char
+
+        if len(word) > 0:
+            yield word
 
 def remove_stops(iterator, stopwords=[]):
     stopwords.extend(string.punctuation)
