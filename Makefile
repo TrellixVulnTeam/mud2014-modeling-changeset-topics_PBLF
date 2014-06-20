@@ -1,5 +1,5 @@
 all:
-	nosetests || true
+	nosetests tests/ || true
 	find src tests -name '*.pyc' -exec rm {} \;
 
 install: submodules requirements
@@ -17,7 +17,6 @@ init: submodules
 	. env/bin/activate && pip install numpy
 	. env/bin/activate && pip install --editable lib/gittle
 	. env/bin/activate && pip install --editable lib/whatthepatch
-	. env/bin/activate && pip install --editable lib/gensim
 	. env/bin/activate && pip install -r requirements.txt
 	. env/bin/activate && pip install --editable .
 
@@ -25,5 +24,4 @@ requirements:
 	pip install numpy
 	pip install --editable lib/gittle
 	pip install --editable lib/whatthepatch
-	pip install --editable lib/gensim
 	pip install -r requirements.txt
