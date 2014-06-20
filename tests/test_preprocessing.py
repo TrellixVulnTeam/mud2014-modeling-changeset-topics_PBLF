@@ -143,3 +143,83 @@ class PreprocessTests(unittest.TestCase):
         stops = ['the']
         result = remove_stops(inputs, stops)
         self.assertIsInstance(result, type(x for x in list()))
+
+    def test_preprocessor(self):
+        """Split tokens into terms using the following rules:
+
+            0. All digits are discarded
+            1. A sequence beginning with an lc letter must be followed by lc letters
+            2. A sequence beginning with an uc letter can be followed by either:
+                a. One or more uc letters
+                b. One or more lc letters
+
+        """
+        cases = dict({
+            'camelCase': ('camel', 'case'),
+            'CamelCase': ('camel', 'case'),
+            'camel2case': ('camel', 'case'),
+            'camel2Case': ('camel', 'case'),
+            'word': ('word', ),
+            'HTML': ('html', ),
+            'readXML': ('read', 'xml'),
+            'XMLRead': ('xml', 'read'),
+            'firstMIDDLELast': ('first', 'middle', 'last'),
+            'CFile': ('file'),
+            'Word2Word34': ('word', 'word'),
+            'WORD123Word': ('word', 'word'),
+            'c_amelCase': ('amel', 'case'),
+            'CamelC_ase': ('camel','ase'),
+            'camel2_case': ('camel','case'),
+            'camel_2Case': ('camel','case'),
+            'word': ('word', ),
+            'HTML': ('html', ),
+            'read_XML': ('read', 'xml'),
+            'XML_Read': ('xml', 'read'),
+            'firstM_IDDL_ELast': ('first', 'iddl', 'last'),
+            'the_CFile': ('the', 'file'),
+            'Word_2_Word3_4': ('word', 'word'),
+            'WO_RD123W_or_d': ('wo', 'rd', 'or',),
+            'hypen-ation': ('hypen', 'ation'),
+            'email@address.com': ('email', '@', 'address', '.', 'com'),
+            '/*comment*/': ('comment'),
+            'word1': ('word', '1'),
+            'Word1': ('word', '1'),
+            'f1': tuple(),
+            '1ms': tuple(),
+            'F1': tuple(),
+            'WORD_THING': ('word', 'thing'),
+            '@': tuple(),
+            'WORD_THING_ONE': ('word', 'thing', 'one'),
+            'wordThing_one': ('word', 'thing', 'one'),
+            '_w': tuple(),
+            '_wt': ('wt', ),
+            '_wT': tuple(),
+            '_WT': ('wt', ),
+            '_Wt': ('wt', ),
+            'wt_': ('wt', ),
+            '<5>': tuple(),
+            '==': tuple(),
+            'x=5;': tuple(),
+            '2.0': tuple(),
+            '2,0': tuple(),
+            '//test': ('test'),
+            'Boolean.FALSE': tuple(),
+            'word': ('word', ),
+            'word.': ('word', ),
+            '.word.': ('word', ),
+            '.word': ('word', ),
+            'WordThing.': ('word', 'thing'),
+            'WordThing.FLAG': ('word', 'thing', 'flag'),
+            'WordThing.cmd': ('word', 'thing', 'cmd'),
+            'WordThing.cmdDo': ('word', 'thing', 'cmd'),
+            'System.out.println': ('system', 'out', 'println'),
+            'System.out.println();': ('system', 'out', 'println'),
+            'x++': tuple(),
+            '++x': tuple(),
+            "n't": tuple(),
+            u"test💩word": ('test', 'word'),
+            u'Erwin_Schrödinger': ('erwin', u'schrödinger')
+            })
+
+        # todo
+        assert False
