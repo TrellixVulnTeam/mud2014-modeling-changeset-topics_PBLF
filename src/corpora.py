@@ -29,23 +29,32 @@ STOPS = read_stops([
                     ])
 
 class Corpus(gensim.corpora.TextCorpus):
-    def __len__(self):
-        return self.length
+    def __init__(self, remove_stops=True, split=True, lower=True, min_len=2):
+        self.remove_stops = remove_stops
+        self.split = split
+        self.lower = lower
+        self.min_len = min_len
 
-    def __iter__(self):
-        return self.get_texts()
+        super(Corpus, self).__init__('.')
 
     def preprocess(self, document, info=[]):
         document = to_unicode(document, info)
         words = tokenize(document)
-        words = split(words)
-        words = (word.lower() for word in words)
-        words = remove_stops(words, STOPS)
-        words = (word for word in words if len(word) > 1)
+
+        if self.split:
+            words = split(words)
+
+        if self.lower:
+            words = (word.lower() for word in words)
+
+        if self.remove_stops:
+            words = remove_stops(words, STOPS)
+
+        words = (word for word in words if len(word) >= self.min_len)
         return words
 
 class MultiTextCorpus(Corpus):
-    def __init__(self, repo, ref=u'HEAD'):
+    def __init__(self, repo, ref=u'HEAD', remove_stops=True, split=True, lower=True, min_len=2):
         self.repo = repo
         self.metadata = False
         if type(ref) is unicode:
@@ -54,6 +63,8 @@ class MultiTextCorpus(Corpus):
             self.ref = ref
 
         assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
+
+        super(MultiTextCorpus, self).__init__(remove_stops, split, lower, min_len)
 
     def get_texts(self):
         length = 0
@@ -74,9 +85,11 @@ class MultiTextCorpus(Corpus):
 
 class ChangesetCorpus(Corpus):
 
-    def __init__(self, repo):
+    def __init__(self, repo, ref=u'HEAD', remove_stops=True, split=True, lower=True, min_len=2):
         self.repo = repo
         self.metadata = False
+
+        super(ChangesetCorpus, self).__init__(remove_stops, split, lower, min_len)
 
     def _get_diff(self, changeset):
         """ Return a text representing a `git diff` for the files in the
