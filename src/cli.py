@@ -1,12 +1,11 @@
 from __future__ import print_function
-
 import click
 
 class Config:
     def __init__(self):
         self.verbose = False
         self.base_path = '.'
-        self.project = None
+        self.project = {}
         # set all possible config options here
 
 
@@ -22,10 +21,20 @@ def cli(config, verbose, base_path, project):
     """
     Topic of Change
     """
+    
     # Only set config items here, this function is unused otherwise.
     config.verbose = verbose
     config.base_path = base_path
-    config.project = project
+    with open("projects.csv", 'r') as f:
+        next(f)
+        for line in f:
+            line = line.strip().split(",") 
+            proj = line[0]
+            parts = line[1:] 
+            if proj not in config.project:
+                config.project[proj] = list()
+                for part in parts:
+                    config.project[proj].append(part) 
 
 
 @cli.command()
@@ -94,4 +103,3 @@ def run_all(context, config):
     context.forward(preprocess)
     context.forward(model)
     context.forward(evaluate)
-
