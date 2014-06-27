@@ -1,1 +1,12 @@
 % vim:syntax=tex
+
+Rough outline of methodology:
+
+Gather corpora.
+Get words from corpora.
+Filter the words by splitting compound words and removing stop words.
+Do not stem words because Biggers and Kraft found that the null stemmer was just as effective as six other stemmers in feature location techniques using LDA \cite{Biggers-Kraft}.
+Put filtered words from change sets into gensim to create topic models.
+Put filtered words from release method into gensim to create topic models.
+Test both types of models for topic distinctness.
+Analyze effectiveness based on topic distinctness.
