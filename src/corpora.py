@@ -19,7 +19,6 @@ import re
 import nltk
 import gensim
 import dulwich, dulwich.repo, dulwich.patch
-import gittle
 
 from preprocessing import tokenize, split, remove_stops, read_stops, to_unicode
 
@@ -63,14 +62,16 @@ class MultiTextCorpus(Corpus):
             self.ref = ref
 
         assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
+        self.ref_tree = self.repo[self.ref].tree
 
         super(MultiTextCorpus, self).__init__('.', remove_stops, split, lower, min_len)
 
     def get_texts(self):
         length = 0
 
-        for fname, file_info in self.repo.get_commit_files(self.ref).items():
-            document = file_info['data']
+        for tree in self.repo.object_store.iter_tree_contents(self.ref_tree):
+            fname = tree.path
+            document = self.repo.object_store.get_raw(tree.sha)[1]
             if dulwich.patch.is_binary(document):
                 continue
 
@@ -98,7 +99,7 @@ class ChangesetCorpus(Corpus):
         """
         patch_file = StringIO()
         dulwich.patch.write_object_diff(patch_file,
-                self.repo.repo.object_store,
+                self.repo.object_store,
                 changeset.old, changeset.new)
         return patch_file.getvalue()
 
@@ -107,13 +108,13 @@ class ChangesetCorpus(Corpus):
 
         """
 
-        for walk_entry in self.repo.repo.get_walker(reverse=reverse):
+        for walk_entry in self.repo.get_walker(reverse=reverse):
             commit = walk_entry.commit
 
             # initial revision, has no parent
             if len(commit.parents) == 0:
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.repo.object_store,
+                        self.repo.object_store,
                         None,
                         commit.tree):
                     diff = self._get_diff(changes)
@@ -123,8 +124,8 @@ class ChangesetCorpus(Corpus):
                 # do I need to know the parent id?
 
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.repo.object_store,
-                        self.repo.repo[parent].tree,
+                        self.repo.object_store,
+                        self.repo[parent].tree,
                         commit.tree):
                     diff = self._get_diff(changes)
                     yield commit.id, parent, diff

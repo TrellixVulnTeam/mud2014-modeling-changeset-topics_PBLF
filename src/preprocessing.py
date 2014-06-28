@@ -20,7 +20,9 @@ import string
 import nltk
 
 
-tokenize = nltk.word_tokenize
+#tokenize = nltk.word_tokenize
+def tokenize(s):
+    return s.split()
 
 def to_unicode(document, info=[]):
     document = document.replace('\x00', ' ') #remove nulls

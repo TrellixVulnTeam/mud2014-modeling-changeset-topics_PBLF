@@ -100,9 +100,9 @@ def clone(context, config):
 def open_or_clone(path, project):
     full_path = path + project.name
     try:
-        return gittle.Gittle(full_path)
+        return gittle.Gittle(full_path).repo
     except dulwich.errors.NotGitRepository:
-        return gittle.Gittle.clone_bare(project.url, full_path)
+        return gittle.Gittle.clone_bare(project.url, full_path).repo
 
 
 @main.command()
@@ -115,7 +115,7 @@ def corpora(context, config):
 
     if config.repo is None:
         try:
-            config.repo = gittle.Gittle(config.path + config.project.name)
+            config.repo = gittle.Gittle(config.path + config.project.name).repo
         except dulwich.errors.NotGitRepository:
             error('Repository not cloned yet!')
 
