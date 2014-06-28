@@ -14,14 +14,20 @@ import sys
 from collections import namedtuple
 
 import click
+import gittle
+import dulwich
 
 class Config:
     def __init__(self):
         self.verbose = False
         self.base_path = '.'
         self.project = None
+        self.repo = None
         # set all possible config options here
 
+def error(msg, errorno=1)
+    print(msg, file=sys.stderr)
+    sys.exit(errorno)
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
@@ -61,35 +67,55 @@ def main(config, verbose, base_path, project):
         #    config.project.name => "Blah Name"
 
         if config.project is None:
-            print("Could not find the project '%s' in 'projects.csv'!" % project, file=sys.stderr)
-            sys.exit(1)
+            error("Could not find the project '%s' in 'projects.csv'!" % project)
 
 @main.command()
 @pass_config
-def clone(config):
+@click.pass_context
+def clone(context, config):
     """
     Clones the project repository
     """
-    if config.verbose:
-        print('We are in verbose mode.')
-
     print('Cloning repo for: %s' % config.project.name)
+
+    tries = 10
+    while config.repo is None and tries > 0:
+        tries -= 1
+        try:
+            config.repo = open_or_clone(config.base_path, config.project)
+        except dulwich.errors.GitProtocolError as e:
+            config.repo = None
+
+    if config.repo is None
+        error('Could not clone repository within 10 tries :(')
+
+def open_or_clone(path, project):
+    full_path = path + '/' + project.short_name
+    try:
+        return gittle.Gittle(full_path)
+    except dulwich.errors.NotGitRepository:
+        return gittle.Gittle.clone_bare(project.url, full_path)
+
 
 @main.command()
 @pass_config
-def corpora(config):
+@click.pass_context
+def corpora(context, config):
     """
     Builds the basic corpora for a project
     """
-    if config.verbose:
-        print('We are in verbose mode.')
+
+    if config.repo is None:
+        # clone repo
+        context.forward(clone)
 
     print('Creating corpus for: %s' % config.project.name)
 
 
 @main.command()
 @pass_config
-def preprocess(config):
+@click.pass_context
+def preprocess(context, config):
     """
     Runs the preprocessing steps on a corpus
     """
@@ -98,7 +124,8 @@ def preprocess(config):
 
 @main.command()
 @pass_config
-def model(config):
+@click.pass_context
+def model(context, config):
     """
     Builds a model for the corpora
     """
@@ -107,7 +134,8 @@ def model(config):
 
 @main.command()
 @pass_config
-def evaluate(config):
+@click.pass_context
+def evaluate(context, config):
     """
     Evalutates the models
     """
