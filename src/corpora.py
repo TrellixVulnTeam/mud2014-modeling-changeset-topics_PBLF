@@ -29,13 +29,13 @@ STOPS = read_stops([
                     ])
 
 class Corpus(gensim.corpora.TextCorpus):
-    def __init__(self, remove_stops=True, split=True, lower=True, min_len=2):
+    def __init__(self, fname=None, remove_stops=True, split=True, lower=True, min_len=2):
         self.remove_stops = remove_stops
         self.split = split
         self.lower = lower
         self.min_len = min_len
 
-        super(Corpus, self).__init__('.')
+        super(Corpus, self).__init__(fname)
 
     def preprocess(self, document, info=[]):
         document = to_unicode(document, info)
@@ -64,7 +64,7 @@ class MultiTextCorpus(Corpus):
 
         assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
 
-        super(MultiTextCorpus, self).__init__(remove_stops, split, lower, min_len)
+        super(MultiTextCorpus, self).__init__('.', remove_stops, split, lower, min_len)
 
     def get_texts(self):
         length = 0
@@ -89,7 +89,7 @@ class ChangesetCorpus(Corpus):
         self.repo = repo
         self.metadata = False
 
-        super(ChangesetCorpus, self).__init__(remove_stops, split, lower, min_len)
+        super(ChangesetCorpus, self).__init__('.', remove_stops, split, lower, min_len)
 
     def _get_diff(self, changeset):
         """ Return a text representing a `git diff` for the files in the
