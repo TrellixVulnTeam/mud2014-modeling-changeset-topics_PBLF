@@ -13,10 +13,12 @@ Code for splitting the terms.
 
 from __future__ import print_function
 
+import sys
 import re
 import string
 
 import nltk
+
 
 tokenize = nltk.word_tokenize
 
@@ -28,7 +30,8 @@ def to_unicode(document, info=[]):
             try:
                 return unicode(document, encoding=codec)
             except UnicodeDecodeError as e:
-                logger.debug('%s %s %s' %(codec, str(e), ' '.join(info)))
+                #logger.debug('%s %s %s' %(codec, str(e), ' '.join(info)))
+                print('%s %s %s' %(codec, str(e), ' '.join(info)), file=sys.stderr)
 
     return document
 

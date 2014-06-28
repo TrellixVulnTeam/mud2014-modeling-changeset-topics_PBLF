@@ -1,5 +1,5 @@
-short_name,name,url,release,commit
-ant,"Apache Ant",https://github.com/apache/ant.git,1.9.4,90653089548cd37d9f0d30631fbefb504b02dbc2
+name,full_name,url,release,commit
+ant,"Apache Ant",https://github.com/apache/ant.git,1.9.4,1c927b15af84cfce315a0ef6f4db60c7d47c2c50
 jabref,"JabRef",https://github.com/JabRef/jabref.git,2.10,d9ba745225f56faf878b6538bda25969a996c968
 jabref-bassett,"JabRef from Bassett-Kraft'13",https://github.com/JabRef/jabref.git,2.6,55e2db1a27a6551c462a6067f196a82ebb7124a6
 jedit-bassett,"jEdit from Bassett-Kraft'13",http://git.code.sf.net/p/jedit/jEdit.bak.git,4.3,de36dc8f25160c7c7d8a6bc2317940b37e60f6e7
