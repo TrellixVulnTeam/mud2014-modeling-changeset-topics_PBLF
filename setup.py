@@ -42,7 +42,7 @@ setup(
     install_requires=requirementstxt,
     entry_points='''
         [console_scripts]
-        mct=src:cli
+        mct=src:main
     ''',
 )
 

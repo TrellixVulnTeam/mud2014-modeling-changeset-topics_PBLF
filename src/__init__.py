@@ -7,4 +7,4 @@
 #
 # See LICENSE for details.
 
-from cli import *
+from main import *
