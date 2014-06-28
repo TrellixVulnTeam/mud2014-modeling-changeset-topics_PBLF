@@ -17,6 +17,7 @@ import click
 import gittle
 import dulwich
 from gensim.corpora import MalletCorpus
+from gensim.models import LdaModel
 
 from corpora import MultiTextCorpus, ChangesetCorpus
 
@@ -27,6 +28,8 @@ class Config:
         self.path = './'
         self.project = None
         self.repo = None
+        self.file_corpus = None
+        self.changeset_corpus = None
         # set all possible config options here
 
 def error(msg, errorno=1):
@@ -73,6 +76,7 @@ def main(config, verbose, path, project):
         if config.project is None:
             error("Could not find the project '%s' in 'projects.csv'!" % project)
 
+
 @main.command()
 @pass_config
 @click.pass_context
@@ -115,30 +119,44 @@ def corpora(context, config):
         except dulwich.errors.NotGitRepository:
             error('Repository not cloned yet!')
 
-    print('Creating corpus for: %s' % config.project.name)
-    print('Creating file-based corpus out of source files for '
-          'release %s at commit %s' % (
-              config.project.release, config.project.commit))
+    print('Creating corpora for: %s' % config.project.name)
 
-    file_corpus = MultiTextCorpus(config.repo, config.project.commit)
-    MalletCorpus.serialize(config.path + config.project.name, file_corpus)
+    # build file-based corpus
+    # try opening an previously made corpus first
+    file_fname = config.path + config.project.name + '_files.mallet'
+    try:
+        file_corpus = MalletCorpus(file_fname)
+        print('Opened previously created corpus at file %s' % file_fname)
+    # build one if it doesnt exist
+    except:
+        print('Creating file-based corpus out of source files for '
+            'release %s at commit %s' % (
+                config.project.release, config.project.commit))
 
-    print('Creating changeset-based corpus out of source files for '
-          'release %s for all commits reachable from %s' % (
-              config.project.release, config.project.commit))
+        file_corpus = MultiTextCorpus(config.repo, config.project.commit)
+        file_corpus.metadata = True
+        MalletCorpus.serialize(file_fname, file_corpus,
+                id2word=file_corpus.dictionary, metadata=True)
 
-    changeset_corpus = ChangesetCorpus(config.repo, config.project.commit)
-    MalletCorpus.serialize(config.path + config.project.name, changeset_corpus)
+    # build changeset-based corpus
+    changeset_fname = config.path + config.project.name + '_changesets.mallet'
+    # try opening an previously made corpus first
+    try:
+        changeset_corpus = MalletCorpus(changeset_fname)
+        print('Opened previously created corpus at file %s' % file_fname)
+    # build one if it doesnt exist
+    except:
+        print('Creating changeset-based corpus out of source files for '
+            'release %s for all commits reachable from %s' % (
+                config.project.release, config.project.commit))
 
+        changeset_corpus = ChangesetCorpus(config.repo, config.project.commit)
+        changeset_corpus.metadata = True
+        MalletCorpus.serialize(changeset_fname, changeset_corpus,
+                id2word=changeset_corpus.dictionary, metadata=True)
 
-@main.command()
-@pass_config
-@click.pass_context
-def preprocess(context, config):
-    """
-    Runs the preprocessing steps on a corpus
-    """
-    print('Preproccessing corpus for: %s' % config.project.name)
+    config.file_corpus = file_corpus
+    config.changeset_corpus = changeset_corpus
 
 
 @main.command()
@@ -150,6 +168,29 @@ def model(context, config):
     """
     print('Building topic models for: %s' % config.project.name)
 
+    file_fname = config.path + config.project.name + '_files.lda'
+    try:
+        file_model = LdaModel.load(file_fname)
+        print('Opened previously created model at file %s' % file_fname)
+    except:
+        if config.file_corpus is None:
+            error('Corpora for building file models not found!')
+
+        file_model = LdaModel(config.file_corpus)
+
+    config.file_model = file_model
+
+    changeset_fname = config.path + config.project.name + '_changesets.lda'
+    try:
+        changeset_model = LdaModel.load(changeset_fname)
+        print('Opened previously created model at changeset %s' % changeset_fname)
+    except:
+        if config.changeset_corpus is None:
+            error('Corpora for building changeset models not found!')
+
+        changeset_model = LdaModel(config.changeset_corpus)
+
+    config.changeset_model = changeset_model
 
 @main.command()
 @pass_config
@@ -158,8 +199,10 @@ def evaluate(context, config):
     """
     Evalutates the models
     """
-    print('Evalutating models for: %s' % config.project.name)
+    if config.file_model is None or config.changeset_model is None:
+        error('Cannot evalutate LDA models not built yet!')
 
+    print('Evalutating models for: %s' % config.project.name)
 
 @main.command()
 @pass_config
@@ -171,6 +214,5 @@ def run_all(context, config):
     print('Doing everything for: %s' % config.project.name)
     context.forward(clone)
     context.forward(corpora)
-    context.forward(preprocess)
     context.forward(model)
     context.forward(evaluate)
