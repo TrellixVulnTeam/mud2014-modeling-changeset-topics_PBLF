@@ -20,6 +20,7 @@ from io import StringIO
 from nose.tools import *
 
 from src.preprocessing import split, remove_stops
+from src.corpora import Corpus
 
 # datapath is now a useful function for building paths to test files
 module_path = os.path.dirname(__file__)
@@ -155,42 +156,42 @@ class PreprocessTests(unittest.TestCase):
 
         """
         cases = dict({
-            'camelCase': ('camel', 'case'),
-            'CamelCase': ('camel', 'case'),
-            'camel2case': ('camel', 'case'),
-            'camel2Case': ('camel', 'case'),
+            'camelCase': ('camel', ),
+            'CamelCase': ('camel', ),
+            'camel2case': ('camel', ),
+            'camel2Case': ('camel', ),
             'word': ('word', ),
             'HTML': ('html', ),
             'readXML': ('read', 'xml'),
             'XMLRead': ('xml', 'read'),
-            'firstMIDDLELast': ('first', 'middle', 'last'),
-            'CFile': ('file'),
+            'firstMIDDLELast': ('middle', ),
+            'CFile': ('file', ),
             'Word2Word34': ('word', 'word'),
             'WORD123Word': ('word', 'word'),
-            'c_amelCase': ('amel', 'case'),
+            'c_amelCase': ('amel', ),
             'CamelC_ase': ('camel','ase'),
-            'camel2_case': ('camel','case'),
-            'camel_2Case': ('camel','case'),
+            'camel2_case': ('camel', ),
+            'camel_2Case': ('camel', ),
             'word': ('word', ),
             'HTML': ('html', ),
             'read_XML': ('read', 'xml'),
             'XML_Read': ('xml', 'read'),
-            'firstM_IDDL_ELast': ('first', 'iddl', 'last'),
-            'the_CFile': ('the', 'file'),
+            'firstM_IDDL_ELast': ('iddl', ),
+            'the_CFile': ('file', ),
             'Word_2_Word3_4': ('word', 'word'),
-            'WO_RD123W_or_d': ('wo', 'rd', 'or',),
+            'WO_RD123W_or_d': ('wo', ),
             'hypen-ation': ('hypen', 'ation'),
-            'email@address.com': ('email', '@', 'address', '.', 'com'),
-            '/*comment*/': ('comment'),
-            'word1': ('word', '1'),
-            'Word1': ('word', '1'),
+            'email@address.com': ('email', 'address'),
+            '/*comment*/': ('comment', ),
+            'word1': ('word', ),
+            'Word1': ('word', ),
             'f1': tuple(),
-            '1ms': tuple(),
+            '1ms': ('ms', ),
             'F1': tuple(),
-            'WORD_THING': ('word', 'thing'),
+            'WORD_THING': ('word', ),
             '@': tuple(),
-            'WORD_THING_ONE': ('word', 'thing', 'one'),
-            'wordThing_one': ('word', 'thing', 'one'),
+            'WORD_THING_ONE': ('word', ),
+            'wordThing_one': ('word', ),
             '_w': tuple(),
             '_wt': ('wt', ),
             '_wT': tuple(),
@@ -202,18 +203,18 @@ class PreprocessTests(unittest.TestCase):
             'x=5;': tuple(),
             '2.0': tuple(),
             '2,0': tuple(),
-            '//test': ('test'),
+            '//test': ('test', ),
             'Boolean.FALSE': tuple(),
             'word': ('word', ),
             'word.': ('word', ),
             '.word.': ('word', ),
             '.word': ('word', ),
-            'WordThing.': ('word', 'thing'),
-            'WordThing.FLAG': ('word', 'thing', 'flag'),
-            'WordThing.cmd': ('word', 'thing', 'cmd'),
-            'WordThing.cmdDo': ('word', 'thing', 'cmd'),
-            'System.out.println': ('system', 'out', 'println'),
-            'System.out.println();': ('system', 'out', 'println'),
+            'WordThing.': ('word', ),
+            'WordThing.FLAG': ('word', 'flag'),
+            'WordThing.cmd': ('word', 'cmd'),
+            'WordThing.cmdDo': ('word', 'cmd'),
+            'System.out.println': ('system', 'println'),
+            'System.out.println();': ('system', 'println'),
             'x++': tuple(),
             '++x': tuple(),
             "n't": tuple(),
@@ -221,5 +222,12 @@ class PreprocessTests(unittest.TestCase):
             u'Erwin_Schrödinger': ('erwin', u'schrödinger')
             })
 
-        # todo
-        assert False
+        c = Corpus()
+        for term, expected in cases.items():
+            result = c.preprocess(term)
+            self.assertEqual(tuple(result), expected)
+
+        terms = cases.keys()
+        expected = sum(list(map(list, cases.values())), [])
+        result = c.preprocess(' '.join(terms))
+        self.assertEqual(list(result), expected)
