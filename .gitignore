@@ -68,3 +68,5 @@ docs/_build/
 *.bbl
 *.blg
 *.pdf
+
+*.swp
