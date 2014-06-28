@@ -32,7 +32,7 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
         help="Set the directory to work within")
 @click.argument('project')
 @pass_config
-def cli(config, verbose, base_path, project):
+def main(config, verbose, base_path, project):
     """
     Topic of Change
     """
@@ -64,7 +64,7 @@ def cli(config, verbose, base_path, project):
             print("Could not find the project '%s' in 'projects.csv'!" % project, file=sys.stderr)
             sys.exit(1)
 
-@cli.command()
+@main.command()
 @pass_config
 def clone(config):
     """
@@ -75,7 +75,7 @@ def clone(config):
 
     print('Cloning repo for: %s' % config.project.name)
 
-@cli.command()
+@main.command()
 @pass_config
 def corpora(config):
     """
@@ -87,7 +87,7 @@ def corpora(config):
     print('Creating corpus for: %s' % config.project.name)
 
 
-@cli.command()
+@main.command()
 @pass_config
 def preprocess(config):
     """
@@ -96,7 +96,7 @@ def preprocess(config):
     print('Preproccessing corpus for: %s' % config.project.name)
 
 
-@cli.command()
+@main.command()
 @pass_config
 def model(config):
     """
@@ -105,7 +105,7 @@ def model(config):
     print('Building topic models for: %s' % config.project.name)
 
 
-@cli.command()
+@main.command()
 @pass_config
 def evaluate(config):
     """
@@ -114,7 +114,7 @@ def evaluate(config):
     print('Evalutating models for: %s' % config.project.name)
 
 
-@cli.command()
+@main.command()
 @pass_config
 @click.pass_context
 def run_all(context, config):

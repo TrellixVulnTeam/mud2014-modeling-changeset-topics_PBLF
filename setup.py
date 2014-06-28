@@ -42,7 +42,7 @@ setup(
     install_requires=requirementstxt,
     entry_points='''
         [console_scripts]
-        topicofchange=src:cli
+        topicofchange=src:main
     ''',
 )
 
