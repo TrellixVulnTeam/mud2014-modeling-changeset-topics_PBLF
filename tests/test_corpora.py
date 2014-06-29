@@ -35,6 +35,22 @@ class TestMultitextCorpus(unittest.TestCase):
                 min_len=0)
         self.docs = list(self.corpus)
 
+    def test_lazy(self):
+        corpus = MultiTextCorpus(self.repo,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0,
+                lazy_dict=True)
+
+        self.assertEqual(len(corpus.dictionary), 0)
+
+        # if lazy, iterating over the corpus will now build the dict
+        docs = list(corpus)
+
+        self.assertGreater(len(corpus.dictionary), 0)
+
+
     def test_length(self):
         self.assertEqual(len(self.corpus), 10)
         self.assertEqual(len(self.docs), 10)
@@ -215,6 +231,22 @@ class TestMultitextCorpusAtRef(unittest.TestCase):
                 min_len=0)
         self.docs = list(self.corpus)
 
+
+    def test_lazy(self):
+        corpus = MultiTextCorpus(self.repo,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0,
+                lazy_dict=True)
+
+        self.assertEqual(len(corpus.dictionary), 0)
+
+        # if lazy, iterating over the corpus will now build the dict
+        docs = list(corpus)
+
+        self.assertGreater(len(corpus.dictionary), 0)
+
     def test_length(self):
         self.assertEqual(len(self.corpus), 7)
         self.assertEqual(len(self.docs), 7)
@@ -354,6 +386,21 @@ class TestChangesetCorpus(unittest.TestCase):
         l = len(self.corpus)
         for _ in self.corpus:
             self.assertEqual(l, len(self.corpus))
+
+    def test_lazy(self):
+        corpus = MultiTextCorpus(self.repo,
+                remove_stops=False,
+                lower=True,
+                split=True,
+                min_len=0,
+                lazy_dict=True)
+
+        self.assertEqual(len(corpus.dictionary), 0)
+
+        # if lazy, iterating over the corpus will now build the dict
+        docs = list(corpus)
+
+        self.assertGreater(len(corpus.dictionary), 0)
 
 
     def test_changeset_get_texts(self):

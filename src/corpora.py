@@ -27,14 +27,50 @@ STOPS = read_stops([
                     'data/java_reserved.txt',
                     ])
 
-class Corpus(gensim.corpora.TextCorpus):
-    def __init__(self, fname=None, remove_stops=True, split=True, lower=True, min_len=2):
+class GitCorpus(gensim.interfaces.CorpusABC):
+    """
+    Helper class to simplify the pipeline of getting bag-of-words vectors (= a
+    gensim corpus) from plain text.
+
+    This is an abstract base class: override the `get_texts()` method to match
+    your particular input.
+
+    Given a filename (or a file-like object) in constructor, the corpus object
+    will be automatically initialized with a dictionary in `self.dictionary` and
+    will support the `iter` corpus method. You must only provide a correct `get_texts`
+    implementation.
+
+    """
+    def __init__(self, repo=None, ref='HEAD', remove_stops=True,
+            split=True, lower=True, min_len=2, lazy_dict=False):
+
+        self.repo = repo
         self.remove_stops = remove_stops
         self.split = split
         self.lower = lower
         self.min_len = min_len
+        self.lazy_dict = lazy_dict
 
-        super(Corpus, self).__init__(fname)
+        self.dictionary = gensim.corpora.Dictionary()
+        self.metadata = False
+
+        # ensure ref is a str otherwise dulwich cries
+        if type(ref) is unicode:
+            self.ref = ref.encode('utf-8')
+        else:
+            self.ref = ref
+
+        self.ref_tree = None
+
+        if repo is not None:
+            # find which file tree is for the commit we care about
+            self.ref_tree = self.repo[self.ref].tree
+
+            if not lazy_dict:
+                # build the dict (not lazy)
+                self.dictionary.add_documents(self.get_texts())
+
+        super(GitCorpus, self).__init__()
 
     def preprocess(self, document, info=[]):
         document = to_unicode(document, info)
@@ -52,31 +88,47 @@ class Corpus(gensim.corpora.TextCorpus):
         words = (word for word in words if len(word) >= self.min_len)
         return words
 
-class MultiTextCorpus(Corpus):
-    def __init__(self, repo, ref=u'HEAD', remove_stops=True, split=True, lower=True, min_len=2):
-        self.repo = repo
-        self.metadata = False
-        if type(ref) is unicode:
-            self.ref = ref.encode('utf-8')
-        else:
-            self.ref = ref
+    def __iter__(self):
+        """
+        The function that defines a corpus.
 
-        assert type(self.ref) is str, 'ref is not a str, it is: %s' % str(type(self.ref))
-        self.ref_tree = self.repo[self.ref].tree
+        Iterating over the corpus must yield sparse vectors, one for each document.
+        """
+        for text in self.get_texts():
+            if self.metadata:
+                yield self.dictionary.doc2bow(text[0], allow_update=self.lazy_dict), text[1]
+            else:
+                yield self.dictionary.doc2bow(text, allow_update=self.lazy_dict)
 
-        super(MultiTextCorpus, self).__init__('.', remove_stops, split, lower, min_len)
+    def get_texts(self):
+        """
+        Iterate over the collection, yielding one document at a time. A document
+        is a sequence of words (strings) that can be fed into `Dictionary.doc2bow`.
 
+        Override this function to match your input (parse input files, do any
+        text preprocessing, lowercasing, tokenizing etc.). There will be no further
+        preprocessing of the words coming out of this function.
+        """
+        raise NotImplementedError
+
+    def __len__(self):
+        return self.length  # will throw if corpus not initialized
+
+# endclass Corpus
+
+class MultiTextCorpus(GitCorpus):
     def get_texts(self):
         length = 0
 
-        for tree in self.repo.object_store.iter_tree_contents(self.ref_tree):
-            fname = tree.path
-            document = self.repo.object_store.get_raw(tree.sha)[1]
+        for entry in self.repo.object_store.iter_tree_contents(self.ref_tree):
+            fname = entry.path
+            document = self.repo.object_store.get_raw(entry.sha)[1]
             if dulwich.patch.is_binary(document):
                 continue
 
             words = self.preprocess(document, [fname, self.ref])
             length += 1
+
             if self.metadata:
                 yield words, (fname, u'en')
             else:
@@ -84,14 +136,7 @@ class MultiTextCorpus(Corpus):
 
         self.length = length # only reset after iteration is done.
 
-class ChangesetCorpus(Corpus):
-
-    def __init__(self, repo, ref=u'HEAD', remove_stops=True, split=True, lower=True, min_len=2):
-        self.repo = repo
-        self.metadata = False
-
-        super(ChangesetCorpus, self).__init__('.', remove_stops, split, lower, min_len)
-
+class ChangesetCorpus(GitCorpus):
     def _get_diff(self, changeset):
         """ Return a text representing a `git diff` for the files in the
         changeset.
