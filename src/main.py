@@ -133,7 +133,7 @@ def corpora(context, config):
             'release %s at commit %s' % (
                 config.project.release, config.project.commit))
 
-        file_corpus = MultiTextCorpus(config.repo, config.project.commit)
+        file_corpus = MultiTextCorpus(config.repo, config.project.commit, lazy_dict=True)
         file_corpus.metadata = True
         MalletCorpus.serialize(file_fname, file_corpus,
                 id2word=file_corpus.dictionary, metadata=True)
@@ -150,7 +150,7 @@ def corpora(context, config):
             'release %s for all commits reachable from %s' % (
                 config.project.release, config.project.commit))
 
-        changeset_corpus = ChangesetCorpus(config.repo, config.project.commit)
+        changeset_corpus = ChangesetCorpus(config.repo, config.project.commit, lazy_dict=True)
         changeset_corpus.metadata = True
         MalletCorpus.serialize(changeset_fname, changeset_corpus,
                 id2word=changeset_corpus.dictionary, metadata=True)
