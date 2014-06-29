@@ -185,6 +185,8 @@ def model(context, config):
                 alpha=config.alpha,
                 num_topics=config.num_topics)
 
+        file_model.save(file_fname)
+
     config.file_model = file_model
 
     changeset_fname = config.path + config.project.name + '_changesets.lda'
@@ -198,6 +200,8 @@ def model(context, config):
         changeset_model = LdaModel(config.changeset_corpus,
                 alpha=config.alpha,
                 num_topics=config.num_topics)
+
+        changeset_model.save(changeset_fname)
 
     config.changeset_model = changeset_model
 
