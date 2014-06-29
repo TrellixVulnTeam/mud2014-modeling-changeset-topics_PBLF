@@ -19,6 +19,7 @@ import dulwich
 from gensim.corpora import MalletCorpus
 from gensim.models import LdaModel
 
+import utils
 from corpora import MultiTextCorpus, ChangesetCorpus
 
 
@@ -30,6 +31,8 @@ class Config:
         self.repo = None
         self.file_corpus = None
         self.changeset_corpus = None
+        self.num_topics = 100
+        self.alpha = 'auto' # or can set a float
         # set all possible config options here
 
 def error(msg, errorno=1):
@@ -176,7 +179,11 @@ def model(context, config):
         if config.file_corpus is None:
             error('Corpora for building file models not found!')
 
-        file_model = LdaModel(config.file_corpus)
+        # TODO
+        # Maybe look into various settings for num_topics?
+        file_model = LdaModel(config.file_corpus,
+                alpha=config.alpha,
+                num_topics=config.num_topics)
 
     config.file_model = file_model
 
@@ -188,7 +195,9 @@ def model(context, config):
         if config.changeset_corpus is None:
             error('Corpora for building changeset models not found!')
 
-        changeset_model = LdaModel(config.changeset_corpus)
+        changeset_model = LdaModel(config.changeset_corpus,
+                alpha=config.alpha,
+                num_topics=config.num_topics)
 
     config.changeset_model = changeset_model
 
@@ -203,6 +212,8 @@ def evaluate(context, config):
         error('Cannot evalutate LDA models not built yet!')
 
     print('Evalutating models for: %s' % config.project.name)
+    # calculate topic distinctiveness using utils.kullback_leibler_divergence() 
+
 
 @main.command()
 @pass_config
