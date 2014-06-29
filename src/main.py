@@ -216,7 +216,29 @@ def evaluate(context, config):
         error('Cannot evalutate LDA models not built yet!')
 
     print('Evalutating models for: %s' % config.project.name)
-    # calculate topic distinctiveness using utils.kullback_leibler_divergence() 
+
+    print("File model KL:",
+            score(config.file_model, utils.kullback_leibler_divergence))
+    print("Changeset model KL:",
+            score(config.changeset_model, utils.kullback_leibler_divergence))
+
+def score(model, fn):
+    total = 0
+    for a, topic_a in norm_phi(model):
+        score = 0
+        for b, topic_b in norm_phi(model):
+            if a == b:
+                continue
+            score += fn(topic_a, topic_b)
+        print(a, score)
+        total += score
+    return total
+
+def norm_phi(model):
+    for topicid in range(model.num_topics):
+        topic = model.state.get_lambda()[topicid]
+        topic = topic / topic.sum() # normalize to probability dist
+        yield topicid, topic
 
 
 @main.command()
