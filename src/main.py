@@ -132,9 +132,6 @@ def corpora(context, config):
         MalletCorpus.serialize(changeset_fname, changeset_corpus,
                 id2word=changeset_corpus.dictionary, metadata=True)
 
-    config.file_corpus = file_corpus
-    config.changeset_corpus = changeset_corpus
-
 
 @main.command()
 @pass_config
@@ -145,18 +142,26 @@ def model(context, config):
     """
     print('Building topic models for: %s' % config.project.name)
 
+
     file_fname = config.path + config.project.name + '_files.lda'
     try:
         file_model = LdaModel.load(file_fname)
         print('Opened previously created model at file %s' % file_fname)
     except:
         if config.file_corpus is None:
-            print('Corpora for building file models not found! Building...')
+            fname = config.path + config.project.name + '_files.mallet'
+            try:
+                config.file_corpus = MalletCorpus(fname)
+                print('Opened previously created corpus at file %s' % fname)
+            # build one if it doesnt exist
+            except:
+                error('Corpora for building file models not found!')
 
 
         # TODO
         # Maybe look into various settings for num_topics?
         file_model = LdaModel(config.file_corpus,
+                id2word=config.file_corpus.id2word,
                 alpha=config.alpha,
                 num_topics=config.num_topics)
 
@@ -170,9 +175,16 @@ def model(context, config):
         print('Opened previously created model at changeset %s' % changeset_fname)
     except:
         if config.changeset_corpus is None:
-            error('Corpora for building changeset models not found!')
+            fname = config.path + config.project.name + '_changesets.mallet'
+            try:
+                config.changeset_corpus = MalletCorpus(fname)
+                print('Opened previously created corpus at file %s' % fname)
+            # build one if it doesnt exist
+            except:
+                error('Corpora for building changeset models not found!')
 
         changeset_model = LdaModel(config.changeset_corpus,
+                id2word=config.changeset_corpus.id2word,
                 alpha=config.alpha,
                 num_topics=config.num_topics)
 
@@ -187,27 +199,51 @@ def evaluate(context, config):
     """
     Evalutates the models
     """
-    if config.file_model is None or config.changeset_model is None:
-        error('Cannot evalutate LDA models not built yet!')
+    file_model = config.file_model
+    changeset_model = config.changeset_model
+
+    if file_model is None or changeset_model is None:
+        file_fname = config.path + config.project.name + '_files.lda'
+        try:
+            file_model = LdaModel.load(file_fname)
+            print('Opened previously created model at file %s' % file_fname)
+        except:
+            error('Cannot evalutate LDA models not built yet!')
+
+        changeset_fname = config.path + config.project.name + '_changesets.lda'
+        try:
+            changeset_model = LdaModel.load(changeset_fname)
+            print('Opened previously created model at changeset %s' % changeset_fname)
+        except:
+            error('Cannot evalutate LDA models not built yet!')
 
     print('Evalutating models for: %s' % config.project.name)
 
-    print("File model KL:",
-            score(config.file_model, utils.kullback_leibler_divergence))
-    print("Changeset model KL:",
-            score(config.changeset_model, utils.kullback_leibler_divergence))
+    file_scores = score(config.file_model, utils.kullback_leibler_divergence)
+    changeset_scores = score(config.changeset_model, utils.kullback_leibler_divergence))
+
+    file_total = sum(file_scores, key=lambda x: x[1])
+    changeset_total = sum(changeset_scores, key=lambda x: x[1])
+
+    print("File model KL:", file_total)
+    print("Changeset model KL:", changeset_total)
+    print("File model KL mean:", file_total / len(file_scores))
+    print("Changeset model KL mean:", changeset_total / len(changeset_scores))
 
 def score(model, fn):
-    total = 0
+    # thomas et al 2011 msr
+    #
+    scores = list()
     for a, topic_a in norm_phi(model):
         score = 0
         for b, topic_b in norm_phi(model):
             if a == b:
                 continue
             score += fn(topic_a, topic_b)
+        score *= (1 / (model.num_topics - 1))
         print(a, score)
-        total += score
-    return total
+        scores.append((a, score))
+    return scores
 
 def norm_phi(model):
     for topicid in range(model.num_topics):
