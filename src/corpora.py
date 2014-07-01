@@ -16,7 +16,6 @@ from StringIO import StringIO
 import os
 import re
 
-import nltk
 import gensim
 import dulwich, dulwich.repo, dulwich.patch
 
