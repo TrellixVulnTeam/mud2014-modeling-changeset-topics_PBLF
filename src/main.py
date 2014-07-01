@@ -14,8 +14,8 @@ import sys
 from collections import namedtuple
 
 import click
-import gittle
 import dulwich
+import dulwich.repo
 from gensim.corpora import MalletCorpus
 from gensim.models import LdaModel
 
@@ -83,34 +83,6 @@ def main(config, verbose, path, project):
 @main.command()
 @pass_config
 @click.pass_context
-def clone(context, config):
-    """
-    Clones the project repository
-    """
-    print('Cloning repo for: %s' % config.project.name)
-
-    tries = 10
-    while config.repo is None and tries > 0:
-        tries -= 1
-        try:
-            config.repo = open_or_clone(config.path, config.project)
-        except dulwich.errors.GitProtocolError as e:
-            config.repo = None
-
-    if config.repo is None:
-        error('Could not clone repository within 10 tries :(')
-
-def open_or_clone(path, project):
-    full_path = path + project.name
-    try:
-        return gittle.Gittle(full_path).repo
-    except dulwich.errors.NotGitRepository:
-        return gittle.Gittle.clone_bare(project.url, full_path).repo
-
-
-@main.command()
-@pass_config
-@click.pass_context
 def corpora(context, config):
     """
     Builds the basic corpora for a project
@@ -118,7 +90,8 @@ def corpora(context, config):
 
     if config.repo is None:
         try:
-            config.repo = gittle.Gittle(config.path + config.project.name).repo
+            full_path = config.path + config.project.name
+            config.repo = dulwich.repo.Repo(full_path)
         except dulwich.errors.NotGitRepository:
             error('Repository not cloned yet!')
 
@@ -177,7 +150,8 @@ def model(context, config):
         print('Opened previously created model at file %s' % file_fname)
     except:
         if config.file_corpus is None:
-            error('Corpora for building file models not found!')
+            print('Corpora for building file models not found! Building...')
+
 
         # TODO
         # Maybe look into various settings for num_topics?
@@ -249,7 +223,6 @@ def run_all(context, config):
     Runs corpora, preprocess, model, and evaluate in one shot.
     """
     print('Doing everything for: %s' % config.project.name)
-    context.forward(clone)
     context.forward(corpora)
     context.forward(model)
     context.forward(evaluate)
