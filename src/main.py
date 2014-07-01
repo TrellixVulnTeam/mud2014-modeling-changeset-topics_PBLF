@@ -88,12 +88,13 @@ def corpora(context, config):
     Builds the basic corpora for a project
     """
 
-    if config.repo is None:
-        try:
-            full_path = config.path + config.project.name
-            config.repo = dulwich.repo.Repo(full_path)
-        except dulwich.errors.NotGitRepository:
-            error('Repository not cloned yet!')
+    git_path = config.path + config.project.name
+    # open the repo
+    try:
+        config.repo = dulwich.repo.Repo(git_path)
+    except dulwich.errors.NotGitRepository:
+        error('Repository not cloned yet! Clone command: '
+                'git clone %s %s' % (config.project.url, git_path))
 
     print('Creating corpora for: %s' % config.project.name)
 
