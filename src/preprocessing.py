@@ -80,17 +80,20 @@ def split(iterator):
         if len(word) > 0:
             yield word
 
-def remove_stops(iterator, stopwords=[]):
-    stopwords.extend(string.punctuation)
-    stopwords.extend(string.digits)
-    stopwords.extend(string.whitespace)
-    for word in iterator:
-        if word not in stopwords and len(word) > 0:
-            try:
-                int(word)
-                float(word)
-            except ValueError:
-                yield word
+def remove_stops(iterator, stopwords=set()):
+    if type(stopwords) is not set:
+        stopwords = set(stopwords)
+
+    stopwords.update(string.punctuation)
+    stopwords.update(string.digits)
+    stopwords.update(string.whitespace)
+    stopwords.update([''])
+    for word in filter(lambda x: x not in stopwords, iterator):
+        try:
+            int(word)
+            float(word)
+        except ValueError:
+            yield word
 
 def read_stops(l):
     stops = list()
@@ -98,4 +101,4 @@ def read_stops(l):
         with open(each) as f:
             stops.extend(f.readlines())
 
-    return [word.strip() for word in stops]
+    return set([word.strip() for word in stops])
