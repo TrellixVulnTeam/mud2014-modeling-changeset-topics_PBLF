@@ -224,8 +224,8 @@ def evaluate(context, config):
     file_scores = score(file_model, utils.kullback_leibler_divergence)
     changeset_scores = score(changeset_model, utils.kullback_leibler_divergence)
 
-    file_total = sum(file_scores, key=lambda x: x[1])
-    changeset_total = sum(changeset_scores, key=lambda x: x[1])
+    file_total = sum([x[1] for x in file_scores])
+    changeset_total = sum([x[1] for x in changeset_scores])
 
     print("File model KL:", file_total)
     print("Changeset model KL:", changeset_total)
