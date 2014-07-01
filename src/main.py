@@ -31,6 +31,8 @@ class Config:
         self.repo = None
         self.file_corpus = None
         self.changeset_corpus = None
+        self.file_model = None
+        self.changeset_model = None
         self.num_topics = 100
         self.alpha = 'auto' # or can set a float
         # set all possible config options here
@@ -219,8 +221,8 @@ def evaluate(context, config):
 
     print('Evalutating models for: %s' % config.project.name)
 
-    file_scores = score(config.file_model, utils.kullback_leibler_divergence)
-    changeset_scores = score(config.changeset_model, utils.kullback_leibler_divergence))
+    file_scores = score(file_model, utils.kullback_leibler_divergence)
+    changeset_scores = score(changeset_model, utils.kullback_leibler_divergence)
 
     file_total = sum(file_scores, key=lambda x: x[1])
     changeset_total = sum(changeset_scores, key=lambda x: x[1])
@@ -235,12 +237,12 @@ def score(model, fn):
     #
     scores = list()
     for a, topic_a in norm_phi(model):
-        score = 0
+        score = 0.0
         for b, topic_b in norm_phi(model):
             if a == b:
                 continue
             score += fn(topic_a, topic_b)
-        score *= (1 / (model.num_topics - 1))
+        score *= (1.0 / (model.num_topics - 1))
         print(a, score)
         scores.append((a, score))
     return scores
