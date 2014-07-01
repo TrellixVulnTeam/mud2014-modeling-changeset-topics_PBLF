@@ -50,7 +50,7 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         self.min_len = min_len
         self.lazy_dict = lazy_dict
 
-        self.dictionary = gensim.corpora.Dictionary()
+        self.id2word = gensim.corpora.Dictionary()
         self.metadata = False
 
         # ensure ref is a str otherwise dulwich cries
@@ -67,7 +67,7 @@ class GitCorpus(gensim.interfaces.CorpusABC):
 
             if not lazy_dict:
                 # build the dict (not lazy)
-                self.dictionary.add_documents(self.get_texts())
+                self.id2word.add_documents(self.get_texts())
 
         super(GitCorpus, self).__init__()
 
@@ -95,9 +95,9 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         """
         for text in self.get_texts():
             if self.metadata:
-                yield self.dictionary.doc2bow(text[0], allow_update=self.lazy_dict), text[1]
+                yield self.id2word.doc2bow(text[0], allow_update=self.lazy_dict), text[1]
             else:
-                yield self.dictionary.doc2bow(text, allow_update=self.lazy_dict)
+                yield self.id2word.doc2bow(text, allow_update=self.lazy_dict)
 
     def get_texts(self):
         """

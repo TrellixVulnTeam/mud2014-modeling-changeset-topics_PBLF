@@ -43,12 +43,12 @@ class TestMultitextCorpus(unittest.TestCase):
                 min_len=0,
                 lazy_dict=True)
 
-        self.assertEqual(len(corpus.dictionary), 0)
+        self.assertEqual(len(corpus.id2word), 0)
 
         # if lazy, iterating over the corpus will now build the dict
         docs = list(corpus)
 
-        self.assertGreater(len(corpus.dictionary), 0)
+        self.assertGreater(len(corpus.id2word), 0)
 
 
     def test_length(self):
@@ -216,7 +216,7 @@ class TestMultitextCorpus(unittest.TestCase):
 
             # convert the document to text freq since we don't know the
             # term ids ahead of time for testing.
-            textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
+            textdoc = set((unicode(self.corpus.id2word[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)
 
 class TestMultitextCorpusAtRef(unittest.TestCase):
@@ -240,12 +240,12 @@ class TestMultitextCorpusAtRef(unittest.TestCase):
                 min_len=0,
                 lazy_dict=True)
 
-        self.assertEqual(len(corpus.dictionary), 0)
+        self.assertEqual(len(corpus.id2word), 0)
 
         # if lazy, iterating over the corpus will now build the dict
         docs = list(corpus)
 
-        self.assertGreater(len(corpus.dictionary), 0)
+        self.assertGreater(len(corpus.id2word), 0)
 
     def test_length(self):
         self.assertEqual(len(self.corpus), 7)
@@ -355,7 +355,7 @@ class TestMultitextCorpusAtRef(unittest.TestCase):
 
             # convert the document to text freq since we don't know the
             # term ids ahead of time for testing.
-            textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
+            textdoc = set((unicode(self.corpus.id2word[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)
 
 
@@ -395,12 +395,12 @@ class TestChangesetCorpus(unittest.TestCase):
                 min_len=0,
                 lazy_dict=True)
 
-        self.assertEqual(len(corpus.dictionary), 0)
+        self.assertEqual(len(corpus.id2word), 0)
 
         # if lazy, iterating over the corpus will now build the dict
         docs = list(corpus)
 
-        self.assertGreater(len(corpus.dictionary), 0)
+        self.assertGreater(len(corpus.id2word), 0)
 
 
     def test_changeset_get_texts(self):
@@ -572,5 +572,5 @@ class TestChangesetCorpus(unittest.TestCase):
 
             # convert the document to text freq since we don't know the
             # term ids ahead of time for testing.
-            textdoc = set((unicode(self.corpus.dictionary[x[0]]), x[1]) for x in doc)
+            textdoc = set((unicode(self.corpus.id2word[x[0]]), x[1]) for x in doc)
             self.assertIn(textdoc, documents)

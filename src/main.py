@@ -115,14 +115,14 @@ def corpora(context, config):
         file_corpus = MultiTextCorpus(config.repo, config.project.commit, lazy_dict=True)
         file_corpus.metadata = True
         MalletCorpus.serialize(file_fname, file_corpus,
-                id2word=file_corpus.dictionary, metadata=True)
+                id2word=file_corpus.id2word, metadata=True)
 
     # build changeset-based corpus
     changeset_fname = config.path + config.project.name + '_changesets.mallet'
     # try opening an previously made corpus first
     try:
         changeset_corpus = MalletCorpus(changeset_fname)
-        print('Opened previously created corpus at file %s' % file_fname)
+        print('Opened previously created corpus at file %s' % changeset_fname)
     # build one if it doesnt exist
     except:
         print('Creating changeset-based corpus out of source files for '
@@ -132,8 +132,10 @@ def corpora(context, config):
         changeset_corpus = ChangesetCorpus(config.repo, config.project.commit, lazy_dict=True)
         changeset_corpus.metadata = True
         MalletCorpus.serialize(changeset_fname, changeset_corpus,
-                id2word=changeset_corpus.dictionary, metadata=True)
+                id2word=changeset_corpus.id2word, metadata=True)
 
+    config.file_corpus = file_corpus
+    config.changeset_corpus = changeset_corpus
 
 @main.command()
 @pass_config
@@ -151,6 +153,7 @@ def model(context, config):
         print('Opened previously created model at file %s' % file_fname)
     except:
         if config.file_corpus is None:
+            print(a, score)
             fname = config.path + config.project.name + '_files.mallet'
             try:
                 config.file_corpus = MalletCorpus(fname)
