@@ -116,6 +116,7 @@ def corpora(context, config):
         file_corpus.metadata = True
         MalletCorpus.serialize(file_fname, file_corpus,
                 id2word=file_corpus.id2word, metadata=True)
+        file_corpus.metadata = False
 
     # build changeset-based corpus
     changeset_fname = config.path + config.project.name + '_changesets.mallet'
@@ -133,6 +134,7 @@ def corpora(context, config):
         changeset_corpus.metadata = True
         MalletCorpus.serialize(changeset_fname, changeset_corpus,
                 id2word=changeset_corpus.id2word, metadata=True)
+        changeset_corpus.metadata = False
 
     config.file_corpus = file_corpus
     config.changeset_corpus = changeset_corpus
