@@ -65,3 +65,24 @@ def total_variation_distance(q_dist,p_dist, filter_by=0.001):
         distance += math.fabs(q - p)
     distance /= 2
     return distance
+
+def score(model, fn):
+    # thomas et al 2011 msr
+    #
+    scores = list()
+    for a, topic_a in norm_phi(model):
+        score = 0.0
+        for b, topic_b in norm_phi(model):
+            if a == b:
+                continue
+            score += fn(topic_a, topic_b)
+        score *= (1.0 / (model.num_topics - 1))
+        print(a, score)
+        scores.append((a, score))
+    return scores
+
+def norm_phi(model):
+    for topicid in range(model.num_topics):
+        topic = model.state.get_lambda()[topicid]
+        topic = topic / topic.sum() # normalize to probability dist
+        yield topicid, topic

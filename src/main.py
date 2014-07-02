@@ -127,6 +127,7 @@ def corpora(context, config):
         MalletCorpus.serialize(file_fname, file_corpus,
                 id2word=file_corpus.id2word, metadata=True)
         file_corpus.metadata = False
+        file_corpus = MalletCorpus(file_fname)
 
     # build changeset-based corpus
     changeset_fname = config.fname_prefix + 'changeset.mallet'
@@ -145,6 +146,7 @@ def corpora(context, config):
         MalletCorpus.serialize(changeset_fname, changeset_corpus,
                 id2word=changeset_corpus.id2word, metadata=True)
         changeset_corpus.metadata = False
+        changeset_corpus = MalletCorpus(changeset_fname)
 
     config.file_corpus = file_corpus
     config.changeset_corpus = changeset_corpus
@@ -236,8 +238,8 @@ def evaluate(context, config):
 
     print('Evalutating models for: %s' % config.project.name)
 
-    file_scores = score(file_model, utils.kullback_leibler_divergence)
-    changeset_scores = score(changeset_model, utils.kullback_leibler_divergence)
+    file_scores = utils.score(file_model, utils.kullback_leibler_divergence)
+    changeset_scores = utils.score(changeset_model, utils.kullback_leibler_divergence)
 
     file_total = sum([x[1] for x in file_scores])
     changeset_total = sum([x[1] for x in changeset_scores])
@@ -246,27 +248,6 @@ def evaluate(context, config):
     print("Changeset model KL:", changeset_total)
     print("File model KL mean:", file_total / len(file_scores))
     print("Changeset model KL mean:", changeset_total / len(changeset_scores))
-
-def score(model, fn):
-    # thomas et al 2011 msr
-    #
-    scores = list()
-    for a, topic_a in norm_phi(model):
-        score = 0.0
-        for b, topic_b in norm_phi(model):
-            if a == b:
-                continue
-            score += fn(topic_a, topic_b)
-        score *= (1.0 / (model.num_topics - 1))
-        print(a, score)
-        scores.append((a, score))
-    return scores
-
-def norm_phi(model):
-    for topicid in range(model.num_topics):
-        topic = model.state.get_lambda()[topicid]
-        topic = topic / topic.sum() # normalize to probability dist
-        yield topicid, topic
 
 
 @main.command()
