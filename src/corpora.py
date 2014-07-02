@@ -11,7 +11,6 @@
 Code for generating the corpora.
 """
 
-from __future__ import print_function
 from StringIO import StringIO
 import os
 import re
@@ -20,6 +19,9 @@ import gensim
 import dulwich, dulwich.repo, dulwich.patch
 
 from preprocessing import tokenize, split, remove_stops, read_stops, to_unicode
+
+import logging
+logger = logging.getLogger('topicofchange.corpora')
 
 STOPS = read_stops([
                     'data/english_stops.txt',
