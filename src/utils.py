@@ -1,4 +1,7 @@
 import math
+import logging
+
+logger = logging.getLogger('mct.utils')
 
 def kullback_leibler_divergence(q_dist, p_dist, filter_by=0.001):
     assert len(q_dist) == len(p_dist)
@@ -77,7 +80,7 @@ def score(model, fn):
                 continue
             score += fn(topic_a, topic_b)
         score *= (1.0 / (model.num_topics - 1))
-        print(a, score)
+        logger.debug("topic %d score %f" % (a, score))
         scores.append((a, score))
     return scores
 

@@ -7,8 +7,6 @@
 #
 # See LICENSE for details.
 
-from __future__ import print_function
-
 import csv
 import sys
 from collections import namedtuple
@@ -23,9 +21,12 @@ import utils
 from corpora import MultiTextCorpus, ChangesetCorpus
 
 
+import logging
+
+logger = logging.getLogger('mct')
+
 class Config:
     def __init__(self):
-        self.verbose = False
         self.path = './'
         self.project = None
         self.repo = None
@@ -35,11 +36,11 @@ class Config:
         self.changeset_model = None
         self.fname_prefix = ''
         self.num_topics = 100
-        self.alpha = 'auto' # or can set a float
+        self.alpha = 'symmetric' # or can set a float
         # set all possible config options here
 
 def error(msg, errorno=1):
-    print(msg, file=sys.stderr)
+    logger.error(msg)
     sys.exit(errorno)
 
 
@@ -56,8 +57,13 @@ def main(config, verbose, path, project):
     Modeling Changeset Topics
     """
 
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
+    if verbose:
+        logging.root.setLevel(level=logging.DEBUG)
+    else:
+        logging.root.setLevel(level=logging.INFO)
+
     # Only set config items here, this function is unused otherwise.
-    config.verbose = verbose
     config.path = path
     if not config.path.endswith('/'):
         config.path += '/'
@@ -108,17 +114,17 @@ def corpora(context, config):
         error('Repository not cloned yet! Clone command: '
                 'git clone %s %s' % (config.project.url, git_path))
 
-    print('Creating corpora for: %s' % config.project.name)
+    logger.info('Creating corpora for: %s' % config.project.name)
 
     # build file-based corpus
     # try opening an previously made corpus first
     file_fname = config.fname_prefix + 'file.mallet'
     try:
         file_corpus = MalletCorpus(file_fname)
-        print('Opened previously created corpus at file %s' % file_fname)
+        logger.info('Opened previously created corpus at file %s' % file_fname)
     # build one if it doesnt exist
     except:
-        print('Creating file-based corpus out of source files for '
+        logger.info('Creating file-based corpus out of source files for '
             'release %s at commit %s' % (
                 config.project.release, config.project.commit))
 
@@ -134,10 +140,10 @@ def corpora(context, config):
     # try opening an previously made corpus first
     try:
         changeset_corpus = MalletCorpus(changeset_fname)
-        print('Opened previously created corpus at file %s' % changeset_fname)
+        logger.info('Opened previously created corpus at file %s' % changeset_fname)
     # build one if it doesnt exist
     except:
-        print('Creating changeset-based corpus out of source files for '
+        logger.info('Creating changeset-based corpus out of source files for '
             'release %s for all commits reachable from %s' % (
                 config.project.release, config.project.commit))
 
@@ -158,20 +164,20 @@ def model(context, config):
     """
     Builds a model for the corpora
     """
-    print('Building topic models for: %s' % config.project.name)
+    logger.info('Building topic models for: %s' % config.project.name)
 
 
     file_fname = config.fname_prefix + 'file.lda'
     try:
         file_model = LdaModel.load(file_fname)
-        print('Opened previously created model at file %s' % file_fname)
+        logger.info('Opened previously created model at file %s' % file_fname)
     except:
         if config.file_corpus is None:
-            print(a, score)
+            logger.info(a, score)
             fname = config.fname_prefix + 'file.mallet'
             try:
                 config.file_corpus = MalletCorpus(fname)
-                print('Opened previously created corpus at file %s' % fname)
+                logger.info('Opened previously created corpus at file %s' % fname)
             # build one if it doesnt exist
             except:
                 error('Corpora for building file models not found!')
@@ -191,13 +197,13 @@ def model(context, config):
     changeset_fname = config.fname_prefix + 'changeset.lda'
     try:
         changeset_model = LdaModel.load(changeset_fname)
-        print('Opened previously created model at changeset %s' % changeset_fname)
+        logger.info('Opened previously created model at changeset %s' % changeset_fname)
     except:
         if config.changeset_corpus is None:
             fname = config.fname_prefix + 'changeset.mallet'
             try:
                 config.changeset_corpus = MalletCorpus(fname)
-                print('Opened previously created corpus at file %s' % fname)
+                logger.info('Opened previously created corpus at file %s' % fname)
             # build one if it doesnt exist
             except:
                 error('Corpora for building changeset models not found!')
@@ -225,18 +231,18 @@ def evaluate(context, config):
         file_fname = config.fname_prefix + 'file.lda'
         try:
             file_model = LdaModel.load(file_fname)
-            print('Opened previously created model at file %s' % file_fname)
+            logger.info('Opened previously created model at file %s' % file_fname)
         except:
             error('Cannot evalutate LDA models not built yet!')
 
         changeset_fname = config.fname_prefix + 'changeset.lda'
         try:
             changeset_model = LdaModel.load(changeset_fname)
-            print('Opened previously created model at changeset %s' % changeset_fname)
+            logger.info('Opened previously created model at changeset %s' % changeset_fname)
         except:
             error('Cannot evalutate LDA models not built yet!')
 
-    print('Evalutating models for: %s' % config.project.name)
+    logger.info('Evalutating models for: %s' % config.project.name)
 
     file_scores = utils.score(file_model, utils.kullback_leibler_divergence)
     changeset_scores = utils.score(changeset_model, utils.kullback_leibler_divergence)
@@ -244,10 +250,10 @@ def evaluate(context, config):
     file_total = sum([x[1] for x in file_scores])
     changeset_total = sum([x[1] for x in changeset_scores])
 
-    print("File model KL:", file_total)
-    print("Changeset model KL:", changeset_total)
-    print("File model KL mean:", file_total / len(file_scores))
-    print("Changeset model KL mean:", changeset_total / len(changeset_scores))
+    logger.info("File model KL:", file_total)
+    logger.info("Changeset model KL:", changeset_total)
+    logger.info("File model KL mean:", file_total / len(file_scores))
+    logger.info("Changeset model KL mean:", changeset_total / len(changeset_scores))
 
 
 @main.command()
@@ -257,7 +263,7 @@ def run_all(context, config):
     """
     Runs corpora, preprocess, model, and evaluate in one shot.
     """
-    print('Doing everything for: %s' % config.project.name)
+    logger.info('Doing everything for: %s' % config.project.name)
     context.forward(corpora)
     context.forward(model)
     context.forward(evaluate)
