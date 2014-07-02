@@ -57,7 +57,8 @@ def main(config, verbose, path, project):
     Topic of Change
     """
 
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(name)s : %(funcName)s : %(message)s')
+
     if verbose:
         logging.root.setLevel(level=logging.DEBUG)
     else:
@@ -252,8 +253,8 @@ def evaluate(context, config):
 
     logger.info("File model KL: %f" % file_total)
     logger.info("Changeset model KL: %f" % changeset_total)
-    logger.info("File model KL mean: %f" % file_total / len(file_scores))
-    logger.info("Changeset model KL mean: %f" % changeset_total / len(changeset_scores))
+    logger.info("File model KL mean: %f" % (file_total / len(file_scores)))
+    logger.info("Changeset model KL mean: %f" % (changeset_total / len(changeset_scores)))
 
 
 @main.command()
