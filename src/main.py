@@ -250,10 +250,10 @@ def evaluate(context, config):
     file_total = sum([x[1] for x in file_scores])
     changeset_total = sum([x[1] for x in changeset_scores])
 
-    logger.info("File model KL:", file_total)
-    logger.info("Changeset model KL:", changeset_total)
-    logger.info("File model KL mean:", file_total / len(file_scores))
-    logger.info("Changeset model KL mean:", changeset_total / len(changeset_scores))
+    logger.info("File model KL: %f" % file_total)
+    logger.info("Changeset model KL: %f" % changeset_total)
+    logger.info("File model KL mean: %f" % file_total / len(file_scores))
+    logger.info("Changeset model KL mean: %f" % changeset_total / len(changeset_scores))
 
 
 @main.command()
