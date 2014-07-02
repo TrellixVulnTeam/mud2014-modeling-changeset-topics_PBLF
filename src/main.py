@@ -33,6 +33,7 @@ class Config:
         self.changeset_corpus = None
         self.file_model = None
         self.changeset_model = None
+        self.fname_prefix = ''
         self.num_topics = 100
         self.alpha = 'auto' # or can set a float
         # set all possible config options here
@@ -58,6 +59,9 @@ def main(config, verbose, path, project):
     # Only set config items here, this function is unused otherwise.
     config.verbose = verbose
     config.path = path
+    if not config.path.endswith('/'):
+        config.path += '/'
+
     with open("projects.csv", 'r') as f:
         reader = csv.reader(f)
         header = next(reader)
@@ -81,6 +85,12 @@ def main(config, verbose, path, project):
         if config.project is None:
             error("Could not find the project '%s' in 'projects.csv'!" % project)
 
+    config.fname_prefix = (config.path +
+                            config.project.name +
+                            '-' +
+                            config.project.commit[:8] + '-'
+                            )
+
 
 @main.command()
 @pass_config
@@ -102,7 +112,7 @@ def corpora(context, config):
 
     # build file-based corpus
     # try opening an previously made corpus first
-    file_fname = config.path + config.project.name + '_files.mallet'
+    file_fname = config.fname_prefix + 'file.mallet'
     try:
         file_corpus = MalletCorpus(file_fname)
         print('Opened previously created corpus at file %s' % file_fname)
@@ -119,7 +129,7 @@ def corpora(context, config):
         file_corpus.metadata = False
 
     # build changeset-based corpus
-    changeset_fname = config.path + config.project.name + '_changesets.mallet'
+    changeset_fname = config.fname_prefix + 'changeset.mallet'
     # try opening an previously made corpus first
     try:
         changeset_corpus = MalletCorpus(changeset_fname)
@@ -149,14 +159,14 @@ def model(context, config):
     print('Building topic models for: %s' % config.project.name)
 
 
-    file_fname = config.path + config.project.name + '_files.lda'
+    file_fname = config.fname_prefix + 'file.lda'
     try:
         file_model = LdaModel.load(file_fname)
         print('Opened previously created model at file %s' % file_fname)
     except:
         if config.file_corpus is None:
             print(a, score)
-            fname = config.path + config.project.name + '_files.mallet'
+            fname = config.fname_prefix + 'file.mallet'
             try:
                 config.file_corpus = MalletCorpus(fname)
                 print('Opened previously created corpus at file %s' % fname)
@@ -176,13 +186,13 @@ def model(context, config):
 
     config.file_model = file_model
 
-    changeset_fname = config.path + config.project.name + '_changesets.lda'
+    changeset_fname = config.fname_prefix + 'changeset.lda'
     try:
         changeset_model = LdaModel.load(changeset_fname)
         print('Opened previously created model at changeset %s' % changeset_fname)
     except:
         if config.changeset_corpus is None:
-            fname = config.path + config.project.name + '_changesets.mallet'
+            fname = config.fname_prefix + 'changeset.mallet'
             try:
                 config.changeset_corpus = MalletCorpus(fname)
                 print('Opened previously created corpus at file %s' % fname)
@@ -210,14 +220,14 @@ def evaluate(context, config):
     changeset_model = config.changeset_model
 
     if file_model is None or changeset_model is None:
-        file_fname = config.path + config.project.name + '_files.lda'
+        file_fname = config.fname_prefix + 'file.lda'
         try:
             file_model = LdaModel.load(file_fname)
             print('Opened previously created model at file %s' % file_fname)
         except:
             error('Cannot evalutate LDA models not built yet!')
 
-        changeset_fname = config.path + config.project.name + '_changesets.lda'
+        changeset_fname = config.fname_prefix + 'changeset.lda'
         try:
             changeset_model = LdaModel.load(changeset_fname)
             print('Opened previously created model at changeset %s' % changeset_fname)
