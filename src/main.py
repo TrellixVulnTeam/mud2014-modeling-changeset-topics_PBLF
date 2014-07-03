@@ -9,6 +9,7 @@
 
 import csv
 import sys
+import os.path
 from collections import namedtuple
 
 import click
@@ -30,11 +31,10 @@ class Config:
         self.path = './'
         self.project = None
         self.repo = None
-        self.file_corpus = None
-        self.changeset_corpus = None
-        self.file_model = None
-        self.changeset_model = None
-        self.fname_prefix = ''
+        self.file_corpus_fname = ''
+        self.changeset_corpus_fname = ''
+        self.file_model_fname = ''
+        self.changeset_model_fname = ''
         self.passes = 10
         self.num_topics = 100
         self.alpha = 'symmetric' # or can set a float
@@ -95,13 +95,24 @@ def main(config, verbose, path, project):
         if config.project is None:
             error("Could not find the project '%s' in 'projects.csv'!" % project)
 
-    config.fname_prefix = (config.path +
-                            config.project.name + '-' +
-                            config.project.commit[:8] + '-' +
-                            str(config.passes) + 'passes-' +
-                            str(config.alpha) + 'alpha-' +
-                            str(config.num_topics) + 'topics-' +
-                            '')
+    corpus_fname = (config.path +
+                    config.project.name + '-' +
+                    config.project.commit[:8] + '-' +
+                    '%s')
+
+    model_fname = (config.path +
+                    config.project.name + '-' +
+                    config.project.commit[:8] + '-' +
+                    str(config.passes) + 'passes-' +
+                    str(config.alpha) + 'alpha-' +
+                    str(config.num_topics) + 'topics-' +
+                    '%s')
+
+    config.file_corpus_fname = corpus_fname % 'file.mallet'
+    config.changeset_corpus_fname = corpus_fname % 'changeset.mallet'
+
+    config.file_model_fname = model_fname % 'file.lda'
+    config.changeset_model_fname = model_fname % 'changeset.lda'
 
 
 @main.command()
@@ -122,46 +133,27 @@ def corpora(context, config):
 
     logger.info('Creating corpora for: %s' % config.project.name)
 
-    # build file-based corpus
-    # try opening an previously made corpus first
-    file_fname = config.fname_prefix + 'file.mallet'
-    try:
-        file_corpus = MalletCorpus(file_fname)
-        logger.info('Opened previously created corpus at file %s' % file_fname)
-    # build one if it doesnt exist
-    except:
+    if not os.path.exists(config.file_corpus_fname):
         logger.info('Creating file-based corpus out of source files for '
             'release %s at commit %s' % (
                 config.project.release, config.project.commit))
 
         file_corpus = MultiTextCorpus(config.repo, config.project.commit, lazy_dict=True)
         file_corpus.metadata = True
-        MalletCorpus.serialize(file_fname, file_corpus,
+        MalletCorpus.serialize(config.file_corpus_fname, file_corpus,
                 id2word=file_corpus.id2word, metadata=True)
         file_corpus.metadata = False
-        file_corpus = MalletCorpus(file_fname)
 
-    # build changeset-based corpus
-    changeset_fname = config.fname_prefix + 'changeset.mallet'
-    # try opening an previously made corpus first
-    try:
-        changeset_corpus = MalletCorpus(changeset_fname)
-        logger.info('Opened previously created corpus at file %s' % changeset_fname)
-    # build one if it doesnt exist
-    except:
+    if not os.path.exists(config.changeset_corpus_fname):
         logger.info('Creating changeset-based corpus out of source files for '
             'release %s for all commits reachable from %s' % (
                 config.project.release, config.project.commit))
 
         changeset_corpus = ChangesetCorpus(config.repo, config.project.commit, lazy_dict=True)
         changeset_corpus.metadata = True
-        MalletCorpus.serialize(changeset_fname, changeset_corpus,
+        MalletCorpus.serialize(config.changeset_corpus_fname, changeset_corpus,
                 id2word=changeset_corpus.id2word, metadata=True)
         changeset_corpus.metadata = False
-        changeset_corpus = MalletCorpus(changeset_fname)
-
-    config.file_corpus = file_corpus
-    config.changeset_corpus = changeset_corpus
 
 @main.command()
 @pass_config
@@ -172,58 +164,40 @@ def model(context, config):
     """
     logger.info('Building topic models for: %s' % config.project.name)
 
-
-    file_fname = config.fname_prefix + 'file.lda'
-    try:
-        file_model = LdaModel.load(file_fname)
-        logger.info('Opened previously created model at file %s' % file_fname)
-    except:
-        if config.file_corpus is None:
-            logger.info(a, score)
-            fname = config.fname_prefix + 'file.mallet'
-            try:
-                config.file_corpus = MalletCorpus(fname)
-                logger.info('Opened previously created corpus at file %s' % fname)
-            # build one if it doesnt exist
-            except:
-                error('Corpora for building file models not found!')
+    if not os.path.exists(config.file_model_fname):
+        try:
+            file_corpus = MalletCorpus(config.file_corpus_fname)
+            logger.info('Opened previously created corpus at file %s' % config.file_corpus_fname)
+        # build one if it doesnt exist
+        except:
+            error('Corpora for building file models not found!')
 
 
         # TODO
         # Maybe look into various settings for num_topics?
-        file_model = LdaModel(config.file_corpus,
-                id2word=config.file_corpus.id2word,
+        file_model = LdaModel(file_corpus,
+                id2word=file_corpus.id2word,
                 alpha=config.alpha,
                 passes=config.passes,
                 num_topics=config.num_topics)
 
-        file_model.save(file_fname)
+        file_model.save(config.file_model_fname)
 
-    config.file_model = file_model
+    if not os.path.exists(config.changeset_model_fname):
+        try:
+            changeset_corpus = MalletCorpus(config.changeset_corpus_fname)
+            logger.info('Opened previously created corpus at file %s' % config.changeset_corpus_fname)
+        # build one if it doesnt exist
+        except:
+            error('Corpora for building changeset models not found!')
 
-    changeset_fname = config.fname_prefix + 'changeset.lda'
-    try:
-        changeset_model = LdaModel.load(changeset_fname)
-        logger.info('Opened previously created model at changeset %s' % changeset_fname)
-    except:
-        if config.changeset_corpus is None:
-            fname = config.fname_prefix + 'changeset.mallet'
-            try:
-                config.changeset_corpus = MalletCorpus(fname)
-                logger.info('Opened previously created corpus at file %s' % fname)
-            # build one if it doesnt exist
-            except:
-                error('Corpora for building changeset models not found!')
-
-        changeset_model = LdaModel(config.changeset_corpus,
-                id2word=config.changeset_corpus.id2word,
+        changeset_model = LdaModel(changeset_corpus,
+                id2word=changeset_corpus.id2word,
                 alpha=config.alpha,
                 passes=config.passes,
                 num_topics=config.num_topics)
 
-        changeset_model.save(changeset_fname)
-
-    config.changeset_model = changeset_model
+        changeset_model.save(config.changeset_model_fname)
 
 @main.command()
 @pass_config
@@ -232,23 +206,17 @@ def evaluate(context, config):
     """
     Evalutates the models
     """
-    file_model = config.file_model
-    changeset_model = config.changeset_model
+    try:
+        file_model = LdaModel.load(config.file_model_fname)
+        logger.info('Opened previously created model at file %s' % config.file_model_fname)
+    except:
+        error('Cannot evalutate LDA models not built yet!')
 
-    if file_model is None or changeset_model is None:
-        file_fname = config.fname_prefix + 'file.lda'
-        try:
-            file_model = LdaModel.load(file_fname)
-            logger.info('Opened previously created model at file %s' % file_fname)
-        except:
-            error('Cannot evalutate LDA models not built yet!')
-
-        changeset_fname = config.fname_prefix + 'changeset.lda'
-        try:
-            changeset_model = LdaModel.load(changeset_fname)
-            logger.info('Opened previously created model at changeset %s' % changeset_fname)
-        except:
-            error('Cannot evalutate LDA models not built yet!')
+    try:
+        changeset_model = LdaModel.load(config.changeset_model_fname)
+        logger.info('Opened previously created model at changeset %s' % config.changeset_model_fname)
+    except:
+        error('Cannot evalutate LDA models not built yet!')
 
     logger.info('Evalutating models for: %s' % config.project.name)
 
@@ -268,9 +236,8 @@ def evaluate(context, config):
 @pass_config
 @click.pass_context
 def evaluate_corpora(context, config):
-    file_fname = config.fname_prefix + 'file.mallet'
     try:
-        file_corpus = MalletCorpus(file_fname)
+        file_corpus = MalletCorpus(config.file_corpus_fname)
     except:
         error('Corpora not built yet -- cannot evaluate')
 
@@ -278,9 +245,8 @@ def evaluate_corpora(context, config):
     print("Top 10 words in files:", file_word_freq[:10])
     print("Bottom 10 words in files:", file_word_freq[-10:])
 
-    changeset_fname = config.fname_prefix + 'changeset.mallet'
     try:
-        changeset_corpus = MalletCorpus(changeset_fname)
+        changeset_corpus = MalletCorpus(config.changeset_corpus_fname)
     except:
         error('Corpora not built yet -- cannot evaluate')
     changeset_word_freq = list(reversed(sorted(count_words(changeset_corpus))))
