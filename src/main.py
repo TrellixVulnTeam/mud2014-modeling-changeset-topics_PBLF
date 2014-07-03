@@ -260,6 +260,43 @@ def evaluate(context, config):
 @main.command()
 @pass_config
 @click.pass_context
+def evaluate_corpora(context, config):
+    file_fname = config.fname_prefix + 'file.mallet'
+    try:
+        file_corpus = MalletCorpus(file_fname)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+
+    file_word_freq = list(reversed(sorted(count_words(file_corpus))))
+    print("Top 10 words in files:", file_word_freq[:10])
+    print("Bottom 10 words in files:", file_word_freq[-10:])
+
+    changeset_fname = config.fname_prefix + 'changeset.mallet'
+    try:
+        changeset_corpus = MalletCorpus(changeset_fname)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+    changeset_word_freq = list(reversed(sorted(count_words(changeset_corpus))))
+    print("Top 10 words in changesets:", changeset_word_freq[:10])
+    print("Bottom 10 words in changesets:", changeset_word_freq[-10:])
+
+def count_words(corpus):
+    word_freq = dict()
+    for doc in corpus:
+        for word, count in doc:
+            if word not in word_freq:
+                word_freq[word] = 0
+
+            word_freq[word] += count
+
+    for word_id, freq in word_freq.items():
+        yield freq, corpus.id2word[word_id]
+
+
+
+@main.command()
+@pass_config
+@click.pass_context
 def run_all(context, config):
     """
     Runs corpora, preprocess, model, and evaluate in one shot.
