@@ -1,11 +1,26 @@
 % vim:syntax=tex
 
-Intro stuff \cite{Blei2003}
+Latent Dirichlet Allocation (LDA) \cite{Blei2003} has been used to
+address problems in the field of software engineering \cite{Binkley2014}
+from feature location \cite{Bassett2013} to author-topic modeling \cite{Steyvers2004}.
+However, topic models in software engineering are often developed by only using specific releases of source code.
+Every change that is made in the source code between releases could potentially cause previously-made topic models to become obsolete.
+This creates difficulties for those who want to use topic modeling in the software engineering
+because a model based on releases prevents up-to-date information leading up to a release from being utilized.
+In this paper, we explore developing topic models based upon the changes to the source code between commits.
+While some research has been done on producing topic models based on the commit log messages \cite{Hindle2009},
+our model instead focuses on the source code changes.
+This method allows the topic model to evolve dynamically over time
+without requiring the reprocessing of the entire corpus.
 
-Since Latent Dirichlet Allocation (LDA) \cite{Blei2003} was first developed, it has been used on corpora from many disciplines to generate topic models [citations]. It has been used increasingly to address problems in the field of software engineering \cite{Binkley2014} from feature location \cite{Bassett2013} to author-topic modeling \cite{Steyvers2004}. However, topic models in software engineering are often developed by only using specific releases of source code. Every change that is made in the source code between releases could potentially cause previously-made topic models to become obsolete. This creates difficulties for those who want to use topic modeling in the software engineering because a model based on releases prevents up-to-date information leading up to a release from being utilized. In this paper, we explore developing topic models based upon the changes to the source code between commits (diffs) \cite{Thomas2011} rather than source code releases. This method allows the topic model to evolve dynamically over time without requiring the reprocessing of the entire corpus. While some research has been done on producing topic models based on the commit log comments \cite{Hindle2009}, our model instead focuses on the commit logs themselves and disregards the comments (I think this is right.).
+The goal of this paper to determine if a topic model based on the change sets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
+In this paper, we will compare results of topic models created through our model and the release model.
+The metric that we will use to determine quality is topic distinctness, which has been developed and used in topic modeling of source code \cite{Thomas2011}.
+Topic distinctness measures how different one topic is from any other topic.
+We are aiming for the change set model to be comparable to the standard release model.
 
-The goal of this paper to determine if a topic model based on the change sets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases. In this paper, we will compare results of topic models created through our model and the release model. The metric that we will use to determine quality is topic distinctness, which has been developed and used in topic modeling of source code \cite{Thomas2011}. Topic distinctness essentially measures how different one topic is from any other topic. We are aiming for the change set model to have at least equal topic distinctness as the standard release model because our model allows commits to be added to the already created topic model, resulting in far less computing time. Our ultimate goal is to develop a topic model that will allow authors to be linked to certain topics and features in the source code (info about the diagram Chris always has to draw on white board).
-
-The corpora we analyzed was a large selection software that was freely collected online. The corpora we selected were based
-
+% let's not elude to this yet
+%Our ultimate goal is to develop a topic model that will allow authors to
+%be linked to certain topics and features in the source code (info about
+%the diagram Chris always has to draw on white board).
 
