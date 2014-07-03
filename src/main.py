@@ -35,6 +35,7 @@ class Config:
         self.file_model = None
         self.changeset_model = None
         self.fname_prefix = ''
+        self.passes = 10
         self.num_topics = 100
         self.alpha = 'symmetric' # or can set a float
         # set all possible config options here
@@ -95,10 +96,12 @@ def main(config, verbose, path, project):
             error("Could not find the project '%s' in 'projects.csv'!" % project)
 
     config.fname_prefix = (config.path +
-                            config.project.name +
-                            '-' +
-                            config.project.commit[:8] + '-'
-                            )
+                            config.project.name + '-' +
+                            config.project.commit[:8] + '-' +
+                            str(config.passes) + 'passes-' +
+                            str(config.alpha) + 'alpha-' +
+                            str(config.num_topics) + 'topics-' +
+                            '')
 
 
 @main.command()
@@ -191,6 +194,7 @@ def model(context, config):
         file_model = LdaModel(config.file_corpus,
                 id2word=config.file_corpus.id2word,
                 alpha=config.alpha,
+                passes=config.passes,
                 num_topics=config.num_topics)
 
         file_model.save(file_fname)
@@ -214,6 +218,7 @@ def model(context, config):
         changeset_model = LdaModel(config.changeset_corpus,
                 id2word=config.changeset_corpus.id2word,
                 alpha=config.alpha,
+                passes=config.passes,
                 num_topics=config.num_topics)
 
         changeset_model.save(changeset_fname)
