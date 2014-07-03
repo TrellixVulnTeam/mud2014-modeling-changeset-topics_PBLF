@@ -48,7 +48,7 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 @click.group()
 @click.option('--verbose', is_flag=True)
-@click.option('--path', default='/var/opt/topic-of-change/',
+@click.option('--path', default='toc-temp/',
         help="Set the directory to work within")
 @click.argument('project')
 @pass_config
@@ -68,6 +68,8 @@ def main(config, verbose, path, project):
     config.path = path
     if not config.path.endswith('/'):
         config.path += '/'
+
+    utils.mkdir(config.path)
 
     with open("projects.csv", 'r') as f:
         reader = csv.reader(f)
