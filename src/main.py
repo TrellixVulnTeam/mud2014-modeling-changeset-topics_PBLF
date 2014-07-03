@@ -48,7 +48,7 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 @click.group()
 @click.option('--verbose', is_flag=True)
-@click.option('--path', default='toc-temp/',
+@click.option('--path', default='data/',
         help="Set the directory to work within")
 @click.argument('project')
 @pass_config
