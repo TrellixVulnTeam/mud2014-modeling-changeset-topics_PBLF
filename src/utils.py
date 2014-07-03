@@ -1,5 +1,9 @@
 import math
 import logging
+import os
+import sys
+
+
 
 logger = logging.getLogger('mct.utils')
 
@@ -89,3 +93,15 @@ def norm_phi(model):
         topic = model.state.get_lambda()[topicid]
         topic = topic / topic.sum() # normalize to probability dist
         yield topicid, topic
+
+# exception handling mkdir -p
+def mkdir(d):
+    try:
+        os.makedirs(d)
+    except os.error as e:
+        if 17 == e.errno:
+            # the directory already exists
+            pass
+        else:
+            print('Failed to create "%s" directory!' % d)
+            sys.exit(e.errno)
