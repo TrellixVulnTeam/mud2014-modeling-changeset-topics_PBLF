@@ -15,7 +15,7 @@ from collections import namedtuple
 import click
 import dulwich
 import dulwich.repo
-from gensim.corpora import MalletCorpus
+from gensim.corpora import MalletCorpus, Dictionary
 from gensim.models import LdaModel
 
 import utils
@@ -143,6 +143,7 @@ def corpora(context, config):
         MalletCorpus.serialize(config.file_corpus_fname, file_corpus,
                 id2word=file_corpus.id2word, metadata=True)
         file_corpus.metadata = False
+        file_corpus.id2word.save_as_text(config.file_corpus_fname + '.dict')
 
     if not os.path.exists(config.changeset_corpus_fname):
         logger.info('Creating changeset-based corpus out of source files for '
@@ -154,6 +155,7 @@ def corpora(context, config):
         MalletCorpus.serialize(config.changeset_corpus_fname, changeset_corpus,
                 id2word=changeset_corpus.id2word, metadata=True)
         changeset_corpus.metadata = False
+        changeset_corpus.id2word.save_as_text(config.changeset_corpus_fname + '.dict')
 
 @main.command()
 @pass_config
@@ -166,7 +168,8 @@ def model(context, config):
 
     if not os.path.exists(config.file_model_fname):
         try:
-            file_corpus = MalletCorpus(config.file_corpus_fname)
+            file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
+            file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
             logger.info('Opened previously created corpus at file %s' % config.file_corpus_fname)
         # build one if it doesnt exist
         except:
@@ -185,7 +188,8 @@ def model(context, config):
 
     if not os.path.exists(config.changeset_model_fname):
         try:
-            changeset_corpus = MalletCorpus(config.changeset_corpus_fname)
+            changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
+            changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
             logger.info('Opened previously created corpus at file %s' % config.changeset_corpus_fname)
         # build one if it doesnt exist
         except:
@@ -237,7 +241,8 @@ def evaluate(context, config):
 @click.pass_context
 def evaluate_corpora(context, config):
     try:
-        file_corpus = MalletCorpus(config.file_corpus_fname)
+        file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
+        file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
     except:
         error('Corpora not built yet -- cannot evaluate')
 
@@ -246,7 +251,8 @@ def evaluate_corpora(context, config):
     print("Bottom 10 words in files:", file_word_freq[-10:])
 
     try:
-        changeset_corpus = MalletCorpus(config.changeset_corpus_fname)
+        changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
+        changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
     except:
         error('Corpora not built yet -- cannot evaluate')
     changeset_word_freq = list(reversed(sorted(count_words(changeset_corpus))))
