@@ -10,6 +10,7 @@
 import csv
 import sys
 import os.path
+import random
 from collections import namedtuple
 
 import click
@@ -157,6 +158,8 @@ def corpora(context, config):
         changeset_corpus.metadata = False
         changeset_corpus.id2word.save_as_text(config.changeset_corpus_fname + '.dict')
 
+
+
 @main.command()
 @pass_config
 @click.pass_context
@@ -270,6 +273,67 @@ def count_words(corpus):
 
     for word_id, freq in word_freq.items():
         yield freq, corpus.id2word[word_id]
+
+def perplexity(corpus, model):
+    held_out = list()
+    training = list()
+    target_len = int(0.1 * len(corpus))
+    logger.info('Calculating perplexity with held-out %d of %d documents' % (target_len, len(corpus)))
+
+    ids = set()
+    while len(ids) < target_len:
+        ids.add(random.randint(0, len(corpus)))
+
+    for doc_id, doc in enumerate(corpus):
+        if doc_id in ids:
+            held_out.append(doc)
+        else:
+            training.append(doc)
+
+    model.update(training)
+    return model.log_perplexity(held_out)
+
+@main.command()
+@pass_config
+@click.pass_context
+def evaluate_perplexity(context, config):
+    try:
+        file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
+        file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+    try:
+        changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
+        changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+
+
+    res = list()
+    for K in [10, 25, 50, 100]:
+        file_model = LdaModel(
+                id2word=file_corpus.id2word,
+                alpha=config.alpha,
+                passes=config.passes,
+                num_topics=K)
+
+        changeset_model = LdaModel(
+                id2word=changeset_corpus.id2word,
+                alpha=config.alpha,
+                passes=config.passes,
+                num_topics=K)
+
+        logger.info('Calculating file corpus perplexity for: %s' % config.project.name)
+        file_pwb = 0
+        file_pwb = perplexity(file_corpus, file_model)
+
+        logger.info('Calculating changeset corpus perplexity for: %s' % config.project.name)
+        changeset_pwb = 0
+        changeset_pwb = perplexity(changeset_corpus, changeset_model)
+        res.append((K, file_pwb, changeset_pwb))
+
+    import pprint
+    pprint.pprint(res)
 
 
 
