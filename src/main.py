@@ -49,12 +49,13 @@ def error(msg, errorno=1):
 pass_config = click.make_pass_decorator(Config, ensure=True)
 
 @click.group()
+@click.option('--num-topics', default=100)
 @click.option('--verbose', is_flag=True)
 @click.option('--path', default='data/',
         help="Set the directory to work within")
 @click.argument('project')
 @pass_config
-def main(config, verbose, path, project):
+def main(config, verbose, path, project, num_topics):
     """
     Topic of Change
     """
@@ -114,6 +115,8 @@ def main(config, verbose, path, project):
 
     config.file_model_fname = model_fname % 'file.lda'
     config.changeset_model_fname = model_fname % 'changeset.lda'
+
+    config.num_topics = num_topics
 
 
 @main.command()
@@ -237,6 +240,8 @@ def evaluate(context, config):
     logger.info("Changeset model KL: %f" % changeset_total)
     logger.info("File model KL mean: %f" % (file_total / len(file_scores)))
     logger.info("Changeset model KL mean: %f" % (changeset_total / len(changeset_scores)))
+    with open(config.path + 'evaluate-results.csv', 'a') as f:
+        f.write('%s,"%s",%f,%f' % (config.project.name, str(file_model), file_total, changeset_total))
 
 
 @main.command()
@@ -309,32 +314,28 @@ def evaluate_perplexity(context, config):
         error('Corpora not built yet -- cannot evaluate')
 
 
-    res = list()
-    for K in [10, 25, 50, 100]:
-        file_model = LdaModel(
-                id2word=file_corpus.id2word,
-                alpha=config.alpha,
-                passes=config.passes,
-                num_topics=K)
+    file_model = LdaModel(
+            id2word=file_corpus.id2word,
+            alpha=config.alpha,
+            passes=config.passes,
+            num_topics=config.num_topics)
 
-        changeset_model = LdaModel(
-                id2word=changeset_corpus.id2word,
-                alpha=config.alpha,
-                passes=config.passes,
-                num_topics=K)
+    changeset_model = LdaModel(
+            id2word=changeset_corpus.id2word,
+            alpha=config.alpha,
+            passes=config.passes,
+            num_topics=config.num_topics)
 
-        logger.info('Calculating file corpus perplexity for: %s' % config.project.name)
-        file_pwb = 0
-        file_pwb = perplexity(file_corpus, file_model)
+    logger.info('Calculating file corpus perplexity for: %s' % config.project.name)
+    file_pwb = 0
+    file_pwb = perplexity(file_corpus, file_model)
 
-        logger.info('Calculating changeset corpus perplexity for: %s' % config.project.name)
-        changeset_pwb = 0
-        changeset_pwb = perplexity(changeset_corpus, changeset_model)
-        res.append((K, file_pwb, changeset_pwb))
+    logger.info('Calculating changeset corpus perplexity for: %s' % config.project.name)
+    changeset_pwb = 0
+    changeset_pwb = perplexity(changeset_corpus, changeset_model)
 
-    import pprint
-    pprint.pprint(res)
-
+    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
+        f.write('%s,"%s",%f,%f' % (config.project.name, str(file_model), file_pwb, changeset_pwb))
 
 
 @main.command()
