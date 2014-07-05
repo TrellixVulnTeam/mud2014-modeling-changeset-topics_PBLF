@@ -292,7 +292,6 @@ class TrainingCorpus:
         return len(self.corpus) - len(self.ids)
 
     def __iter__(self):
-        self.held_out = list()
         for doc_id, doc in enumerate(self.corpus):
             if doc_id in self.ids:
                 self.held_out.append(doc)
