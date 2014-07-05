@@ -279,37 +279,24 @@ def count_words(corpus):
     for word_id, freq in word_freq.items():
         yield freq, corpus.id2word[word_id]
 
-class TrainingCorpus:
-    def __init__(self, corpus):
-        self.corpus = corpus
-        self.held_out = list()
+def perplexity(corpus, model):
+    held_out = list()
+    training = list()
+    target_len = int(0.1 * len(corpus))
+    logger.info('Calculating perplexity with held-out %d of %d documents' % (target_len, len(corpus)))
 
-        self.ids = set()
-        while len(self.ids) < int(0.1 * len(corpus)):
-            self.ids.add(random.randint(0, len(corpus)))
+    ids = set()
+    while len(ids) < target_len:
+        ids.add(random.randint(0, len(corpus)))
 
-    def __len__(self):
-        return len(self.corpus) - len(self.ids)
-
-    def __iter__(self):
-        for doc_id, doc in enumerate(self.corpus):
-            if doc_id in self.ids:
-                self.held_out.append(doc)
-            else:
-                yield doc
-
-
-def perplexity(config, corpus):
-    model = LdaModel(
-            id2word=corpus.id2word,
-            alpha=config.alpha,
-            passes=config.passes,
-            num_topics=config.num_topics)
-    training = TrainingCorpus(corpus)
-    logger.info('Calculating perplexity with held-out %d of %d documents' % (len(training.ids), len(corpus)))
+    for doc_id, doc in enumerate(corpus):
+        if doc_id in ids:
+            held_out.append(doc)
+        else:
+            training.append(doc)
 
     model.update(training)
-    return model.log_perplexity(training.held_out)
+    return model.log_perplexity(held_out)
 
 @main.command()
 @pass_config
@@ -327,11 +314,25 @@ def evaluate_perplexity(context, config):
         error('Corpora not built yet -- cannot evaluate')
 
 
+    file_model = LdaModel(
+            id2word=file_corpus.id2word,
+            alpha=config.alpha,
+            passes=config.passes,
+            num_topics=config.num_topics)
+
+    changeset_model = LdaModel(
+            id2word=changeset_corpus.id2word,
+            alpha=config.alpha,
+            passes=config.passes,
+            num_topics=config.num_topics)
+
     logger.info('Calculating file corpus perplexity for: %s' % config.project.name)
-    file_pwb = perplexity(config, file_corpus)
+    file_pwb = 0
+    file_pwb = perplexity(file_corpus, file_model)
 
     logger.info('Calculating changeset corpus perplexity for: %s' % config.project.name)
-    changeset_pwb = perplexity(config, changeset_corpus)
+    changeset_pwb = 0
+    changeset_pwb = perplexity(changeset_corpus, changeset_model)
 
     with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
         f.write('%s,%f,%f' % (config.file_model_fname, file_pwb, changeset_pwb))
