@@ -241,7 +241,7 @@ def evaluate(context, config):
     logger.info("File model KL mean: %f" % (file_total / len(file_scores)))
     logger.info("Changeset model KL mean: %f" % (changeset_total / len(changeset_scores)))
     with open(config.path + 'evaluate-results.csv', 'a') as f:
-        f.write('%s,%f,%f' % (config.file_model_fname, file_total, changeset_total))
+        f.write('%s,%f,%f\n' % (config.file_model_fname, file_total, changeset_total))
 
 
 @main.command()
@@ -335,7 +335,7 @@ def evaluate_perplexity(context, config):
     changeset_pwb = perplexity(changeset_corpus, changeset_model)
 
     with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
-        f.write('%s,%f,%f' % (config.file_model_fname, file_pwb, changeset_pwb))
+        f.write('%s,%f,%f\n' % (config.file_model_fname, file_pwb, changeset_pwb))
 
 
 @main.command()
