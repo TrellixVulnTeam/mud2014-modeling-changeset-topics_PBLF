@@ -263,9 +263,9 @@ def run_all(context, config):
     context.forward(corpora)
     context.forward(model)
     context.forward(evaluate_distinctiveness)
-    context.forward(evaluate_log)
     context.forward(evaluate_corpora)
     context.forward(evaluate_perplexity)
+    context.forward(evaluate_log)
 
 
 def create_corpus(config, Kind):
@@ -357,7 +357,7 @@ def count_words(corpus):
     for word_id, freq in word_freq.items():
         yield freq, corpus.id2word[word_id]
 
-def create_evaluate_perplexity(config, Kind):
+def create_evaluation_perplexity(config, Kind):
     model_fname = config.model_fname % Kind.__name__
     corpus_fname = config.corpus_fname % Kind.__name__
 
@@ -367,12 +367,6 @@ def create_evaluate_perplexity(config, Kind):
     except:
         error('Corpora not built yet -- cannot evaluate')
 
-    pwb = perplexity(corpus)
-    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
-        w = csv.writer(f)
-        w.writerow([model_fname, pwb])
-
-def perplexity(corpus):
     held_out = list()
     training = list()
     target_len = int(0.1 * len(corpus))
@@ -394,5 +388,10 @@ def perplexity(corpus):
             passes=config.passes,
             num_topics=config.num_topics)
 
-    return model.log_perplexity(held_out)
+    pwb = model.log_perplexity(held_out)
+
+    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.writerow([model_fname, pwb])
+
 
