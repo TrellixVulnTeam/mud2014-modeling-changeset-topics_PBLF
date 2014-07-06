@@ -5,7 +5,7 @@ Rough outline of methodology:
 Gather corpora.
 Get words from corpora.
 Filter the words by splitting compound words and removing stop words.
-Do not stem words because Biggers and Kraft found that the null stemmer was just as effective as six other stemmers in feature location techniques using LDA \cite{Biggers-Kraft}.
+Do not stem words because Biggers and Kraft found that the null stemmer was just as effective as six other stemmers in feature location techniques using LDA~\cite{Biggers-Kraft:2012}
 Put filtered words from change sets into gensim to create topic models.
 Put filtered words from release method into gensim to create topic models.
 Test both types of models for topic distinctness.
@@ -16,4 +16,4 @@ Analyze effectiveness based on topic distinctness.
 measures of topic quality developed in this paper.  Our measures enable
 new forms of model selection and suggest that practitioners developing
 topic models should thus focus on evaluations that depend on real-world
-task performance rather than optimizing likelihood-based measures."  \cite{Chang2009}
+task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
