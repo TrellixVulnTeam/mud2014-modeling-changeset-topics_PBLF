@@ -45,6 +45,9 @@ class GitCorpus(gensim.interfaces.CorpusABC):
     def __init__(self, repo=None, ref='HEAD', remove_stops=True,
             split=True, lower=True, min_len=2, lazy_dict=False):
 
+        logger.info('Creating %s corpus out of source files for commit %s' % (
+                self.__class__.__name__, ref))
+
         self.repo = repo
         self.remove_stops = remove_stops
         self.split = split
@@ -230,5 +233,22 @@ class ChangesetCorpus(GitCorpus):
             yield low, (current, u'en')
         else:
             yield low
+
+        self.length = length # only reset after iteration is done.
+
+class CommitLogCorpus(GitCorpus):
+    def get_texts(self):
+        length = 0
+
+        for walk_entry in self.repo.get_walker():
+            commit = walk_entry.commit
+            words = self.preprocess(commit.message, [commit.id])
+
+            length += 1
+            if self.metadata:
+                # have reached the end, yield whatever was collected last
+                yield words, (commit.id, u'en')
+            else:
+                yield words
 
         self.length = length # only reset after iteration is done.
