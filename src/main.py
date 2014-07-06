@@ -13,6 +13,7 @@ import os.path
 import random
 from collections import namedtuple
 
+import numpy
 import click
 import dulwich
 import dulwich.repo
@@ -243,6 +244,27 @@ def evaluate(context, config):
     with open(config.path + 'evaluate-results.csv', 'a') as f:
         f.write('%s,%f,%f\n' % (config.file_model_fname, file_total, changeset_total))
 
+
+    file_etas = entropy(file_model)
+    changeset_etas = entropy(changeset_model)
+
+    file_entropy = sum(file_etas) / len(file_etas)
+    changeset_entropy = sum(changeset_etas) / len(changeset_etas)
+
+    logger.info("File model entropy mean: %f" % file_entropy))
+    logger.info("Changeset model entropy mean: %f" % changeset_entropy))
+    with open(config.path + 'evaluate-entropy-results.csv', 'a') as f:
+        f.write('%s,%f,%f\n' % (config.file_model_fname, file_entropy, changeset_entropy))
+
+def entropy(model):
+    etas = list()
+    for topic in model.state.get_lambda():
+        topic_eta = list()
+        for p_w in topic:
+            topic_eta.append(p_w * numpy.log2(p_w))
+        etas.append(-sum(topic_eta))
+
+    return etas
 
 @main.command()
 @pass_config
