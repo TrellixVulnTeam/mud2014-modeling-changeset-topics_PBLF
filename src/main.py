@@ -240,7 +240,7 @@ def evaluate_log(context, config):
 
     with open('evaluate-log-results.csv', 'a') as f:
         w = csv.writer(f)
-        w.write_row([model_fname, mean] + list(first_shared.values()))
+        w.writerow([model_fname, mean] + list(first_shared.values()))
 
 def get_doc_topic(corpus, model):
     doc_topic = dict()
@@ -312,7 +312,7 @@ def create_evaluation_distinctiveness(config, Kind):
     logger.info("%s model KL: %f" % (model_fname, total))
     with open(config.path + 'evaluate-results.csv', 'a') as f:
         w = csv.writer(f)
-        w.write_row([model_fname, total])
+        w.writerow([model_fname, total])
 
     etas = list()
     for topic in model.state.get_lambda():
@@ -326,7 +326,7 @@ def create_evaluation_distinctiveness(config, Kind):
     logger.info("%s model entropy mean: %f" % (model_fname, entropy))
     with open(config.path + 'evaluate-entropy-results.csv', 'a') as f:
         w = csv.writer(f)
-        w.write_row([model_fname, entropy])
+        w.writerow([model_fname, entropy])
 
 
 def create_evaluation_corpora(config, Kind):
@@ -367,7 +367,7 @@ def create_evaluate_perplexity(config, Kind):
     pwb = perplexity(corpus)
     with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
         w = csv.writer(f)
-        w.write_row([model_fname, pwb])
+        w.writerow([model_fname, pwb])
 
 def perplexity(corpus):
     held_out = list()
