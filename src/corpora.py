@@ -42,8 +42,10 @@ class GitCorpus(gensim.interfaces.CorpusABC):
     implementation.
 
     """
+
     def __init__(self, repo=None, ref='HEAD', remove_stops=True,
-            split=True, lower=True, min_len=2, lazy_dict=False):
+            split=True, lower=True, min_len=2, max_len=40,
+            lazy_dict=False):
 
         logger.info('Creating %s corpus out of source files for commit %s' % (
                 self.__class__.__name__, ref))
@@ -53,6 +55,7 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         self.split = split
         self.lower = lower
         self.min_len = min_len
+        self.max_len = max_len
         self.lazy_dict = lazy_dict
 
         self.id2word = gensim.corpora.Dictionary()
@@ -89,7 +92,8 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         if self.remove_stops:
             words = remove_stops(words, STOPS)
 
-        words = (word for word in words if len(word) >= self.min_len)
+        include = (len(word) >= self.min_len and len(word) <= self.max_len)
+        words = (word for word in words if include)
         return words
 
     def __iter__(self):
