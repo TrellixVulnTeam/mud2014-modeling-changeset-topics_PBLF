@@ -92,8 +92,9 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         if self.remove_stops:
             words = remove_stops(words, STOPS)
 
-        include = (len(word) >= self.min_len and len(word) <= self.max_len)
-        words = (word for word in words if include)
+        def include(word):
+            return len(word) >= self.min_len and len(word) <= self.max_len
+        words = (word for word in words if include(word))
         return words
 
     def __iter__(self):
