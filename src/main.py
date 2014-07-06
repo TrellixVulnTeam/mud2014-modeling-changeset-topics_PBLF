@@ -263,9 +263,9 @@ def run_all(context, config):
     context.forward(corpora)
     context.forward(model)
     context.forward(evaluate_distinctiveness)
-    context.forward(evaluate_log)
     context.forward(evaluate_corpora)
     context.forward(evaluate_perplexity)
+    context.forward(evaluate_log)
 
 
 def create_corpus(config, Kind):
@@ -357,7 +357,7 @@ def count_words(corpus):
     for word_id, freq in word_freq.items():
         yield freq, corpus.id2word[word_id]
 
-def create_evaluate_perplexity(config, Kind):
+def create_evaluation_perplexity(config, Kind):
     model_fname = config.model_fname % Kind.__name__
     corpus_fname = config.corpus_fname % Kind.__name__
 
