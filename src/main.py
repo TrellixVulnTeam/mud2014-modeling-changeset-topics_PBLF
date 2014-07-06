@@ -260,9 +260,10 @@ def run_all(context, config):
 
     context.forward(corpora)
     context.forward(model)
-    context.forward(evaluate)
-    #context.forward(evaluate_corpora)
-    #context.forward(evaluate_perplexity)
+    context.forward(evaluate_distinctiveness)
+    context.forward(evaluate_log)
+    context.forward(evaluate_corpora)
+    context.forward(evaluate_perplexity)
 
 
 def create_corpus(config, Kind):
