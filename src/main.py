@@ -251,8 +251,8 @@ def evaluate(context, config):
     file_entropy = sum(file_etas) / len(file_etas)
     changeset_entropy = sum(changeset_etas) / len(changeset_etas)
 
-    logger.info("File model entropy mean: %f" % file_entropy))
-    logger.info("Changeset model entropy mean: %f" % changeset_entropy))
+    logger.info("File model entropy mean: %f" % file_entropy)
+    logger.info("Changeset model entropy mean: %f" % changeset_entropy)
     with open(config.path + 'evaluate-entropy-results.csv', 'a') as f:
         f.write('%s,%f,%f\n' % (config.file_model_fname, file_entropy, changeset_entropy))
 
