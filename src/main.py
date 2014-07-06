@@ -367,12 +367,6 @@ def create_evaluation_perplexity(config, Kind):
     except:
         error('Corpora not built yet -- cannot evaluate')
 
-    pwb = perplexity(corpus)
-    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
-        w = csv.writer(f)
-        w.writerow([model_fname, pwb])
-
-def perplexity(corpus):
     held_out = list()
     training = list()
     target_len = int(0.1 * len(corpus))
@@ -394,5 +388,10 @@ def perplexity(corpus):
             passes=config.passes,
             num_topics=config.num_topics)
 
-    return model.log_perplexity(held_out)
+    pwb = model.log_perplexity(held_out)
+
+    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.writerow([model_fname, pwb])
+
 
