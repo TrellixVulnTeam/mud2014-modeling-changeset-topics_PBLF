@@ -21,7 +21,7 @@ from gensim.corpora import MalletCorpus, Dictionary
 from gensim.models import LdaModel
 
 import utils
-from corpora import MultiTextCorpus, ChangesetCorpus
+from corpora import MultiTextCorpus, ChangesetCorpus, CommitLogCorpus
 
 
 import logging
@@ -33,10 +33,8 @@ class Config:
         self.path = './'
         self.project = None
         self.repo = None
-        self.file_corpus_fname = ''
-        self.changeset_corpus_fname = ''
-        self.file_model_fname = ''
-        self.changeset_model_fname = ''
+        self.corpus_fname = ''
+        self.model_fname = ''
         self.passes = 10
         self.num_topics = 100
         self.alpha = 'symmetric' # or can set a float
@@ -98,26 +96,28 @@ def main(config, verbose, path, project, num_topics):
         if config.project is None:
             error("Could not find the project '%s' in 'projects.csv'!" % project)
 
-    corpus_fname = (config.path +
+    config.corpus_fname = (config.path +
                     config.project.name + '-' +
                     config.project.commit[:8] + '-' +
-                    '%s')
+                    '%s.mallet')
 
-    model_fname = (config.path +
+    config.model_fname = (config.path +
                     config.project.name + '-' +
                     config.project.commit[:8] + '-' +
                     str(config.passes) + 'passes-' +
                     str(config.alpha) + 'alpha-' +
                     str(config.num_topics) + 'topics-' +
-                    '%s')
-
-    config.file_corpus_fname = corpus_fname % 'file.mallet'
-    config.changeset_corpus_fname = corpus_fname % 'changeset.mallet'
-
-    config.file_model_fname = model_fname % 'file.lda'
-    config.changeset_model_fname = model_fname % 'changeset.lda'
+                    '%s.lda')
 
     config.num_topics = num_topics
+
+    git_path = config.path + config.project.name
+    # open the repo
+    try:
+        config.repo = dulwich.repo.Repo(git_path)
+    except dulwich.errors.NotGitRepository:
+        error('Repository not cloned yet! Clone command: '
+                'git clone %s %s' % (config.project.url, git_path))
 
 
 @main.command()
@@ -128,41 +128,11 @@ def corpora(context, config):
     Builds the basic corpora for a project
     """
 
-    git_path = config.path + config.project.name
-    # open the repo
-    try:
-        config.repo = dulwich.repo.Repo(git_path)
-    except dulwich.errors.NotGitRepository:
-        error('Repository not cloned yet! Clone command: '
-                'git clone %s %s' % (config.project.url, git_path))
-
     logger.info('Creating corpora for: %s' % config.project.name)
 
-    if not os.path.exists(config.file_corpus_fname):
-        logger.info('Creating file-based corpus out of source files for '
-            'release %s at commit %s' % (
-                config.project.release, config.project.commit))
-
-        file_corpus = MultiTextCorpus(config.repo, config.project.commit, lazy_dict=True)
-        file_corpus.metadata = True
-        MalletCorpus.serialize(config.file_corpus_fname, file_corpus,
-                id2word=file_corpus.id2word, metadata=True)
-        file_corpus.metadata = False
-        file_corpus.id2word.save_as_text(config.file_corpus_fname + '.dict')
-
-    if not os.path.exists(config.changeset_corpus_fname):
-        logger.info('Creating changeset-based corpus out of source files for '
-            'release %s for all commits reachable from %s' % (
-                config.project.release, config.project.commit))
-
-        changeset_corpus = ChangesetCorpus(config.repo, config.project.commit, lazy_dict=True)
-        changeset_corpus.metadata = True
-        MalletCorpus.serialize(config.changeset_corpus_fname, changeset_corpus,
-                id2word=changeset_corpus.id2word, metadata=True)
-        changeset_corpus.metadata = False
-        changeset_corpus.id2word.save_as_text(config.changeset_corpus_fname + '.dict')
-
-
+    create_corpus(config, MultiTextCorpus)
+    create_corpus(config, ChangesetCorpus)
+    create_corpus(config, CommitLogCorpus)
 
 @main.command()
 @pass_config
@@ -173,90 +143,177 @@ def model(context, config):
     """
     logger.info('Building topic models for: %s' % config.project.name)
 
-    if not os.path.exists(config.file_model_fname):
-        try:
-            file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
-            file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
-            logger.info('Opened previously created corpus at file %s' % config.file_corpus_fname)
-        # build one if it doesnt exist
-        except:
-            error('Corpora for building file models not found!')
-
-
-        # TODO
-        # Maybe look into various settings for num_topics?
-        file_model = LdaModel(file_corpus,
-                id2word=file_corpus.id2word,
-                alpha=config.alpha,
-                passes=config.passes,
-                num_topics=config.num_topics)
-
-        file_model.save(config.file_model_fname)
-
-    if not os.path.exists(config.changeset_model_fname):
-        try:
-            changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
-            changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
-            logger.info('Opened previously created corpus at file %s' % config.changeset_corpus_fname)
-        # build one if it doesnt exist
-        except:
-            error('Corpora for building changeset models not found!')
-
-        changeset_model = LdaModel(changeset_corpus,
-                id2word=changeset_corpus.id2word,
-                alpha=config.alpha,
-                passes=config.passes,
-                num_topics=config.num_topics)
-
-        changeset_model.save(config.changeset_model_fname)
+    create_model(config, MultiTextCorpus)
+    create_model(config, ChangesetCorpus)
+    create_model(config, CommitLogCorpus)
 
 @main.command()
 @pass_config
 @click.pass_context
-def evaluate(context, config):
+def evaluate_distinctiveness(context, config):
     """
     Evalutates the models
     """
-    try:
-        file_model = LdaModel.load(config.file_model_fname)
-        logger.info('Opened previously created model at file %s' % config.file_model_fname)
-    except:
-        error('Cannot evalutate LDA models not built yet!')
+    logger.info('Evalutating distinctiveness of models for: %s' % config.project.name)
 
-    try:
-        changeset_model = LdaModel.load(config.changeset_model_fname)
-        logger.info('Opened previously created model at changeset %s' % config.changeset_model_fname)
-    except:
-        error('Cannot evalutate LDA models not built yet!')
+    create_evaluation_distinctiveness(config, MultiTextCorpus)
+    create_evaluation_distinctiveness(config, ChangesetCorpus)
+    create_evaluation_distinctiveness(config, CommitLogCorpus)
 
+@main.command()
+@pass_config
+@click.pass_context
+def evaluate_corpora(context, config):
+    logger.info('Evaluating corpus for: %s' % config.project.name)
+
+    create_evaluation_corpora(config, MultiTextCorpus)
+    create_evaluation_corpora(config, ChangesetCorpus)
+    create_evaluation_corpora(config, CommitLogCorpus)
+
+@main.command()
+@pass_config
+@click.pass_context
+def evaluate_perplexity(context, config):
+    logger.info('Evalutating perplexity of models for: %s' % config.project.name)
+
+    create_evaluation_perplexity(config, MultiTextCorpus)
+    create_evaluation_perplexity(config, ChangesetCorpus)
+    create_evaluation_perplexity(config, CommitLogCorpus)
+
+@main.command()
+@pass_config
+@click.pass_context
+def evaluate_log(context, config):
     logger.info('Evalutating models for: %s' % config.project.name)
 
-    file_scores = utils.score(file_model, utils.kullback_leibler_divergence)
-    changeset_scores = utils.score(changeset_model, utils.kullback_leibler_divergence)
+    model_fname = config.model_fname % ChangesetCorpus.__name__
+    changeset_fname = config.corpus_fname % ChangesetCorpus.__name__
+    commit_fname = config.corpus_fname % CommitLogCorpus.__name__
 
-    file_total = sum([x[1] for x in file_scores])
-    changeset_total = sum([x[1] for x in changeset_scores])
+    try:
+        commit_id2word = Dictionary.load(commit_fname + '.dict')
+        commit_corpus = MalletCorpus(commit_fname, id2word=commit_id2word)
+        changeset_id2word = Dictionary.load(changeset_fname + '.dict')
+        changeset_corpus = MalletCorpus(changeset_fname, id2word=changeset_id2word)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
 
-    logger.info("File model KL: %f" % file_total)
-    logger.info("Changeset model KL: %f" % changeset_total)
-    logger.info("File model KL mean: %f" % (file_total / len(file_scores)))
-    logger.info("Changeset model KL mean: %f" % (changeset_total / len(changeset_scores)))
+    try:
+        model = LdaModel.load(model_fname)
+        logger.info('Opened previously created model at file %s' % model_fname)
+    except:
+        error('Cannot evalutate LDA models not built yet!')
+
+
+    changeset_doc_topic = get_doc_topic(changeset_corpus, model)
+    commit_doc_topic = get_doc_topic(commit_corpus, model)
+
+    assert commit_doc_topic.keys() == changeset_doc_topic.keys()
+
+    first_shared = dict()
+    for id_ in commit_doc_topic:
+        assert len(commit_doc_topic[id_]) == len(changeset_doc_topic[id_])
+        i = 0
+        commit_topics = [topic[0] for topic in commit_doc_topic[id_]]
+        changeset_topics = [topic[0] for topic in changeset_doc_topic[id_]]
+
+        maximum = max(len(commit_topics), len(changeset_topics))
+        minimum = maximum
+
+        for i, topic in enumerate(commit_topics):
+            if topic in changeset_topics:
+                j = changeset_topics.find(topic)
+                minimum = min(minimum, max(i, j))
+
+        for i, topic in enumerate(changeset_topics):
+            if topic in changeset_topics:
+                j = commit_topics.find(topic)
+                minimum = min(minimum, max(i, j))
+
+        first_shared[id_] = minimum
+
+        if minimum == maximum:
+            logger.info('No common topics found for %s' % id_)
+            first_shared[id_] = None
+
+    mean = sum(first_shared.values()) / len(first_shared)
+
+    with open('evaluate-log-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.write_row([model_fname, mean] + list(first_shared.values()))
+
+def get_doc_topic(corpus, model):
+    doc_topic = dict()
+    corpus.metadata = True
+    for id_, doc in corpus:
+        doc_topic[id_] = model[doc]
+    return list(reversed(sorted(doc_topic, key=lambda x: x[1])))
+
+@main.command()
+@pass_config
+@click.pass_context
+def run_all(context, config):
+    """
+    Runs corpora, preprocess, model, and evaluate in one shot.
+    """
+    logger.info('Doing everything for: %s' % config.project.name)
+
+    context.forward(corpora)
+    context.forward(model)
+    context.forward(evaluate)
+    #context.forward(evaluate_corpora)
+    #context.forward(evaluate_perplexity)
+
+
+def create_corpus(config, Kind):
+    model_fname = config.model_fname % Kind.__name__
+    corpus_fname = config.corpus_fname % Kind.__name__
+
+    if not os.path.exists(corpus_fname):
+        corpus = Kind(config.repo, config.project.commit, lazy_dict=True)
+        corpus.metadata = True
+        MalletCorpus.serialize(corpus_fname, corpus, id2word=corpus.id2word, metadata=True)
+        corpus.metadata = False
+        corpus.id2word.save(corpus_fname + '.dict')
+
+def create_model(config, Kind):
+    model_fname = config.model_fname % Kind.__name__
+    corpus_fname = config.corpus_fname % Kind.__name__
+
+    if not os.path.exists(model_fname):
+        try:
+            id2word = Dictionary.load(corpus_fname + '.dict')
+            corpus = MalletCorpus(corpus_fname, id2word=id2word)
+            logger.info('Opened previously created corpus at file %s' % corpus_fname)
+        except:
+            error('Corpora for building file models not found!')
+
+        file_model = LdaModel(corpus,
+                id2word=corpus.id2word,
+                alpha=config.alpha,
+                passes=config.passes,
+                num_topics=config.num_topics)
+
+        file_model.save(model_fname)
+
+def create_evaluation_distinctiveness(config, Kind):
+    model_fname = config.model_fname % Kind.__name__
+    corpus_fname = config.corpus_fname % Kind.__name__
+
+    try:
+        model = LdaModel.load(model_fname)
+        logger.info('Opened previously created model at file %s' % model_fname)
+    except:
+        error('Cannot evalutate LDA models not built yet!')
+
+    scores = utils.score(model, utils.kullback_leibler_divergence)
+    total = sum([x[1] for x in scores])
+
+    logger.info("%s model KL: %f" % (model_fname, total))
     with open(config.path + 'evaluate-results.csv', 'a') as f:
-        f.write('%s,%f,%f\n' % (config.file_model_fname, file_total, changeset_total))
+        w = csv.writer(f)
+        w.write_row([model_fname, total])
 
-
-    file_etas = entropy(file_model)
-    changeset_etas = entropy(changeset_model)
-
-    file_entropy = sum(file_etas) / len(file_etas)
-    changeset_entropy = sum(changeset_etas) / len(changeset_etas)
-
-    logger.info("File model entropy mean: %f" % file_entropy)
-    logger.info("Changeset model entropy mean: %f" % changeset_entropy)
-    with open(config.path + 'evaluate-entropy-results.csv', 'a') as f:
-        f.write('%s,%f,%f\n' % (config.file_model_fname, file_entropy, changeset_entropy))
-
-def entropy(model):
     etas = list()
     for topic in model.state.get_lambda():
         topic_eta = list()
@@ -264,30 +321,26 @@ def entropy(model):
             topic_eta.append(p_w * numpy.log2(p_w))
         etas.append(-sum(topic_eta))
 
-    return etas
+    entropy = sum(etas) / len(etas)
 
-@main.command()
-@pass_config
-@click.pass_context
-def evaluate_corpora(context, config):
+    logger.info("%s model entropy mean: %f" % (model_fname, entropy))
+    with open(config.path + 'evaluate-entropy-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.write_row([model_fname, entropy])
+
+
+def create_evaluation_corpora(config, Kind):
+    corpus_fname = config.corpus_fname % Kind.__name__
+
     try:
-        file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
-        file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
+        id2word = Dictionary.load(corpus_fname + '.dict')
+        corpus = MalletCorpus(corpus_fname, id2word=id2word)
     except:
         error('Corpora not built yet -- cannot evaluate')
 
-    file_word_freq = list(reversed(sorted(count_words(file_corpus))))
-    print("Top 10 words in files:", file_word_freq[:10])
-    print("Bottom 10 words in files:", file_word_freq[-10:])
-
-    try:
-        changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
-        changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
-    except:
-        error('Corpora not built yet -- cannot evaluate')
-    changeset_word_freq = list(reversed(sorted(count_words(changeset_corpus))))
-    print("Top 10 words in changesets:", changeset_word_freq[:10])
-    print("Bottom 10 words in changesets:", changeset_word_freq[-10:])
+    word_freq = list(reversed(sorted(count_words(corpus))))
+    print("Top 10 words in %s: %s", (corpus_fname, str(word_freq[:10])))
+    print("Bottom 10 words in %s: %s", (corpus_fname, str(word_freq[-10:])))
 
 def count_words(corpus):
     word_freq = dict()
@@ -301,7 +354,22 @@ def count_words(corpus):
     for word_id, freq in word_freq.items():
         yield freq, corpus.id2word[word_id]
 
-def perplexity(corpus, model):
+def create_evaluate_perplexity(config, Kind):
+    model_fname = config.model_fname % Kind.__name__
+    corpus_fname = config.corpus_fname % Kind.__name__
+
+    try:
+        id2word = Dictionary.load(corpus_fname + '.dict')
+        corpus = MalletCorpus(corpus_fname, id2word=id2word)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+
+    pwb = perplexity(corpus)
+    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.write_row([model_fname, pwb])
+
+def perplexity(corpus):
     held_out = list()
     training = list()
     target_len = int(0.1 * len(corpus))
@@ -317,57 +385,11 @@ def perplexity(corpus, model):
         else:
             training.append(doc)
 
-    model.update(training)
+    model = LdaModel(training,
+            id2word=corpus.id2word,
+            alpha=config.alpha,
+            passes=config.passes,
+            num_topics=config.num_topics)
+
     return model.log_perplexity(held_out)
 
-@main.command()
-@pass_config
-@click.pass_context
-def evaluate_perplexity(context, config):
-    try:
-        file_dict = Dictionary.load_from_text(config.file_corpus_fname + '.dict')
-        file_corpus = MalletCorpus(config.file_corpus_fname, id2word=file_dict)
-    except:
-        error('Corpora not built yet -- cannot evaluate')
-    try:
-        changeset_dict = Dictionary.load_from_text(config.changeset_corpus_fname + '.dict')
-        changeset_corpus = MalletCorpus(config.changeset_corpus_fname, id2word=changeset_dict)
-    except:
-        error('Corpora not built yet -- cannot evaluate')
-
-
-    file_model = LdaModel(
-            id2word=file_corpus.id2word,
-            alpha=config.alpha,
-            passes=config.passes,
-            num_topics=config.num_topics)
-
-    changeset_model = LdaModel(
-            id2word=changeset_corpus.id2word,
-            alpha=config.alpha,
-            passes=config.passes,
-            num_topics=config.num_topics)
-
-    logger.info('Calculating file corpus perplexity for: %s' % config.project.name)
-    file_pwb = 0
-    file_pwb = perplexity(file_corpus, file_model)
-
-    logger.info('Calculating changeset corpus perplexity for: %s' % config.project.name)
-    changeset_pwb = 0
-    changeset_pwb = perplexity(changeset_corpus, changeset_model)
-
-    with open(config.path + 'evaluate-perplexity-results.csv', 'a') as f:
-        f.write('%s,%f,%f\n' % (config.file_model_fname, file_pwb, changeset_pwb))
-
-
-@main.command()
-@pass_config
-@click.pass_context
-def run_all(context, config):
-    """
-    Runs corpora, preprocess, model, and evaluate in one shot.
-    """
-    logger.info('Doing everything for: %s' % config.project.name)
-    context.forward(corpora)
-    context.forward(model)
-    context.forward(evaluate)
