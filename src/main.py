@@ -245,8 +245,10 @@ def evaluate_log(context, config):
 def get_doc_topic(corpus, model):
     doc_topic = dict()
     corpus.metadata = True
-    for id_, doc in corpus:
+    for doc, id_ in corpus:
         doc_topic[id_] = model[doc]
+
+    corpus.metadata = False
     return list(reversed(sorted(doc_topic, key=lambda x: x[1])))
 
 @main.command()
