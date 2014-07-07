@@ -246,10 +246,10 @@ def get_doc_topic(corpus, model):
     doc_topic = dict()
     corpus.metadata = True
     for doc, id_ in corpus:
-        doc_topic[id_] = model[doc]
+        doc_topic[id_] = list(reversed(sorted(model[doc], key=lambda x: x[1])))
 
     corpus.metadata = False
-    return list(reversed(sorted(doc_topic, key=lambda x: x[1])))
+    return doc_topic
 
 @main.command()
 @pass_config
