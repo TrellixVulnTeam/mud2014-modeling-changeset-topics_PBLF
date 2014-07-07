@@ -1,6 +1,6 @@
 % vim:syntax=tex
 
-Rough outline of methodology:
+Rough outline of methodology
 
 Gather corpora.
 Get words from corpora.
@@ -17,3 +17,75 @@ measures of topic quality developed in this paper.  Our measures enable
 new forms of model selection and suggest that practitioners developing
 topic models should thus focus on evaluations that depend on real-world
 task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
+
+\subsection{Text extraction from source code}
+
+\subsection{Text extraction from change-sets}
+
+
+\begin{figure}[ht]
+\centering
+\footnotesize
+\begin{lstlisting}[language=diff, basicstyle=\ttfamily]
+diff --git a/lao b/tzu
+index 635ef2c..5af88a8 100644
+--- a/lao
++++ b/tzu
+@@ -1,7 +1,6 @@
+-The Way that can be told of is not the eternal Way;
+-The name that can be named is not the eternal name.
+ The Nameless is the origin of Heaven and Earth;
+-The Named is the mother of all things.
++The named is the mother of all things.
++
+ Therefore let there always be non-being,
+   so we may see their subtlety,
+ And let there always be being,
+@@ -9,3 +8,6 @@ And let there always be being,
+ The two are the same,
+ But after they are produced,
+   they have different names.
++They both may be called deep and profound.
++Deeper and more profound,
++The door of all subtleties!
+\end{lstlisting}
+\caption{Example of a \texttt{git diff}. Black or blue lines denote metadata about the change, red lines (beginning with a single \texttt{-}) denote line removals, and green lines (beginning with a single \texttt{+}) denote line additions.}
+\label{fig:diff}
+\end{figure}
+
+To extract text from the change-sets, we look at the output of viewing
+the \texttt{git diff} between two commits.
+Figure~\ref{fig:diff} shows an example of what a change-set might look
+like in Git.
+
+\begin{figure}[ht]
+\em
+\footnotesize
+The Way that can be told of is not the eternal Way;
+The name that can be named is not the eternal name.
+The Named is the mother of all things.
+The named is the mother of all things.
+They both may be called deep and profound.
+Deeper and more profound,
+The door of all subtleties!
+\caption{An example extracted change-set document before preprocessing}
+\label{fig:diffdocument}
+\end{figure}
+In our change-set text extractor, we only extract text from removed or added lines.
+Context and metadata lines are ignored.
+Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
+from the change shown in Figure~\ref{fig:diff}.
+
+\subsection{Modeling}
+
+For our topic modeling, we use the open source Python library Gensim~\cite{Gensim}.
+We set the LDA parameters as follows:
+$100$ topics ($K$),
+a symmetric $\alpha=0.1$,
+$\beta$ is left as a default value of $1/K$ (also $0.1$).
+Since Gensim's LDA implementation is based on the
+Online LDA by Hoffman et al.~\ref{Hoffman-etal:2010},
+it uses variational inference instead of a Collapsed Gibbs Sampler.
+In order to ensure that the model converges for each document,
+we allow LDA to see each document $10$ times by setting
+Gensim's intialization parameter \texttt{passes}.
