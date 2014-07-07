@@ -43,8 +43,8 @@ Terminology used in this section will first be defined, followed by an overview 
     A document is a collection of terms that appear in a source code entity.
     Each entity in the source code will have an associated document in the resulting corpus.
 
-    Typically, this indexing process has been used on source code files\needcite.
-    \attn{Need stuff about Hindle and people using commit log messages} Another method that has been used to generate a corpus is one proposed by Hindle et al. ~\cite{Hindle2009} that creates tokens based on the commit log messages.
+    Typically, this indexing process has been used on source code files~\cite{Linstead-etal:2007b}\cite{Lukins-etal:2008}.
+    Another method that has been used to generate a corpus is one proposed by Hindle et al. ~\cite{Hindle-etal:2009} that creates tokens based on the commit log messages.
     In this method,
     commit log comments are extracted,
     word distributions are created based on those comments,
@@ -88,22 +88,25 @@ Terminology used in this section will first be defined, followed by an overview 
     (e.g., ‘stemmer’, ‘stemming’)
     to be conflated to a single term
     (e.g., ‘stem’).
-    \attn{Should probably mention Biggers-Kraft'10 here}
+    Biggers and Kraft found that stemming did not improve text retrieval based feature location that used LDA~\cite{Biggers-Kraft:2012}.
+    We decided,
+    therefore,
+    that stemmers should not be used in the preprocessing for our model.
     \end{itemize}
 
     \subsubsection{Term Weighting}
     The term weighting step assigns a numeric value, or weight, to each item in the corpus.
     Common term weighting schemes described in the literature are
     binary, term count, term frequency, and
-    term frequency-inverse document frequency (tf-idf)\needcite.
-
-    \attn{Should probably talk about Bassett-Kraft'13 here}
+    term frequency-inverse document frequency (tf-idf)~\cite{Salton:1988}.
+    Bassett and Kraft discovered that when using LDA-based Feature Location Techniques a weighting of eight for method names and a weighting of one for the method call~\cite{Bassett-Kraft:2013}.
+    \attn{Because we are using LDA in our model, this is the weighting we will use.}
 
     \subsubsection{Model Generation}
     Model generation is depicted in the center of Figure~\ref{fig:process}.
     This stage takes a corpus as input and processes it using a TR method
     to produce a model of the source code as output.
-    The TR methods commonly used in this stage include the VSM\needcite,
+    The TR methods commonly used in this stage include the VSM~\cite{Salton:1971},
     LSI~\cite{Deerwester-etal:1990},
     and LDA~\cite{Blei-etal:2003}.
 
