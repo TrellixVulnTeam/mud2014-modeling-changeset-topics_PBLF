@@ -98,9 +98,9 @@ Terminology used in this section will first be defined, followed by an overview 
     The term weighting step assigns a numeric value, or weight, to each item in the corpus.
     Common term weighting schemes described in the literature are
     binary, term count, term frequency, and
-    term frequency-inverse document frequency (tf-idf)\needcite.
-
-    \attn{Should probably talk about Bassett-Kraft'13 here}
+    term frequency-inverse document frequency (tf-idf)~\cite{Salton:1988}.
+    Bassett and Kraft discovered that when using LDA-based Feature Location Techniques a weighting of eight for method names and a weighting of one for the method call~\cite{Bassett-Kraft:2013}.
+    \attn{Because we are using LDA in our model, this is the weighting we will use.}
 
     \subsubsection{Model Generation}
     Model generation is depicted in the center of Figure~\ref{fig:process}.
