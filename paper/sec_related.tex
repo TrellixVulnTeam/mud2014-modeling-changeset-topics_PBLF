@@ -30,10 +30,9 @@ Terminology used in this section will first be defined, followed by an overview 
     We use the same terminology as Biggers et al.~\cite{Biggers-etal:2014}.
     They provide the following definitions:
     \begin{itemize}
-\setlength{\itemsep}{1pt}
-\setlength{\parskip}{0pt}
-\setlength{\parsep}{0pt}
-
+    \setlength{\itemsep}{1pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
     \item \textit{Term}: a sequence of letters and the basic unit of discrete data in a lexicon
     \item \textit{Token}: a sequence of non-whitespace characters; contains one or more terms
     \item \textit{Entity}: a source element such as a package, class, method, or file
@@ -114,7 +113,8 @@ Terminology used in this section will first be defined, followed by an overview 
     binary, term count, term frequency, and
     term frequency-inverse document frequency (tf-idf)~\cite{Salton:1988}.
     Bassett and Kraft discovered that when using LDA-based Feature Location Techniques a weighting of eight for method names and a weighting of one for the method call~\cite{Bassett-Kraft:2013}.
-    \attn{Because we are using LDA in our model, this is the weighting we will use.}
+    We chose not to weight any terms over another, and all terms have
+    equal weighting.
 
     \subsubsection{Model Generation}
     Model generation is depicted in the center of Figure~\ref{fig:process}.
