@@ -7,3 +7,6 @@ data/aspectj-5a5bef1e-10passes-symmetricalpha-100topics-MultiTextCorpus.lda,375.
 data/jodatime-b0fcbb95-10passes-symmetricalpha-100topics-ChangesetCorpus.lda,103.49534741503489
 data/jodatime-b0fcbb95-10passes-symmetricalpha-100topics-CommitLogCorpus.lda,141.20596537867883
 data/jodatime-b0fcbb95-10passes-symmetricalpha-100topics-MultiTextCorpus.lda,134.26611108708596
+data/postgresql-d4f8dde3-10passes-symmetricalpha-100topics-MultiTextCorpus.lda,259.34569875959244
+data/postgresql-d4f8dde3-10passes-symmetricalpha-100topics-ChangesetCorpus.lda,345.26306161805894
+data/postgresql-d4f8dde3-10passes-symmetricalpha-100topics-CommitLogCorpus.lda,355.93815495477224
