@@ -208,44 +208,48 @@ def evaluate_log(context, config):
     changeset_doc_topic = get_doc_topic(changeset_corpus, model)
     commit_doc_topic = get_doc_topic(commit_corpus, model)
 
-    assert commit_doc_topic.keys() == changeset_doc_topic.keys()
+    #assert list(sorted(commit_doc_topic.keys())) == list(sorted(changeset_doc_topic.keys()))
 
     first_shared = dict()
     for id_ in commit_doc_topic:
-        assert len(commit_doc_topic[id_]) == len(changeset_doc_topic[id_])
+        #assert len(commit_doc_topic[id_]) == len(changeset_doc_topic[id_])
         i = 0
         commit_topics = [topic[0] for topic in commit_doc_topic[id_]]
-        changeset_topics = [topic[0] for topic in changeset_doc_topic[id_]]
+        try:
+            changeset_topics = [topic[0] for topic in changeset_doc_topic[id_]]
+        except:
+            continue
 
-        maximum = max(len(commit_topics), len(changeset_topics))
+        maximum = 101
         minimum = maximum
 
         for i, topic in enumerate(commit_topics):
             if topic in changeset_topics:
-                j = changeset_topics.find(topic)
+                j = changeset_topics.index(topic)
                 minimum = min(minimum, max(i, j))
 
         for i, topic in enumerate(changeset_topics):
-            if topic in changeset_topics:
-                j = commit_topics.find(topic)
+            if topic in commit_topics:
+                j = commit_topics.index(topic)
                 minimum = min(minimum, max(i, j))
 
         first_shared[id_] = minimum
 
         if minimum == maximum:
-            logger.info('No common topics found for %s' % id_)
-            first_shared[id_] = None
+            logger.info('No common topics found for %s' % str(id_))
+            del first_shared[id_]
 
     mean = sum(first_shared.values()) / len(first_shared)
 
-    with open('evaluate-log-results.csv', 'a') as f:
+    with open('data/evaluate-log-results.csv', 'a') as f:
         w = csv.writer(f)
         w.writerow([model_fname, mean] + list(first_shared.values()))
 
 def get_doc_topic(corpus, model):
     doc_topic = dict()
     corpus.metadata = True
-    for doc, id_ in corpus:
+    for doc, meta in corpus:
+        id_ = meta[0]
         doc_topic[id_] = list(reversed(sorted(model[doc], key=lambda x: x[1])))
 
     corpus.metadata = False
