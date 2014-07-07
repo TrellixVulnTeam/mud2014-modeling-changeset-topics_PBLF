@@ -7,13 +7,25 @@
 \usepackage{comment}
 \usepackage[pdftex]{graphicx}
 \usepackage{url}
+\usepackage{listings}
 
+\definecolor{lightred}{RGB}{180,75,75}
+\definecolor{lightgreen}{RGB}{75,180,75}
+\definecolor{lightblue}{RGB}{75,75,180}
+
+\lstdefinelanguage{diff}{
+  morecomment=[f][\color{lightblue}]{@@},     % group identifier
+  morecomment=[f][\color{lightred}]-,         % deleted lines 
+  morecomment=[f][\color{lightgreen}]+,       % added lines
+  morecomment=[f][\color{black}]{---}, % Diff header lines (must appear after +,-)
+  morecomment=[f][\color{black}]{+++},
+}
 \hyphenation{}
-
 
 \newcommand{\attn}[1]{{\color{red}#1}}
 \newcommand{\desc}[1]{{\emph{\color{blue}#1}}}
 \newcommand{\needcite}{\attn{\tiny{[cite]}}}
+
 
 \begin{document}
 \title{Topic Modeling Change-sets}
