@@ -14,8 +14,11 @@ By doing this, we gain a topic model that evolves dynamically over time without 
 
 The goal of this paper to determine if a topic model based on the change-sets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
 In this paper, we will compare results of a standard release model and our change-set model.
-The metric that we will use to determine quality is topic distinctness, which has been developed and used in topic modeling of source code.~\cite{Thomas-etal:2011}
-Topic distinctness measures how distinct a newly discovered topic is in comparison to the other, already discovered topics.
+The metric that we will use to determine quality is topic distinctness,
+which has been developed and used in topic modeling of source
+code~\cite{Wei-etal:2010, Thomas-etal:2011, Chuang-etal:2012}.
+Topic distinctness measures how distinct a newly discovered topic is in
+comparison to the other, already discovered topics.
 We use this metric as a  tool to compare our change-set model to a model built upon a release.
 
 
