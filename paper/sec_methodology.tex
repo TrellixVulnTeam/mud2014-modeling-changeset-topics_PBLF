@@ -18,11 +18,6 @@ new forms of model selection and suggest that practitioners developing
 topic models should thus focus on evaluations that depend on real-world
 task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
 
-\subsection{Text extraction from source code}
-
-\subsection{Text extraction from change-sets}
-
-
 \begin{figure}[ht]
 \centering
 \footnotesize
@@ -53,11 +48,6 @@ index 635ef2c..5af88a8 100644
 \label{fig:diff}
 \end{figure}
 
-To extract text from the change-sets, we look at the output of viewing
-the \texttt{git diff} between two commits.
-Figure~\ref{fig:diff} shows an example of what a change-set might look
-like in Git.
-
 \begin{figure}[ht]
 \em
 \footnotesize
@@ -71,6 +61,26 @@ The door of all subtleties!
 \caption{An example extracted change-set document before preprocessing}
 \label{fig:diffdocument}
 \end{figure}
+
+\subsection{Text extraction from source code}
+
+For our text extraction step on source code,
+we simply use the entire contents of the document.
+Unlike previous methods\needcite,
+we do not parse the source code documents for classes, methods, and so on.
+We do this because so-and-so-I-forget\needcite,
+but also it leaves our technique language-independent.
+Special characters such as braces and semicolons will be removed during
+preprocessing.
+
+\subsection{Text extraction from change-sets}
+
+
+To extract text from the change-sets, we look at the output of viewing
+the \texttt{git diff} between two commits.
+Figure~\ref{fig:diff} shows an example of what a change-set might look
+like in Git.
+
 In our change-set text extractor, we only extract text from removed or added lines.
 Context and metadata lines are ignored.
 Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
@@ -79,13 +89,13 @@ from the change shown in Figure~\ref{fig:diff}.
 \subsection{Modeling}
 
 For our topic modeling, we use the open source Python library Gensim~\cite{Gensim}.
-We set the LDA parameters as follows:
-$100$ topics ($K$),
-a symmetric $\alpha=0.1$,
-$\beta$ is left as a default value of $1/K$ (also $0.1$).
 Since Gensim's LDA implementation is based on the
-Online LDA by Hoffman et al.~\ref{Hoffman-etal:2010},
+Online LDA by Hoffman et al.~\cite{Hoffman-etal:2010},
 it uses variational inference instead of a Collapsed Gibbs Sampler.
 In order to ensure that the model converges for each document,
 we allow LDA to see each document $10$ times by setting
-Gensim's intialization parameter \texttt{passes}.
+Gensim's intialization parameter \texttt{passes} to this value.
+We set the remaining LDA parameters as follows:
+$100$ topics ($K$),
+a symmetric $\alpha=0.01$,
+$\beta$ is left as a default value of $1/K$ (also $0.01$).

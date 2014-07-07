@@ -1,2 +1,17 @@
 % vim:syntax=tex
 
+
+Following Thomas et al~\cite{Thomas-etal:2011}, we use topic distinctiveness
+to evaluate our topic models.
+Distinct topics are topics with dissimilar word vectors to all other topics in the model.
+Thomas et al define topic distinctiveness (TD) of a topic $z_i$ as the mean
+Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
+
+\begin{equation}
+TD(\phi_{z_i}) = 
+\frac{1}{K - 1}
+\sum_{j=1,j \neq i}^{K}
+KL(\phi_{z_i}, \phi_{z_j})
+\label{eq:topicdistinctiveness}
+\end{equation}
+
