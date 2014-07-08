@@ -1,6 +1,7 @@
 \documentclass[conference]{IEEEtran}
 
 \usepackage{balance}
+\usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{cite}
 \usepackage{color}
@@ -9,6 +10,9 @@
 \usepackage{url}
 \usepackage{listings}
 
+
+%\setlength{\parskip}{1pt}
+%\setlength{\parsep}{1pt}
 
 \definecolor{lightred}{RGB}{150,0,0}
 \definecolor{lightgreen}{RGB}{0,150,0}
@@ -34,7 +38,7 @@
 
 
 \begin{document}
-\title{Topic Modeling Changesets}
+\title{Modeling Changeset Topics}
 \author{
     \IEEEauthorblockN{
         Christopher S. Corley,
@@ -68,7 +72,7 @@
         ABB Corporate Research\\
         Software Research Area\\
         Raleigh, NC 27606\\
-        \texttt{nicholas.a.kraft@ua.abb.com}
+        \texttt{nicholas.a.kraft@us.abb.com}
     }
 }
 
@@ -84,16 +88,18 @@ Many of these approaches combine mining unstructured data, such as bug
 reports, with topic modeling a release or snapshot of source code.
 However, source code evolves, which causes models to become obsolete.
 In this paper, we explore the approach of topic modeling \emph{changesets}
-over the "traditional" release approach.
+over the ``traditional" release approach.
 We conduct an exploratory study of four open source systems:
 three written in Java and the last in C.
 We investigate the differences in corpora in each project,
 and evaluate the topic distinctiveness of the models.
-We find that we are all really cool people.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
+mining software repositories,
+topic modeling,
+latent dirichlet allocation.
 \end{IEEEkeywords}
 
 \section{Introduction}

@@ -66,10 +66,12 @@ The same preprocessing steps are employed on all documents extracted.
 
 For our document extraction from a release,
 we simply use the entire contents of the document.
-Unlike previous methods\needcite,
+Unlike previous methods, %\needcite,
 we do not parse the source code documents for classes, methods, and so on.
-We do this because so-and-so-I-forget\needcite,
-but also it leaves our technique language-independent.
+%We do this because so-and-so-I-forget\needcite,
+%but also it leaves our technique language-independent.
+We do this to leave our technique language-independent,
+and to also allow for a fair comparison between the two approaches.
 Special characters such as braces and semicolons will be removed during
 preprocessing.
 
@@ -87,7 +89,7 @@ only that it is text changed by the commit.
 Our document preprocessor implements the transformations described in Section~\ref{sec:preprocessing}.
 %We filter \texttt{java.lang} class names before splitting tokens.
 We split tokens based on camel case, underscores, and non-letters.
-We normalize to lower case before filtering English stop words~\cite{StopWords}, Java keywords, and words shorter than three characters.
+We normalize to lower case before filtering English stop words~\cite{StopWords}, Java keywords, and words shorter than two characters.
 We do not stem words.
 
 
@@ -156,14 +158,13 @@ We create two corpora for each of our four subject systems.
 We then used LDA to model the documents into topics.
 
 To answer RQ1, we investigate the term frequency in each corpus.
-We build two word-vectors from all unique terms from both corpora.
+We create two distributions from all unique terms from both corpora.
 That is, each vector is of the same length and contain zero values for terms not in its respective corpus.
-We measure the similarity of the two word-vectors using cosine similarity.
-
+We measure the similarity of the two word-vectors using cosine distance.
 
 To answer RQ2, we follow Thomas et al~\cite{Thomas-etal:2011}.
 We use topic distinctiveness to evaluate our topic models.
-Distinct topics are topics with dissimilar word vectors to all other topics in the model.
+Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
 Thomas et al.\ define topic distinctiveness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
 
@@ -175,9 +176,8 @@ KL(\phi_{z_i}, \phi_{z_j})
 \label{eq:topicdistinctiveness}
 \end{equation}
 
-For each model, we calculate the topic distinctiveness of every topic.
 We score the overall topic distinctiveness of a model $\phi$ as the mean of
-its topic's distinctiveness scores.
+its topic distinctiveness scores.
 
 \begin{equation}
 TD(\phi) =
@@ -192,4 +192,71 @@ TD(\phi_{z_i})
 
 \subsection{Results}
 
-Butts
+RQ1 asks whether a corpus generated from changesets have similar terms
+as a corpus generated from a release.
+We expected to find that set of unique terms in the changeset corpus to be
+a superset of the set of unique terms in the release corpus.
+Interestingly, this holds true for \jodatime\ and \aspectj,
+but not for \ant\ and \postgres.
+Further inspection shows that 2 terms appear in the \ant release corpus that do not appear in the changeset corpus,
+and 19 terms appear in \postgres's respective corpora.
+However, these anomolies appear to have been file encoding errors that
+had been introduced into the version history.
+For example, one of the terms for \ant\ was \texttt{rapha}. This is due
+to an encoding error in the \texttt{KEYS} files for a developer named
+"Rapha\"{e}l Luta".
+
+To answer RQ1, we created two word distributions that represented the unique
+terms from both corpora for each system.
+Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant release corpus.
+Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant changeset corpus.
+%
+% At this point, I would love to do a stats test. But I am way too tired
+% to figure that out because I am butts at stats
+%
+
+\begin{figure*}[ht]
+\centering
+\begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{dist1}
+    \caption{Normalized distribution of the release corpus}
+    \label{fig:antdist1}
+\end{subfigure}
+\begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{dist2}
+    \caption{Normalized distribution of the changeset corpus}
+    \label{fig:antdist2}
+\end{subfigure}
+
+\caption{Comparison of \ant\ word distributions}
+\end{figure*}
+
+
+RQ2 asks if topic models trained on changeset corpora produce more distinct
+topics.
+We expected to find that they would since "popular" words would become
+more prevalant in the corpus from receiving several changes.
+Interestingly, this is true for \ant\ and \postgres,
+but not for \jodatime\ and \aspectj!
+We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
+That is, \ant\ and \postgres have drastically more documents in the changeset corpora.
+% WTF latex stop it is is 5 am i dont have time for this
+%Table~\ref{tab:systemcorpora} shows the document count and term count for each system.
+Table I shows the document count and term count for each system.
+
+\begin{table*}[ht]
+\centering
+\small
+\begin{tabular}{l|rrrrrr}
+    System      & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+                & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+    \hline
+    \ant        & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
+    \aspectj    & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
+    \jodatime   & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
+    \postgres   & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
+    \hline
+\end{tabular}
+\label{tab:systemcorpora}
+\caption{Subject systems corpora description}
+\end{table*}

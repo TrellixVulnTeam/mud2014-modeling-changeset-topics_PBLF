@@ -1,1 +1,22 @@
 % vim:syntax=tex
+
+In this paper conducted an exploratory study on modeling the topics of
+changesets.
+We used latent Dirichlet allocation (LDA) to extract linguistic
+topics from changesets and source code.
+
+We address two research questions regarding the topic modeling of changesets.
+First, we investigated whether changeset copora were any different than
+traditional release corpora, and what differences there might be.
+For 2 of the 4 systems, we found that the changeset vocabulary was a superset
+to the release vocabulary.
+Next, we investigated whether a topic model trained on a changeset corpus
+was more or less distinct than a topic model trained on a release corpus.
+For 2 of the 4 systems, we found that the changeset corpus produced more
+distinct topics, while for the other 2 it did not.
+
+Future work includes expanding our evaluation and conducting an experiment
+where we utilize these topic models, such as for bug localization.
+Additional future work includes expanding our study to other systems, particularly ones that are not Java.
+It seems unlikely that our results are specific to Java systems, though we cannot confirm this assumption without experimentation.
+ 
