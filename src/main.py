@@ -166,9 +166,11 @@ def evaluate_distinctiveness(context, config):
 def evaluate_corpora(context, config):
     logger.info('Evaluating corpus for: %s' % config.project.name)
 
-    create_evaluation_corpora(config, MultiTextCorpus)
-    create_evaluation_corpora(config, ChangesetCorpus)
-    create_evaluation_corpora(config, CommitLogCorpus)
+    #create_evaluation_corpora(config, MultiTextCorpus)
+    #create_evaluation_corpora(config, ChangesetCorpus)
+    #create_evaluation_corpora(config, CommitLogCorpus)
+
+    create_evaluation_corpora_cosine(config, MultiTextCorpus, ChangesetCorpus)
 
 @main.command()
 @pass_config
@@ -349,17 +351,59 @@ def create_evaluation_corpora(config, Kind):
     print("Top 10 words in %s: %s", (corpus_fname, str(word_freq[:10])))
     print("Bottom 10 words in %s: %s", (corpus_fname, str(word_freq[-10:])))
 
-def count_words(corpus):
+def get_word_freq(corpus):
     word_freq = dict()
     for doc in corpus:
-        for word, count in doc:
+        for word_id, count in doc:
+            word = corpus.id2word[word_id]
             if word not in word_freq:
                 word_freq[word] = 0
 
             word_freq[word] += count
 
-    for word_id, freq in word_freq.items():
-        yield freq, corpus.id2word[word_id]
+    return word_freq
+
+def count_words(corpus):
+    word_freq = get_word_freq(corpus)
+    return word_freq.items()
+
+def create_evaluation_corpora_cosine(config, Kind, Kind2):
+    corpus1_fname = config.corpus_fname % Kind.__name__
+    corpus2_fname = config.corpus_fname % Kind2.__name__
+
+    try:
+        id2word1 = Dictionary.load(corpus1_fname + '.dict')
+        corpus1 = MalletCorpus(corpus1_fname, id2word=id2word1)
+        id2word2 = Dictionary.load(corpus2_fname + '.dict')
+        corpus2 = MalletCorpus(corpus2_fname, id2word=id2word2)
+    except:
+        error('Corpora not built yet -- cannot evaluate')
+
+    word_freq1 = get_word_freq(corpus1)
+    word_freq2 = get_word_freq(corpus2)
+
+    total1 = float(sum(x[1] for x in word_freq1.items()))
+    total2 = float(sum(x[1] for x in word_freq2.items()))
+
+    all_words = set(word_freq1.keys()) | set(word_freq2.keys())
+    for word in all_words:
+        if word not in word_freq1:
+            word_freq1[word] = 0
+        if word not in word_freq2:
+            word_freq2[word] = 0
+
+    dist1 = [x[1]/total1 for x in sorted(word_freq1.items())]
+    dist2 = [x[1]/total2 for x in sorted(word_freq2.items())]
+    rdist = numpy.random.random_sample(len(all_words))
+
+    res = utils.cosine_distance(dist1,dist2, filter_by=0.0)
+    res1 = utils.cosine_distance(dist1,rdist, filter_by=0.0)
+    res2 = utils.cosine_distance(dist2,rdist, filter_by=0.0)
+    logger.info("Cosine distance between corpora: %f" % res)
+    with open(config.path + 'evaluate-cosine-results.csv', 'a') as f:
+        w = csv.writer(f)
+        w.writerow([corpus1_fname, corpus2_fname, res, res1, res2])
+
 
 def create_evaluation_perplexity(config, Kind):
     model_fname = config.model_fname % Kind.__name__
