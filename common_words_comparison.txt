@@ -1,0 +1,39 @@
+comparison of the common words found in each type of corpus, for each project:
+
+posrgresql: 
+length of MultiTextCorpus: 4080
+length of ChangesetCorpus: 36870
+
+(MTC,CSC)  in common
+(84591, 164703) 84572
+
+note: the common words between the multitext corpus and changeset corpus is off by 19 due to unicode junk.
+
+
+ant: 
+length of MultiTextCorpus: 2208
+length of ChangesetCorpus: 12996
+
+(MTC,CSC)  in common
+(17986, 74681) 17984
+
+note: the length of the multitext corpus and changeset corpus is off by 2. specifically ~ set([u'rapha', u'lalev']) these words occur in the snapshot & not the changeset.
+
+
+
+aspectj: 
+length of MultiTextCorpus: 10130
+length of ChangesetCorpus: 7650
+
+(MTC,CSC)  in common
+(22855, 25071) 22855
+
+
+
+jodatime: 
+length of MultiTextCorpus: 402
+length of ChangesetCorpus: 1750
+
+(MTC,CSC)  in common
+(9298, 11385) 9298
+
