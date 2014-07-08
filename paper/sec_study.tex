@@ -1,13 +1,29 @@
 % vim:syntax=tex
 
-\attn{Research Q1:
-    Are the most influential words of file-based corpora
-    interacted with more over time in changeset-based corpora?
-    }
-\attn{Research Q2:
-    Are topics drawn from changeset-based corpora more distinct than
-    topics drawn from file-based corpora?
-    }
+In this section we describe the design of a case study in which we
+explore the relationship between ownership and linguistic topics in source code.
+We describe the case study using the Goal-Question-Metric approach~\cite{Basili-etal:94}.
+%The data for the case study is available in this paper's online
+%appendix\footnote{\url{http://software.eng.ua.edu/data/ownership-topics}}.
+
+\subsection{Definition and Context}
+
+Our \textit{goal} is to explore the relationship between changeset topics and snapshot topics.
+The \textit{quality focus} of the study is on informing development decisions and policy changes
+that could lead to software with fewer defects.
+The \textit{perspective} of the study is of a researcher, developer, or project manager who wishes
+to gain understanding of the concepts or features implemented in the source code.
+The \textit{context} of the study spans the version histories of 4 open source systems.
+
+Toward achievement of our goal, we pose the following research questions:
+\begin{enumerate}
+    \item[]\hspace*{-20pt}\textit{RQ1: Do changeset- and snapshot-based corpora express the same terms?}
+    \item[]\hspace*{-20pt}\textit{RQ2: Are topic models trained on changesets more distinct than topic models trained on a snapshot?}
+\end{enumerate}
+Basically, we want to know whether topic modeling changesets is as good as, or better than, topic modeling a snapshot.
+
+In the remainder of this section we introduce the subjects of our study,
+describe the setting of our study, and report our data collection and analysis procedures.
 
 \subsection{Subject systems}
 
@@ -73,7 +89,7 @@ The named is the mother of all things.
 They both may be called deep and profound.
 Deeper and more profound,
 The door of all subtleties!
-\caption{An example extracted change-set document before preprocessing}
+\caption{An example extracted changeset document before preprocessing}
 \label{fig:diffdocument}
 \end{figure}
 
@@ -88,15 +104,15 @@ but also it leaves our technique language-independent.
 Special characters such as braces and semicolons will be removed during
 preprocessing.
 
-\subsubsection{Text extraction from change-sets}
+\subsubsection{Text extraction from changesets}
 
 
-To extract text from the change-sets, we look at the output of viewing
+To extract text from the changesets, we look at the output of viewing
 the \texttt{git diff} between two commits.
-Figure~\ref{fig:diff} shows an example of what a change-set might look
+Figure~\ref{fig:diff} shows an example of what a changeset might look
 like in Git.
 
-In our change-set text extractor, we only extract text from removed or added lines.
+In our changeset text extractor, we only extract text from removed or added lines.
 Context and metadata lines are ignored.
 Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
 from the change shown in Figure~\ref{fig:diff}.

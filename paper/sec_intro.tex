@@ -8,18 +8,18 @@ Topics are discovered by taking a distribution over the vocabulary, which create
 With each document representing multiple topics, connections are made making the documents easier to navigate.
 While topic models have addressed these problems (e.g., feature location program comprehension, maintenance, etc.) models are typically built on a snapshot of code, or a release.
 A problem with this is, source code is not static, and the drastic amount of changes that occur in between releases forces the models to be rebuilt from scratch.
-Given the nature of these problems, we propose that we use the individual change-sets to continually update the source code.
-A change-set can be thought of as indexing into the documents where changes have occurred, and transforming the indexes from version A to version B.
+Given the nature of these problems, we propose that we use the individual changesets to continually update the source code.
+A changeset can be thought of as indexing into the documents where changes have occurred, and transforming the indexes from version A to version B.
 By doing this, we gain a topic model that evolves dynamically over time without requiring the reprocessing of the entire corpus.
 
-The goal of this paper to determine if a topic model based on the change-sets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
-In this paper, we will compare results of a standard release model and our change-set model.
+The goal of this paper to determine if a topic model based on the changesets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
+In this paper, we will compare results of a standard release model and our changeset model.
 The metric that we will use to determine quality is topic distinctness,
 which has been developed and used in topic modeling of source
 code~\cite{Wei-etal:2010, Thomas-etal:2011, Chuang-etal:2012}.
 Topic distinctness measures how distinct a newly discovered topic is in
 comparison to the other, already discovered topics.
-We use this metric as a  tool to compare our change-set model to a model built upon a release.
+We use this metric as a  tool to compare our changeset model to a model built upon a release.
 
 
 
