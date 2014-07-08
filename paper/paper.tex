@@ -7,36 +7,56 @@
 \usepackage{comment}
 \usepackage[pdftex]{graphicx}
 \usepackage{url}
+\usepackage{listings}
 
+
+\definecolor{lightred}{RGB}{150,0,0}
+\definecolor{lightgreen}{RGB}{0,150,0}
+\definecolor{lightblue}{RGB}{0,0,150}
+
+\lstdefinelanguage{diff}{
+  morecomment=[f][\color{lightblue}]{@@},     % group identifier
+  morecomment=[f][\color{lightred}]-,         % deleted lines
+  morecomment=[f][\color{lightgreen}]+,       % added lines
+  morecomment=[f][\color{black}]{---}, % Diff header lines (must appear after +,-)
+  morecomment=[f][\color{black}]{+++},
+}
 \hyphenation{}
-
 
 \newcommand{\attn}[1]{{\color{red}#1}}
 \newcommand{\desc}[1]{{\emph{\color{blue}#1}}}
 \newcommand{\needcite}{\attn{\tiny{[cite]}}}
 
+\newcommand{\ant}{{Ant}}
+\newcommand{\aspectj}{{AspectJ}}
+\newcommand{\jodatime}{{Joda-Time}}
+\newcommand{\postgres}{{PostgreSQL}}
+
+
 \begin{document}
-\title{Topic Modeling Change-sets}
+\title{Topic Modeling Changesets}
 \author{
+    \IEEEauthorblockN{
+        Christopher S. Corley,
+        Kelly L. Kashuda
+    }
+    \IEEEauthorblockA{
+        Department of Computer Science\\
+        The University of Alabama\\
+        Tuscaloosa, AL 35487\\
+        \texttt{\{cscorley,klkashuda\}@ua.edu}
+    }
+
+    \and
+
     \IEEEauthorblockN{
         Daniel S. May
     }
     \IEEEauthorblockA{
         Department of Computer Science\\
         Swarthmore College\\
+        Swarthmore, PA 19081\\
         \texttt{dmay1@swarthmore.edu}
-    }
-
-    \and
-
-    \IEEEauthorblockN{
-        Kelly L. Kashuda,
-        Christopher S. Corley
-    }
-    \IEEEauthorblockA{
-        Department of Computer Science\\
-        The University of Alabama\\
-        \texttt{\{klkashuda,cscorley\}@ua.edu}
     }
 
     \and
@@ -45,8 +65,10 @@
         Nicholas A. Kraft
     }
     \IEEEauthorblockA{
-        ABB Research\\
-        \texttt{nkraft@}
+        ABB Corporate Research\\
+        Software Research Area\\
+        Raleigh, NC 27606\\
+        \texttt{nicholas.a.kraft@ua.abb.com}
     }
 }
 
@@ -55,7 +77,19 @@
 
 \begin{abstract}
 
-    abstract
+Topic modeling has been applied to several areas of software engineering,
+such as bug localization, feature location, triaging change requests,
+and traceability link recovery.
+Many of these approaches combine mining unstructured data, such as bug
+reports, with topic modeling a release or snapshot of source code.
+However, source code evolves, which causes models to become obsolete.
+In this paper, we explore the approach of topic modeling \emph{changesets}
+over the "traditional" release approach.
+We conduct an exploratory study of four open source systems:
+three written in Java and the last in C.
+We investigate the differences in corpora in each project,
+and evaluate the topic distinctiveness of the models.
+We find that we are all really cool people.
 
 \end{abstract}
 
@@ -69,10 +103,6 @@
 \section{Background \& Related Work}
 \label{sec:related}
 \input{sec_related}
-
-\section{Methodology}
-\label{sec:methodology}
-\input{sec_methodology}
 
 \section{Case Study}
 \label{sec:study}

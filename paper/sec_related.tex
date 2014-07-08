@@ -8,7 +8,16 @@ including key terms and individual steps.
 We also provide an overview of Latent Dirichlet Allocation (LDA) as a text retrieval model
 and review related work on its application in software engineering
 
-\subsection{Source Code Indexing and Retrieval Process}
+\subsection{Source Code Indexing and Modeling Process}
+
+\begin{figure*}[ht]
+\centering
+\centerline{\includegraphics[width=.75\textwidth]{changeset}}
+\caption{Source code indexing and modeling process}
+\label{fig:process}
+\end{figure*}
+
+
 
 The source code indexing and modeling process,
 as illustrated in Figure~\ref{fig:process},
@@ -18,23 +27,22 @@ producing the result of such a query.
 Terminology used in this section will first be defined, followed by an overview of each step of the process.
 
     \subsubsection{Terminology}
-    We use the same terminology as Biggers et al.~\cite{Biggers-etal:2014}.
+    We use the same terminology as Biggers et al.~\cite{Biggers-etal:2011}.
     They provide the following definitions:
     \begin{itemize}
+    \setlength{\itemsep}{1pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
     \item \textit{Term}: a sequence of letters and the basic unit of discrete data in a lexicon
     \item \textit{Token}: a sequence of non-whitespace characters; contains one or more terms
-    \item \textit{Entity}: a source element such as a package, class, method, or file
+    \item \textit{Entity}: a source element such as a class or method
     \item \textit{Identifier}: a token representing the name of an entity
-    \item \textit{Comment}: a sequence of tokens delimited by language-
-    specific markers, e.g., /* */
-    \item \textit{String literal}: a sequence of tokens delimited by
-    language-specific markers, e.g., “ ”
+    \item \textit{Comment}: a sequence of tokens delimited by language-specific markers, e.g., /* */
+    \item \textit{String literal}: a sequence of tokens delimited by language-specific markers, e.g., “ ”
     \item \textit{Word}: the smallest free form in a language
     \end{itemize}
     Further, a term is described as being one of:
-    word,
-    abbreviation of a word,
-    contraction of one or two words,
+    word, abbreviation of a word, contraction of one or two words,
     or acronym of a series of words.
 
     \subsubsection{Indexing}
@@ -43,12 +51,8 @@ Terminology used in this section will first be defined, followed by an overview 
     A document is a collection of terms that appear in a source code entity.
     Each entity in the source code will have an associated document in the resulting corpus.
 
-    Typically, this indexing process has been used on source code files\needcite.
-    \attn{Need stuff about Hindle and people using commit log messages} Another method that has been used to generate a corpus is one proposed by Hindle et al. ~\cite{Hindle2009} that creates tokens based on the commit log messages.
-    In this method,
-    commit log comments are extracted,
-    word distributions are created based on those comments,
-    then LDA is applied to create topic models.
+    Typically, this indexing process has been used on source code files ~\cite{Marcus-etal:2004}.
+    Hindle et al.~\cite{Hindle-etal:2009} creates tokens based on the commit log messages.
     This model is similar to ours in that it uses tokens mined from commits rather than source code files.
     Nevertheless, we are unaware of any previous approach to indexing that is similar to what we propose,
     and our investigation of using indexing with LDA is the first of its kind in the software engineering domain.
@@ -57,73 +61,60 @@ Terminology used in this section will first be defined, followed by an overview 
     The text extraction stage receives as input source code and produces a list of tokens.
     The text extractor can be configured to tokenize some combination of
     the comments, string literals, and identifiers present in the source code.
-    Biggers et al.~\cite{Biggers-etal:2014} evaluate the relative performance of an LDA-based FLT
+    Biggers et al.~\cite{Biggers-etal:2011} evaluate the relative performance of an LDA-based FLT
     given text from different combinations of these sources
     and report that including text from all three sources generally provides the best performance.
     Hence, we choose not to configure a text extractor.
-    Instead, we opt for using the entire document as a whole where applicable.
+    Instead, we opt for using the entire entity as a whole where applicable.
 
     \subsubsection{Preprocessing}
+    \label{sec:preprocessing}
     The preprocessing stage takes each token produced by the text extractor
     and applies a series of processing steps, producing one or more terms.
     Common steps include~\cite{Marcus-etal:2004, Marcus-Menzies:2010}:
     \begin{itemize}
+    \setlength{\itemsep}{1pt}
     \item \textit{Identifier Splitting}:
     divide a token into terms based on common coding conventions
-    such as camel case and underscores
-    and on punctuation or other symbols.
+    such as camel case and underscores and on punctuation or other symbols.
     The original term can be kept or discarded.
     \item \textit{Case Normalization}:
     convert all uppercase characters to lowercase, or vice-versa.
     \item \textit{Stop Word Filtering}:
-    discard articles (e.g., ‘the’, or ‘a’),
+    discard natural language articles (e.g., ‘the’, or ‘a’),
     programming language specific keywords,
     and common words as defined by a stop-list.
     \item \textit{Word length filtering}:
-    discard words that do not meet a lenght requirement,
-    e.g. too short or two long.
+    discard words that do not meet a length requirement (e.g. too short or two long)
     \item \textit{Stemming}:
     strip words of prefixes and suffixes to leave a common root.
     This allows different forms of the same word
     (e.g., ‘stemmer’, ‘stemming’)
     to be conflated to a single term
     (e.g., ‘stem’).
-    \attn{Should probably mention Biggers-Kraft'10 here}
+    Biggers and Kraft found that stemming did not improve text retrieval based feature location that used LDA~\cite{Biggers-Kraft:2012}.
+    Hence, we chose not to perform stemming.
     \end{itemize}
 
     \subsubsection{Term Weighting}
     The term weighting step assigns a numeric value, or weight, to each item in the corpus.
     Common term weighting schemes described in the literature are
     binary, term count, term frequency, and
-    term frequency-inverse document frequency (tf-idf)\needcite.
-
-    \attn{Should probably talk about Bassett-Kraft'13 here}
+    term frequency-inverse document frequency (tf-idf)~\cite{Salton:1988}.
+    Bassett and Kraft discovered that when using LDA-based Feature Location Techniques a weighting of eight for method names and a weighting of one for the method call~\cite{Bassett-Kraft:2013}.
+    We chose not to weight terms, giving all terms equal weighting.
 
     \subsubsection{Model Generation}
     Model generation is depicted in the center of Figure~\ref{fig:process}.
     This stage takes a corpus as input and processes it using a TR method
     to produce a model of the source code as output.
-    The TR methods commonly used in this stage include the VSM\needcite,
+    The TR methods commonly used in this stage include the VSM~\cite{Salton:1971},
     LSI~\cite{Deerwester-etal:1990},
     and LDA~\cite{Blei-etal:2003}.
 
-    \subsubsection{Retrieval}
-    The retrieval process is displayed in the right side of Figure 1.
-    It takes a query as input and produces a ranked list of similar documents,
-    each associated with a distinct source code entity, as output.
-
-    \subsubsection{Querying}
-    The query is a string generated manually or automatically (e.g., from an issue report).
-    This query must be processed the same way as a document in the corpus,
-    and so the query processor shown in Figure 1 will be internally similar to the document extractor.
-    This produces a document associated with the query.
-    It may have to be further processed to be directly comparable with elements in the TR model.
-
-    \subsubsection{Ranking}
-    The classifier shown in Figure~\ref{fig:process} is applied pairwise to
-    the query document and each document in the model
-    to score each pairing on similarity.
-    These scores are then used to rank the documents by descending similarity.
+%Once a model has been generated, further retrieval of information or
+%querying may be done, depending on the task. Common tasks in software
+%engineering include bug localization, feature location, blah blah 
 
 \subsection{Latent Dirichlet Allocation}
 
@@ -137,6 +128,7 @@ indicating the likelihood of a word from the corpus being assigned to the topic.
 
 Inputs to LDA are:
 \begin{itemize}
+\setlength{\itemsep}{1pt}
 \item $D$, the documents
 \item $K$, the number of topics
 \item $\alpha$, the Dirichlet hyperparameter for topic proportions
@@ -146,8 +138,10 @@ Inputs to LDA are:
 The documents provided are considered a bag-of-words,
 represented as a vector of length $V\!$, the size of the vocabulary.
 The original word ordering and grammatical information is discarded.
+
 Outputs of LDA are:
 \begin{itemize}
+\setlength{\itemsep}{1pt}
 \item $\phi$, the term-topic probability distribution
 \item $\theta$, the topic-document probability distribution
 \end{itemize}
@@ -163,9 +157,8 @@ more specific, increasing the decisiveness of the model.
 
 \subsection{Topic Modeling Software}
 
-Feature location as presented by Rajlich et al
-is a way of locating concepts within code to increase understanding of the program as a whole~\cite{Rajlich-Wilde:2002}.
-Linstead et al outlined a statistical model using LDA that was able to mine these concepts from source code~\cite{Linstead-etal:2007b}.
+Feature location as presented by Rajlich et al.\ is a way of locating concepts within code to increase understanding of the program as a whole~\cite{Rajlich-Wilde:2002}.
+Linstead et al.\ outlined a statistical model using LDA that was able to mine these concepts from source code~\cite{Linstead-etal:2007b}.
 Linstead et al.~\cite{Linstead-etal:2007} used author-topic models to retrieve
 developer contribtions from source code.
 Lukins et al.~\cite{Lukins-etal:2008} implemented a way of using LDA to locate bugs in source
@@ -177,11 +170,11 @@ to improve LDA-based feature location accuracy in five Java systems.
 They found that a multiplier of eight for method names and a multiplier
 of one for method calls is best for accuracy.
 
-Hindle et al proposed that topic modeling ought be used on windowed topics~\cite{Hindle-etal:2009}, which were smaller in scope than a larger analysis based on a "global topic analysis" as much of the previous scholarship on topic models in SE used.
-The model that Hindle et al used applied LDA to each separate commit's log comments independently then link the topics together in a way that is known as the Link model.
+Hindle et al.\ proposed that topic modeling ought be used on windowed topics~\cite{Hindle-etal:2009}, which were smaller in scope than a larger analysis based on a "global topic analysis" as much of the previous scholarship on topic models in SE used.
+The model that Hindle et al.\ used applied LDA to each separate commit's log comments independently then link the topics together in a way that is known as the Link model.
 They found that there were certain topics that would not register in a larger analysis but would be important at certain times in the development process.
 
-Thomas et al proposed that the model that ought be used for topic modeling should incorporate only the changes between versions~\cite{Thomas-etal:2011} to better represent the evolution of a corpus over time.
+Thomas et al.\ proposed that the model that ought be used for topic modeling should incorporate only the changes between versions~\cite{Thomas-etal:2011} to better represent the evolution of a corpus over time.
 The diff model, as they named it, processes the source code so that all duplicated code is removed, then creates topic models based on the remaining altered source code.
 This method created more distinct topics than the previously used models.
 The metric that they used to measure the number of distinct topics was topic distinctness (More technical description of TD).
