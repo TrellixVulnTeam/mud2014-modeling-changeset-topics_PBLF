@@ -13,7 +13,7 @@ The \textit{quality focus} of the study is on informing development decisions an
 that could lead to software with fewer defects.
 The \textit{perspective} of the study is of a researcher, developer, or project manager who wishes
 to gain understanding of the concepts or features implemented in the source code.
-The \textit{context} of the study spans the version histories of 4 open source systems.
+The \textit{context} of the study spans the version histories of four open source systems.
 
 Toward achievement of our goal, we pose the following research questions:
 \begin{enumerate}
@@ -24,6 +24,8 @@ Basically, we want to know whether topic modeling changesets is as good as, or b
 
 In the remainder of this section we introduce the subjects of our study,
 describe the setting of our study, and report our data collection and analysis procedures.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Subject software systems}
 
@@ -57,7 +59,7 @@ task performance rather than optimizing likelihood-based measures." ~\cite{Chang
 \end{comment}
 
 We implemented our document extractor in Python v2.7
-using the Dulwich library\footnote{\url{https://pypi.python.org/pypi/dulwich}}.
+using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}} %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
 We extract documents from both a snapshot of the repository at a tagged
 release and each commit reachable from that tag's commit.
 The same preprocessing steps are employed on all documents extracted.
@@ -150,8 +152,17 @@ The door of all subtleties!
 
 \subsection{Data Collection and Analysis}
 
-Following Thomas et al~\cite{Thomas-etal:2011}, we use topic distinctiveness
-to evaluate our topic models.
+We create two corpora for each of our four subject systems.
+We then used LDA to model the documents into topics.
+
+To answer RQ1, we investigate the term frequency in each corpus.
+We build two word-vectors from all unique terms from both corpora.
+That is, each vector is of the same length and contain zero values for terms not in its respective corpus.
+We measure the similarity of the two word-vectors using cosine similarity.
+
+
+To answer RQ2, we follow Thomas et al~\cite{Thomas-etal:2011}.
+We use topic distinctiveness to evaluate our topic models.
 Distinct topics are topics with dissimilar word vectors to all other topics in the model.
 Thomas et al.\ define topic distinctiveness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
@@ -163,6 +174,21 @@ TD(\phi_{z_i}) =
 KL(\phi_{z_i}, \phi_{z_j})
 \label{eq:topicdistinctiveness}
 \end{equation}
+
+For each model, we calculate the topic distinctiveness of every topic.
+We score the overall topic distinctiveness of a model $\phi$ as the mean of
+its topic's distinctiveness scores.
+
+\begin{equation}
+TD(\phi) =
+\frac{1}{K - 1}
+\sum_{i=1}^{K}
+TD(\phi_{z_i})
+\label{eq:overalltopicdistinctiveness}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Results}
 
