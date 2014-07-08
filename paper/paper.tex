@@ -10,13 +10,13 @@
 \usepackage{listings}
 
 
-\definecolor{lightred}{RGB}{180,75,75}
-\definecolor{lightgreen}{RGB}{75,180,75}
-\definecolor{lightblue}{RGB}{75,75,180}
+\definecolor{lightred}{RGB}{150,0,0}
+\definecolor{lightgreen}{RGB}{0,150,0}
+\definecolor{lightblue}{RGB}{0,0,150}
 
 \lstdefinelanguage{diff}{
   morecomment=[f][\color{lightblue}]{@@},     % group identifier
-  morecomment=[f][\color{lightred}]-,         % deleted lines 
+  morecomment=[f][\color{lightred}]-,         % deleted lines
   morecomment=[f][\color{lightgreen}]+,       % added lines
   morecomment=[f][\color{black}]{---}, % Diff header lines (must appear after +,-)
   morecomment=[f][\color{black}]{+++},
@@ -72,7 +72,19 @@
 
 \begin{abstract}
 
-    abstract
+Topic modeling has been applied to several areas of software engineering,
+such as bug localization, feature location, triaging change requests,
+and traceability link recovery.
+Many of these approaches combine mining unstructured data, such as bug
+reports, with topic modeling a release snapshot of source code.
+However, source code evolves, causing the models to quickly go stale.
+In this paper, we explore the approach of topic modeling \emph{changesets}
+over the "traditional" release approach.
+We conduct an exploratory study of four open source systems:
+three written in Java and the last in C.
+We investigate the differences in corpora in each project,
+and evaluate the topic distinctiveness of the models.
+We find that we are all really cool people.
 
 \end{abstract}
 
