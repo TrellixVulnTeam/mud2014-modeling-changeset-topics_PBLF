@@ -44,7 +44,7 @@ class GitCorpus(gensim.interfaces.CorpusABC):
     """
 
     def __init__(self, repo=None, ref='HEAD', remove_stops=True,
-            split=True, lower=True, min_len=2, max_len=40,
+            split=True, lower=True, min_len=3, max_len=40,
             lazy_dict=False):
 
         logger.info('Creating %s corpus out of source files for commit %s' % (

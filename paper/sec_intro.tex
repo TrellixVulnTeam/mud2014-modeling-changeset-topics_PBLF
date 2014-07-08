@@ -1,22 +1,25 @@
 % vim:syntax=tex
-Software developers commonly find themselves dealing with large repositories that date back extensively, before delving into a project or specific task (e.g. feature location, maintenance, etc.)
+Software developers commonly find themselves dealing with large repositories that date back extensively, before delving into a project or specific task (e.g. feature location, maintenance, etc.).
 Navigating through these repositories can be a time consuming task since their organization, or lack there of, can be hard to understand.
 Topic models have been used to address this problem by identifying the underlying topics in the repositories.
-These underlying topics are found using a statistic analysis, through the use of algorithms that are designed to uncover a thematic structure.
-Finding this thematic structure helps developers to navigate and better understand the repositories they are working with.
+These underlying topics are found using a statistic analysis, through the use of algorithms that are designed to uncover the thematic structure that exist.
+Finding this thematic structure helps developers to navigate and better understand the repositories with which they are working.
 Topics are discovered by taking a distribution over the vocabulary, which creates a set of topics for each document in the corpus.
-With each document representing multiple topics, connections are made making the documents easier to navigate.
+With each document representing multiple topics, connections are made between the topics and subtopics, making the documents easier to navigate.
 While topic models have addressed these problems (e.g., feature location program comprehension, maintenance, etc.) models are typically built on a snapshot of code, or a release.
-A problem with this is, source code is not static, and the drastic amount of changes that occur in between releases forces the models to be rebuilt from scratch.
-Given the nature of these problems, we propose that we use the individual change-sets to continually update the source code.
-A change-set can be thought of as indexing into the documents where changes have occurred, and transforming the indexes from version A to version B.
+A problem with this method of generating topic models is the drastic amount of changes that occur in between releases due to the dynamic nature of source code, which force the models to be rebuilt from scratch.
+Given the nature of these problems, we propose that the individual changesets should be used to continually update the source code.
+A changeset can be thought of as indexing the documents where changes have occurred, and transforming the indexes from version A to version B.
 By doing this, we gain a topic model that evolves dynamically over time without requiring the reprocessing of the entire corpus.
 
-The goal of this paper to determine if a topic model based on the change-sets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
-In this paper, we will compare results of a standard release model and our change-set model.
-The metric that we will use to determine quality is topic distinctness, which has been developed and used in topic modeling of source code.~\cite{Thomas-etal:2011}
-Topic distinctness measures how distinct a newly discovered topic is in comparison to the other, already discovered topics.
-We use this metric as a  tool to compare our change-set model to a model built upon a release.
+The goal of this paper to determine if a topic model based on the changesets between commits can produce a topic model that is of equal quality to the common topic modeling based on analyzing releases.
+In this paper, we will compare results of a standard release model and our changeset model.
+The metric that we will use to determine quality is topic distinctness,
+which has been developed and used in topic modeling of source
+code~\cite{Wei-etal:2010, Thomas-etal:2011, Chuang-etal:2012}.
+Topic distinctness measures how distinct a newly discovered topic is in
+comparison to the other, already discovered topics.
+We use this metric as a  tool to compare our changeset model to a model built upon a release.
 
 
 
@@ -25,12 +28,3 @@ We use this metric as a  tool to compare our change-set model to a model built u
 %be linked to certain topics and features in the source code (info about
 %the diagram Chris always has to draw on white board).
 
-
-\attn{Research Q1:
-    Are the most influential words of file-based corpora
-    interacted with more over time in changeset-based corpora?
-    }
-\attn{Research Q2:
-    Are topics drawn from changeset-based corpora more distinct than
-    topics drawn from file-based corpora?
-    }
