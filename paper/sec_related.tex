@@ -27,7 +27,7 @@ producing the result of such a query.
 Terminology used in this section will first be defined, followed by an overview of each step of the process.
 
     \subsubsection{Terminology}
-    We use the same terminology as Biggers et al.~\cite{Biggers-etal:2014}.
+    We use the same terminology as Biggers et al.~\cite{Biggers-etal:2011}.
     They provide the following definitions:
     \begin{itemize}
     \setlength{\itemsep}{1pt}
@@ -35,18 +35,14 @@ Terminology used in this section will first be defined, followed by an overview 
     \setlength{\parsep}{0pt}
     \item \textit{Term}: a sequence of letters and the basic unit of discrete data in a lexicon
     \item \textit{Token}: a sequence of non-whitespace characters; contains one or more terms
-    \item \textit{Entity}: a source element such as a package, class, method, or file
+    \item \textit{Entity}: a source element such as a class or method
     \item \textit{Identifier}: a token representing the name of an entity
-    \item \textit{Comment}: a sequence of tokens delimited by language-
-    specific markers, e.g., /* */
-    \item \textit{String literal}: a sequence of tokens delimited by
-    language-specific markers, e.g., “ ”
+    \item \textit{Comment}: a sequence of tokens delimited by language-specific markers, e.g., /* */
+    \item \textit{String literal}: a sequence of tokens delimited by language-specific markers, e.g., “ ”
     \item \textit{Word}: the smallest free form in a language
     \end{itemize}
     Further, a term is described as being one of:
-    word,
-    abbreviation of a word,
-    contraction of one or two words,
+    word, abbreviation of a word, contraction of one or two words,
     or acronym of a series of words.
 
     \subsubsection{Indexing}
@@ -55,12 +51,8 @@ Terminology used in this section will first be defined, followed by an overview 
     A document is a collection of terms that appear in a source code entity.
     Each entity in the source code will have an associated document in the resulting corpus.
 
-    Typically, this indexing process has been used on source code files~\cite{Linstead-etal:2007b}\cite{Lukins-etal:2008}.
-    Another method that has been used to generate a corpus is one proposed by Hindle et al. ~\cite{Hindle-etal:2009} that creates tokens based on the commit log messages.
-    In this method,
-    commit log comments are extracted,
-    word distributions are created based on those comments,
-    then LDA is applied to create topic models.
+    Typically, this indexing process has been used on source code files.
+    Hindle et al. ~\cite{Hindle-etal:2009} creates tokens based on the commit log messages.
     This model is similar to ours in that it uses tokens mined from commits rather than source code files.
     Nevertheless, we are unaware of any previous approach to indexing that is similar to what we propose,
     and our investigation of using indexing with LDA is the first of its kind in the software engineering domain.
@@ -69,11 +61,11 @@ Terminology used in this section will first be defined, followed by an overview 
     The text extraction stage receives as input source code and produces a list of tokens.
     The text extractor can be configured to tokenize some combination of
     the comments, string literals, and identifiers present in the source code.
-    Biggers et al.~\cite{Biggers-etal:2014} evaluate the relative performance of an LDA-based FLT
+    Biggers et al.~\cite{Biggers-etal:2011} evaluate the relative performance of an LDA-based FLT
     given text from different combinations of these sources
     and report that including text from all three sources generally provides the best performance.
     Hence, we choose not to configure a text extractor.
-    Instead, we opt for using the entire document as a whole where applicable.
+    Instead, we opt for using the entire entity as a whole where applicable.
 
     \subsubsection{Preprocessing}
     The preprocessing stage takes each token produced by the text extractor
@@ -83,18 +75,16 @@ Terminology used in this section will first be defined, followed by an overview 
     \setlength{\itemsep}{1pt}
     \item \textit{Identifier Splitting}:
     divide a token into terms based on common coding conventions
-    such as camel case and underscores
-    and on punctuation or other symbols.
+    such as camel case and underscores and on punctuation or other symbols.
     The original term can be kept or discarded.
     \item \textit{Case Normalization}:
     convert all uppercase characters to lowercase, or vice-versa.
     \item \textit{Stop Word Filtering}:
-    discard articles (e.g., ‘the’, or ‘a’),
+    discard natural language articles (e.g., ‘the’, or ‘a’),
     programming language specific keywords,
     and common words as defined by a stop-list.
     \item \textit{Word length filtering}:
-    discard words that do not meet a lenght requirement,
-    e.g. too short or two long.
+    discard words that do not meet a length requirement (e.g. too short or two long)
     \item \textit{Stemming}:
     strip words of prefixes and suffixes to leave a common root.
     This allows different forms of the same word
@@ -102,9 +92,7 @@ Terminology used in this section will first be defined, followed by an overview 
     to be conflated to a single term
     (e.g., ‘stem’).
     Biggers and Kraft found that stemming did not improve text retrieval based feature location that used LDA~\cite{Biggers-Kraft:2012}.
-    We decided,
-    therefore,
-    that stemmers should not be used in the preprocessing for our model.
+    Hence, we chose not to perform stemming.
     \end{itemize}
 
     \subsubsection{Term Weighting}
@@ -113,8 +101,7 @@ Terminology used in this section will first be defined, followed by an overview 
     binary, term count, term frequency, and
     term frequency-inverse document frequency (tf-idf)~\cite{Salton:1988}.
     Bassett and Kraft discovered that when using LDA-based Feature Location Techniques a weighting of eight for method names and a weighting of one for the method call~\cite{Bassett-Kraft:2013}.
-    We chose not to weight any terms over another, and all terms have
-    equal weighting.
+    We chose not to weight terms, giving all terms equal weighting.
 
     \subsubsection{Model Generation}
     Model generation is depicted in the center of Figure~\ref{fig:process}.
