@@ -1,13 +1,13 @@
 % vim:syntax=tex
-Software developers commonly find themselves dealing with large repositories that date back extensively, before delving into a project or specific task (e.g. feature location, maintenance, etc.).
-Navigating through these repositories can be a time consuming task since their organization, or lack there of, can be hard to understand.
+Software developers commonly find themselves dealing with large, dated repositories before delving into a project or specific task (e.g. feature location, maintenance, etc.).
+Navigating through these repositories can be a time consuming task since their organization, or lack there of, can often be hard to understand.
 Topic models have been used to address this problem by identifying the underlying topics in the repositories.
 These underlying topics are found using a statistic analysis, through the use of algorithms that are designed to uncover the thematic structure that exist.
 Finding this thematic structure helps developers to navigate and better understand the repositories with which they are working.
 Topics are discovered by taking a distribution over the vocabulary, which creates a set of topics for each document in the corpus.
 With each document representing multiple topics, connections are made between the topics and subtopics, making the documents easier to navigate.
 While topic models have addressed these problems (e.g., feature location program comprehension, maintenance, etc.) models are typically built on a snapshot of code, or a release.
-A problem with this method of generating topic models is the drastic amount of changes that occur in between releases due to the dynamic nature of source code, which force the models to be rebuilt from scratch.
+A problem with this method of generating topic models is the drastic amount of changes that can occur in between releases, which force the topic models to be rebuilt from scratch.
 Given the nature of these problems, we propose that the individual changesets should be used to continually update the source code.
 A changeset can be thought of as indexing the documents where changes have occurred, and transforming the indexes from version A to version B.
 By doing this, we gain a topic model that evolves dynamically over time without requiring the reprocessing of the entire corpus.
