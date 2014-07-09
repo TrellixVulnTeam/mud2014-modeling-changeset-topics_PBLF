@@ -1,11 +1,18 @@
 \documentclass[conference]{IEEEtran}
 
+\makeatletter
+% IEEEtran.cls defines \labelindent for backward compatibility reasons
+% Undefine \labelindent to allow the use of package enumitem
+\let\labelindent\relax
+\makeatother
+
 \usepackage{balance}
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{cite}
 \usepackage{color}
 \usepackage{comment}
+\usepackage{enumitem}
 \usepackage[pdftex]{graphicx}
 \usepackage{url}
 \usepackage{listings}
