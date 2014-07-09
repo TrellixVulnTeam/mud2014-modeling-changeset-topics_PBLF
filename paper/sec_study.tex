@@ -16,10 +16,10 @@ to gain understanding of the concepts or features implemented in the source code
 The \textit{context} of the study spans the version histories of four open source systems.
 
 Toward achievement of our goal, we pose the following research questions:
-\begin{enumerate}
-    \item[]\hspace*{-20pt}\textit{RQ1: Do changeset- and snapshot-based corpora express the same terms?}
-    \item[]\hspace*{-20pt}\textit{RQ2: Are topic models trained on changesets more distinct than topic models trained on a snapshot?}
-\end{enumerate}
+\begin{description}[font=\itshape\mdseries,leftmargin=10mm,style=sameline]
+    \item[RQ1] Do changeset- and snapshot-based corpora express the same terms?
+    \item[RQ2] Are topic models trained on changesets more distinct than topic models trained on a snapshot?
+\end{description}
 Basically, we want to know whether topic modeling changesets is as good as, or better than, topic modeling a snapshot.
 
 In the remainder of this section we introduce the subjects of our study,
@@ -49,8 +49,14 @@ each system studied.
 
 \subsection{Setting}
 
-To conduct the studies, we instantiate the process described in Section~\ref{sec:related} and illustrated in Figure~\ref{fig:process}.
+\begin{figure*}[!th]
+    \centering
+    \includegraphics[width=.75\textwidth]{changeset}
+    \caption{Extraction and Modeling Process}
+    \label{fig:process}
+\end{figure*}
 
+Our document extraction process is shown on the left side of Figure~\ref{fig:process}.
 We implemented our document extractor in Python v2.7
 using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}} %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
 We extract documents from both a snapshot of the repository at a tagged
@@ -79,18 +85,18 @@ Context and metadata lines are ignored.
 Note that we do not consider what type of document the text originates from,
 only that it is text changed by the commit.
 
-Our document preprocessor implements the transformations described in Section~\ref{sec:preprocessing}.
+%Our document preprocessor implements the transformations described in Section~\ref{sec:preprocessing}.
 %We filter \texttt{java.lang} class names before splitting tokens.
-We split tokens based on camel case, underscores, and non-letters.
-We normalize to lower case before filtering English stop words~\cite{StopWords}, Java keywords, and words shorter than two characters.
-We do not stem words.
+After extracting tokens, we split them based on camel case, underscores, and non-letters.
+We normalize to lower case before filtering English stop words~\cite{StopWords}, Java keywords, and words shorter than three characters long.
+We do not stem.
 
 
 For our model generation, we use the open source Python library Gensim~\cite{Gensim}.
 Gensim's LDA implementation is based on the Online LDA by Hoffman et al.~\cite{Hoffman-etal:2010}
 and uses variational inference instead of a Collapsed Gibbs Sampler.
 Unlike Gibbs sampling, in order to ensure that the model converges for each document,
-we allow LDA to see each document $10$ times by setting Gensim's intialization parameter \texttt{passes} to this value.
+we allow LDA to see each document $10$ times by setting Gensim's initialization parameter \texttt{passes} to this value.
 We set the following LDA parameters for all four systems:
 $100$ topics ($K$),
 a symmetric $\alpha=0.01$,
@@ -164,14 +170,14 @@ comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chua
 Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
 should depend on real-world tasks over metrics,
 we argue that the positive results from using topic distinctness for visualization
-techniques qualifies the metric for this exporatory study.
+techniques qualifies the metric for this exploratory study.
 
 \begin{comment}
-"Traditional metrics are, indeed, negatively correlated with the
+``Traditional metrics are, indeed, negatively correlated with the
 measures of topic quality developed in this paper.  Our measures enable
 new forms of model selection and suggest that practitioners developing
 topic models should thus focus on evaluations that depend on real-world
-task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
+task performance rather than optimizing likelihood-based measures.''~\cite{Chang-etal:2009}
 \end{comment}
 
 
@@ -211,11 +217,11 @@ Interestingly, this holds true for \jodatime\ and \aspectj,
 but not for \ant\ and \postgres.
 Further inspection shows that 2 terms appear in the \ant release corpus that do not appear in the changeset corpus,
 and 19 terms appear in \postgres's respective corpora.
-However, these anomolies appear to have been file encoding errors that
+However, these anomalies appear to have been file encoding errors that
 had been introduced into the version history.
 For example, one of the terms for \ant\ was \texttt{rapha}. This is due
 to an encoding error in the \texttt{KEYS} files for a developer named
-"Rapha\"{e}l Luta".
+``Rapha\"{e}l Luta''.
 
 To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
@@ -250,8 +256,8 @@ $0.06540$. \postgres\ had the highest, at an astounding $0.33957$.
 
 RQ2 asks if topic models trained on changeset corpora produce more distinct
 topics.
-We expected to find that they would since "popular" words would become
-more prevalant in the corpus from receiving several changes.
+We expected to find that they would since ``popular'' words would become
+more prevalent in the corpus from receiving several changes.
 Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj!
 We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
@@ -261,7 +267,7 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
 \begin{table*}[ht]
 \renewcommand{\arraystretch}{1.3}
 \centering
-\small
+\caption{Subject systems version and corpora description}
 \begin{tabular}{lll rr rr rr}
     \toprule
             & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
@@ -274,18 +280,15 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
     \bottomrule
 \end{tabular}
 \label{tab:systems}
-\caption{Subject systems version and corpora description}
 \end{table*}
 
 
 \begin{table}[ht]
 \renewcommand{\arraystretch}{1.3}
 \centering
-\small
 \begin{tabular}{lllrrrrrr}
     \toprule
-                & TD of     & TD of     \\
-    System      & Release   & Changesets \\
+    System      & Snapshot TD & Changeset TD \\
     \midrule
     \ant        & 2.31      & 3.17      \\
     \aspectj    & 3.75      & 2.78      \\
