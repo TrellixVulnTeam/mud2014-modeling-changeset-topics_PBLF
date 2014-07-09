@@ -74,8 +74,8 @@ Figure~\ref{fig:diff} shows an example of what a changeset might look
 like in Git.
 In our changeset text extractor, we only extract text from removed or added lines.
 Context and metadata lines are ignored.
-Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
-from the change shown in Figure~\ref{fig:diff}.
+%Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
+%from the change shown in Figure~\ref{fig:diff}.
 Note that we do not consider what type of document the text originates from,
 only that it is text changed by the commit.
 
@@ -127,6 +127,7 @@ index 635ef2c..5af88a8 100644
 \label{fig:diff}
 \end{figure}
 
+\begin{comment}
 \begin{figure}[ht]
 \em
 \footnotesize
@@ -140,8 +141,7 @@ The door of all subtleties!
 \caption{An example extracted changeset document before preprocessing}
 \label{fig:diffdocument}
 \end{figure}
-
-
+\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
