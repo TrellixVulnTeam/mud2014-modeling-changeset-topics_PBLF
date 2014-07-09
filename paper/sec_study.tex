@@ -218,6 +218,11 @@ To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
 Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant release corpus.
 Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant changeset corpus.
+We measure the differences between the two distributions using the simple
+cosine distance. For \ant, we had the lowest cosine distance of $0.00396$.
+\aspectj\ and \jodatime\ have similar distances to another of $0.06929$ and
+$0.06540$. \postgres\ had the highest, at an astounding $0.33957$.
+
 %
 % At this point, I would love to do a stats test. But I am way too tired
 % to figure that out because I am butts at stats
@@ -267,22 +272,6 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
 \caption{Subject systems version and corpora description}
 \end{table*}
 
-\begin{table}[ht]
-\centering
-\small
-\begin{tabular}{l|r}
-    System      & Cosine     \\
-                & distance   \\
-    \hline
-    \ant        & 0.003960   \\
-    \aspectj    & 0.069295    \\
-    \jodatime   & 0.065409    \\ 
-    \postgres   & 0.339572    \\
-    \hline
-\end{tabular}
-\label{tab:systems}
-\caption{Cosine distance between the release corpus and changeset corpus (RQ1)}
-\end{table}
 
 \begin{table}[ht]
 \centering

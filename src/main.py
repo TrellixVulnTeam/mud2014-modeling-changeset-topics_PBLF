@@ -396,11 +396,11 @@ def create_evaluation_corpora_cosine(config, Kind, Kind2):
     dist2 = [x[1]/total2 for x in sorted(word_freq2.items())]
     rdist = numpy.random.random_sample(len(all_words))
 
-    res = utils.cosine_distance(dist1,dist2, filter_by=0.0)
-    res1 = utils.cosine_distance(dist1,rdist, filter_by=0.0)
-    res2 = utils.cosine_distance(dist2,rdist, filter_by=0.0)
+    res = utils.hellinger_distance(dist1,dist2, filter_by=0.0)
+    res1 = utils.hellinger_distance(dist1,rdist, filter_by=0.0)
+    res2 = utils.hellinger_distance(dist2,rdist, filter_by=0.0)
     logger.info("Cosine distance between corpora: %f" % res)
-    with open(config.path + 'evaluate-cosine-results.csv', 'a') as f:
+    with open(config.path + 'evaluate-hellinger-results.csv', 'a') as f:
         w = csv.writer(f)
         w.writerow([corpus1_fname, corpus2_fname, res, res1, res2])
 
