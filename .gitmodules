@@ -1,6 +1,0 @@
-[submodule "lib/gittle"]
-	path = lib/gittle
-	url = https://github.com/cscorley/gittle.git
-[submodule "lib/whatthepatch"]
-	path = lib/whatthepatch
-	url = https://github.com/cscorley/whatthepatch.git
