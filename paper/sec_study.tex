@@ -266,3 +266,38 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
 \label{tab:systems}
 \caption{Subject systems version and corpora description}
 \end{table*}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{l|r}
+    System      & Cosine     \\
+                & distance   \\
+    \hline
+    \ant        & 0.003960   \\
+    \aspectj    & 0.069295    \\
+    \jodatime   & 0.065409    \\ 
+    \postgres   & 0.339572    \\
+    \hline
+\end{tabular}
+\label{tab:systems}
+\caption{Cosine distance between the release corpus and changeset corpus (RQ1)}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{l|llrrrrrr}
+    System      & TD of     & TD of     \\
+                & Release   & Changesets \\
+    \hline
+    \ant        & 2.31      & 3.17      \\
+    \aspectj    & 3.75      & 2.78      \\
+    \jodatime   & 1.34      & 1.03      \\
+    \postgres   & 2.59      & 3.56      \\
+    \hline
+\end{tabular}
+\label{tab:systems}
+\caption{Comparison of topic distinctiveness scores (RQ2)}
+\end{table}
+
