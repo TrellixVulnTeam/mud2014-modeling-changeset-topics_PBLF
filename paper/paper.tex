@@ -41,38 +41,38 @@
 \title{Modeling Changeset Topics}
 \author{
     \IEEEauthorblockN{
-        Christopher S. Corley,
-        Kelly L. Kashuda
+        Christopher S.\ Corley,
+        Kelly L.\ Kashuda
     }
     \IEEEauthorblockA{
         Department of Computer Science\\
         The University of Alabama\\
-        Tuscaloosa, AL 35487\\
-        \texttt{\{cscorley,klkashuda\}@ua.edu}
+        Tuscaloosa, AL 35487 USA\\
+        \{cscorley,klkashuda\}@ua.edu
     }
 
     \and
 
     \IEEEauthorblockN{
-        Daniel S. May
+        Daniel S.\ May
     }
     \IEEEauthorblockA{
         Department of Computer Science\\
         Swarthmore College\\
-        Swarthmore, PA 19081\\
-        \texttt{dmay1@swarthmore.edu}
+        Swarthmore, PA 19081 USA\\
+        dmay1@swarthmore.edu
     }
 
     \and
 
     \IEEEauthorblockN{
-        Nicholas A. Kraft
+        Nicholas A.\ Kraft
     }
     \IEEEauthorblockA{
         ABB Corporate Research\\
         Software Research Area\\
-        Raleigh, NC 27606\\
-        \texttt{nicholas.a.kraft@us.abb.com}
+        Raleigh, NC 27606 USA\\
+        nicholas.a.kraft@us.abb.com
     }
 }
 
@@ -80,7 +80,6 @@
 \maketitle
 
 \begin{abstract}
-
 Topic modeling has been applied to several areas of software engineering,
 such as bug localization, feature location, triaging change requests,
 and traceability link recovery.
@@ -88,18 +87,18 @@ Many of these approaches combine mining unstructured data, such as bug
 reports, with topic modeling a release or snapshot of source code.
 However, source code evolves, which causes models to become obsolete.
 In this paper, we explore the approach of topic modeling \emph{changesets}
-over the ``traditional" release approach.
+over the traditional release approach.
 We conduct an exploratory study of four open source systems:
 three written in Java and the last in C.
 We investigate the differences in corpora in each project,
 and evaluate the topic distinctiveness of the models.
-
 \end{abstract}
 
 \begin{IEEEkeywords}
-mining software repositories,
-topic modeling,
-latent dirichlet allocation.
+Mining software repositories;
+changesets;
+topic modeling;
+latent Dirichlet allocation
 \end{IEEEkeywords}
 
 \section{Introduction}

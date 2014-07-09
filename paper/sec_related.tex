@@ -27,7 +27,7 @@ producing the result of such a query.
 Terminology used in this section will first be defined, followed by an overview of each step of the process.
 
     \subsubsection{Terminology}
-    We use the same terminology as Biggers et al.~\cite{Biggers-etal:2011}.
+    We use the same terminology as Biggers et al.~\cite{Biggers_etal:2014}.
     They provide the following definitions:
     \begin{itemize}
     \setlength{\itemsep}{1pt}
@@ -61,7 +61,7 @@ Terminology used in this section will first be defined, followed by an overview 
     The text extraction stage receives as input source code and produces a list of tokens.
     The text extractor can be configured to tokenize some combination of
     the comments, string literals, and identifiers present in the source code.
-    Biggers et al.~\cite{Biggers-etal:2011} evaluate the relative performance of an LDA-based FLT
+    Biggers et al.~\cite{Biggers_etal:2014} evaluate the relative performance of an LDA-based FLT
     given text from different combinations of these sources
     and report that including text from all three sources generally provides the best performance.
     Hence, we choose not to configure a text extractor.
@@ -92,7 +92,7 @@ Terminology used in this section will first be defined, followed by an overview 
     (e.g., ‘stemmer’, ‘stemming’)
     to be conflated to a single term
     (e.g., ‘stem’).
-    Biggers and Kraft found that stemming did not improve text retrieval based feature location that used LDA~\cite{Biggers-Kraft:2012}.
+    Biggers et al.~\cite{Biggers_etal:SERG-2012-03.R1} found that stemming did not improve text retrieval based feature location that used LDA.
     Hence, we chose not to perform stemming.
     \end{itemize}
 
