@@ -256,17 +256,19 @@ That is, \ant\ and \postgres have drastically more documents in the changeset co
 Table~\ref{tab:systems} shows the document count and term count for each system.
 
 \begin{table*}[ht]
+\renewcommand{\arraystretch}{1.3}
 \centering
 \small
-\begin{tabular}{l|llrrrrrr}
-    System     & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
-               & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
-    \hline
+\begin{tabular}{lll rr rr rr}
+    \toprule
+            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+     System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+    \midrule
     \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
     \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
     \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
     \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
-    \hline
+    \bottomrule
 \end{tabular}
 \label{tab:systems}
 \caption{Subject systems version and corpora description}
@@ -274,17 +276,19 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
 
 
 \begin{table}[ht]
+\renewcommand{\arraystretch}{1.3}
 \centering
 \small
-\begin{tabular}{l|llrrrrrr}
-    System      & TD of     & TD of     \\
-                & Release   & Changesets \\
-    \hline
+\begin{tabular}{lllrrrrrr}
+    \toprule
+                & TD of     & TD of     \\
+    System      & Release   & Changesets \\
+    \midrule
     \ant        & 2.31      & 3.17      \\
     \aspectj    & 3.75      & 2.78      \\
     \jodatime   & 1.34      & 1.03      \\
     \postgres   & 2.59      & 3.56      \\
-    \hline
+    \bottomrule
 \end{tabular}
 \label{tab:systems}
 \caption{Comparison of topic distinctiveness scores (RQ2)}
