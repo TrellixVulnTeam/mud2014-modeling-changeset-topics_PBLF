@@ -42,21 +42,36 @@ and \postgres\ is an object-relational database management system.
 Each system is stored in a Git repository, and the developers of each system use descriptive commit messages.
 Further, the developers store bug reports in an issue tracker.
 All systems are written in Java with the exception of \postgres,
-which is written in C.
+which is written in C. Table~\ref{tab:system} outlines the releases for
+each system studied.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{l|ll}
+    System      & Release & Commit SHA
+    \\
+    \hline
+    \ant        & 1.9.4   & 1c927b15
+    \\
+    \aspectj    & 1.8.0   & 5a5bef1e
+    \\
+    \jodatime   & 2.3     & b0fcbb95
+    \\
+    \postgres   & 9.3.4   & d4f8dde3
+    \\
+    \hline
+\end{tabular}
+\label{tab:systems}
+\caption{Subject systems }
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Setting}
 
 To conduct the studies, we instantiate the process described in Section~\ref{sec:related} and illustrated in Figure~\ref{fig:process}.
-
-\begin{comment}
-"Traditional metrics are, indeed, negatively correlated with the
-measures of topic quality developed in this paper.  Our measures enable
-new forms of model selection and suggest that practitioners developing
-topic models should thus focus on evaluations that depend on real-world
-task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
-\end{comment}
 
 We implemented our document extractor in Python v2.7
 using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}} %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
@@ -165,9 +180,24 @@ We measure the similarity of the two word-vectors using cosine distance.
 To answer RQ2, we follow Thomas et al~\cite{Thomas-etal:2011}.
 We use topic distinctiveness to evaluate our topic models.
 Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
+Topic distinctiveness has been show to be an effective measure for qualitative
+comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chuang-etal:2012}.
+Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
+should depend on real-world tasks over metrics,
+we argue that the positive results from using topic distinctiveness for visualization
+techniques qualifies the metric for this exporatory study.
+
+\begin{comment}
+"Traditional metrics are, indeed, negatively correlated with the
+measures of topic quality developed in this paper.  Our measures enable
+new forms of model selection and suggest that practitioners developing
+topic models should thus focus on evaluations that depend on real-world
+task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
+\end{comment}
+
+
 Thomas et al.\ define topic distinctiveness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
-
 \begin{equation}
 TD(\phi_{z_i}) =
 \frac{1}{K - 1}
@@ -177,8 +207,7 @@ KL(\phi_{z_i}, \phi_{z_j})
 \end{equation}
 
 We score the overall topic distinctiveness of a model $\phi$ as the mean of
-its topic distinctiveness scores.
-
+its topic distinctiveness scores:
 \begin{equation}
 TD(\phi) =
 \frac{1}{K - 1}
@@ -240,9 +269,7 @@ Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj!
 We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
 That is, \ant\ and \postgres have drastically more documents in the changeset corpora.
-% WTF latex stop it is is 5 am i dont have time for this
-%Table~\ref{tab:systemcorpora} shows the document count and term count for each system.
-Table I shows the document count and term count for each system.
+Table~\ref{tab:systemcorpora} shows the document count and term count for each system.
 
 \begin{table*}[ht]
 \centering
