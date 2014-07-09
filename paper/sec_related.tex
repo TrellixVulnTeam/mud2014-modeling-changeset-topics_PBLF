@@ -167,19 +167,20 @@ techniques.
 Basset et al.~\cite{Bassett-Kraft:2013} extended this work
 and studied various weightings of various terms in source code
 to improve LDA-based feature location accuracy in five Java systems.
-They found that a multiplier of eight for method names and a multiplier
-of one for method calls is best for accuracy.
+%They found that a multiplier of eight for method names and a multiplier
+%of one for method calls is best for accuracy. This was mentioned earlier.
 
 Hindle et al.\ proposed that topic modeling ought be used on windowed topics~\cite{Hindle-etal:2009}, which were smaller in scope than a larger analysis based on a "global topic analysis" as much of the previous scholarship on topic models in SE used.
 The model that Hindle et al.\ used applied LDA to each separate commit's log comments independently then link the topics together in a way that is known as the Link model.
 They found that there were certain topics that would not register in a larger analysis but would be important at certain times in the development process.
 
 Thomas et al.\ proposed that the model that ought be used for topic modeling should incorporate only the changes between versions~\cite{Thomas-etal:2011} to better represent the evolution of a corpus over time.
-The diff model, as they named it, processes the source code so that all duplicated code is removed, then creates topic models based on the remaining altered source code.
+The diff model, as they named it, processes source code so that all duplicated code is removed, then creates topic models based on the remaining altered source code.
 This method created more distinct topics than the previously used models.
-The metric that they used to measure the number of distinct topics was topic distinctness (More technical description of TD).
+The metric that they used to measure the number of distinct topics was topic distinctness.
 The higher topic distinctness a topic has the more distinct that topic is from other topics.
 This is the measure that we will use to compare our model to a model based on releases.
+A more technical description of TD will be given later in this paper.
 
 \begin{comment}
 Software source code is often compiled through a series of commits that change the source code between releases.

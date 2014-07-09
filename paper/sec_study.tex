@@ -42,21 +42,14 @@ and \postgres\ is an object-relational database management system.
 Each system is stored in a Git repository, and the developers of each system use descriptive commit messages.
 Further, the developers store bug reports in an issue tracker.
 All systems are written in Java with the exception of \postgres,
-which is written in C.
+which is written in C. Table~\ref{tab:systems} outlines the releases for
+each system studied.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Setting}
 
 To conduct the studies, we instantiate the process described in Section~\ref{sec:related} and illustrated in Figure~\ref{fig:process}.
-
-\begin{comment}
-"Traditional metrics are, indeed, negatively correlated with the
-measures of topic quality developed in this paper.  Our measures enable
-new forms of model selection and suggest that practitioners developing
-topic models should thus focus on evaluations that depend on real-world
-task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
-\end{comment}
 
 We implemented our document extractor in Python v2.7
 using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}} %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
@@ -162,12 +155,28 @@ We create two distributions from all unique terms from both corpora.
 That is, each vector is of the same length and contain zero values for terms not in its respective corpus.
 We measure the similarity of the two word-vectors using cosine distance.
 
-To answer RQ2, we follow Thomas et al~\cite{Thomas-etal:2011}.
-We use topic distinctiveness to evaluate our topic models.
+To answer RQ2, we follow Thomas et al.~\cite{Thomas-etal:2011} 
+and use topic distinctiveness to evaluate our topic models.
 Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
+Using this metric will also allow a comparison to the results of Thomas et al.~\cite{Thomas-etal:2011}. 
+Topic distinctiveness has also been shown to be an effective measure for qualitative
+comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chuang-etal:2012}.
+Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
+should depend on real-world tasks over metrics,
+we argue that the positive results from using topic distinctiveness for visualization
+techniques qualifies the metric for this exporatory study.
+
+\begin{comment}
+"Traditional metrics are, indeed, negatively correlated with the
+measures of topic quality developed in this paper.  Our measures enable
+new forms of model selection and suggest that practitioners developing
+topic models should thus focus on evaluations that depend on real-world
+task performance rather than optimizing likelihood-based measures." ~\cite{Chang-etal:2009}
+\end{comment}
+
+
 Thomas et al.\ define topic distinctiveness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
-
 \begin{equation}
 TD(\phi_{z_i}) =
 \frac{1}{K - 1}
@@ -177,8 +186,7 @@ KL(\phi_{z_i}, \phi_{z_j})
 \end{equation}
 
 We score the overall topic distinctiveness of a model $\phi$ as the mean of
-its topic distinctiveness scores.
-
+its topic distinctiveness scores:
 \begin{equation}
 TD(\phi) =
 \frac{1}{K - 1}
@@ -240,23 +248,56 @@ Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj!
 We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
 That is, \ant\ and \postgres have drastically more documents in the changeset corpora.
-% WTF latex stop it is is 5 am i dont have time for this
-%Table~\ref{tab:systemcorpora} shows the document count and term count for each system.
-Table I shows the document count and term count for each system.
+Table~\ref{tab:systems} shows the document count and term count for each system.
 
 \begin{table*}[ht]
 \centering
 \small
-\begin{tabular}{l|rrrrrr}
-    System      & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
-                & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+\begin{tabular}{l|llrrrrrr}
+    System     & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+               & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
     \hline
-    \ant        & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
-    \aspectj    & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
-    \jodatime   & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
-    \postgres   & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
+    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
+    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
+    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
+    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
     \hline
 \end{tabular}
-\label{tab:systemcorpora}
-\caption{Subject systems corpora description}
+\label{tab:systems}
+\caption{Subject systems version and corpora description}
 \end{table*}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{l|r}
+    System      & Cosine     \\
+                & distance   \\
+    \hline
+    \ant        & 0.003960   \\
+    \aspectj    & 0.069295    \\
+    \jodatime   & 0.065409    \\ 
+    \postgres   & 0.339572    \\
+    \hline
+\end{tabular}
+\label{tab:systems}
+\caption{Cosine distance between the release corpus and changeset corpus (RQ1)}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{l|llrrrrrr}
+    System      & TD of     & TD of     \\
+                & Release   & Changesets \\
+    \hline
+    \ant        & 2.31      & 3.17      \\
+    \aspectj    & 3.75      & 2.78      \\
+    \jodatime   & 1.34      & 1.03      \\
+    \postgres   & 2.59      & 3.56      \\
+    \hline
+\end{tabular}
+\label{tab:systems}
+\caption{Comparison of topic distinctiveness scores (RQ2)}
+\end{table}
+
