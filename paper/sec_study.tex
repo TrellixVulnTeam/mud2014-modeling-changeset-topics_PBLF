@@ -42,30 +42,8 @@ and \postgres\ is an object-relational database management system.
 Each system is stored in a Git repository, and the developers of each system use descriptive commit messages.
 Further, the developers store bug reports in an issue tracker.
 All systems are written in Java with the exception of \postgres,
-which is written in C. Table~\ref{tab:system} outlines the releases for
+which is written in C. Table~\ref{tab:systems} outlines the releases for
 each system studied.
-
-\begin{table}[ht]
-\centering
-\small
-\begin{tabular}{l|ll}
-    System      & Release & Commit SHA
-    \\
-    \hline
-    \ant        & 1.9.4   & 1c927b15
-    \\
-    \aspectj    & 1.8.0   & 5a5bef1e
-    \\
-    \jodatime   & 2.3     & b0fcbb95
-    \\
-    \postgres   & 9.3.4   & d4f8dde3
-    \\
-    \hline
-\end{tabular}
-\label{tab:systems}
-\caption{Subject systems }
-\end{table}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -270,21 +248,21 @@ Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj!
 We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
 That is, \ant\ and \postgres have drastically more documents in the changeset corpora.
-Table~\ref{tab:systemcorpora} shows the document count and term count for each system.
+Table~\ref{tab:systems} shows the document count and term count for each system.
 
 \begin{table*}[ht]
 \centering
 \small
-\begin{tabular}{l|rrrrrr}
-    System      & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
-                & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+\begin{tabular}{l|llrrrrrr}
+    System     & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+               & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
     \hline
-    \ant        & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
-    \aspectj    & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
-    \jodatime   & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
-    \postgres   & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
+    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
+    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
+    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
+    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
     \hline
 \end{tabular}
-\label{tab:systemcorpora}
-\caption{Subject systems corpora description}
+\label{tab:systems}
+\caption{Subject systems version and corpora description}
 \end{table*}
