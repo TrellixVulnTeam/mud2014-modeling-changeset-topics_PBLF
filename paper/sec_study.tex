@@ -156,14 +156,14 @@ That is, each vector is of the same length and contain zero values for terms not
 We measure the similarity of the two word-vectors using cosine distance.
 
 To answer RQ2, we follow Thomas et al.~\cite{Thomas-etal:2011} 
-and use topic distinctiveness to evaluate our topic models.
+and use topic distinctness to evaluate our topic models.
 Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
 Using this metric will also allow a comparison to the results of Thomas et al.~\cite{Thomas-etal:2011}. 
-Topic distinctiveness has also been shown to be an effective measure for qualitative
+Topic distinctness has also been shown to be an effective measure for qualitative
 comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chuang-etal:2012}.
 Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
 should depend on real-world tasks over metrics,
-we argue that the positive results from using topic distinctiveness for visualization
+we argue that the positive results from using topic distinctness for visualization
 techniques qualifies the metric for this exporatory study.
 
 \begin{comment}
@@ -175,25 +175,28 @@ task performance rather than optimizing likelihood-based measures." ~\cite{Chang
 \end{comment}
 
 
-Thomas et al.\ define topic distinctiveness (TD) of a topic $z_i$ as the mean
+Thomas et al.\ define topic distinctness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
 \begin{equation}
 TD(\phi_{z_i}) =
 \frac{1}{K - 1}
 \sum_{j=1,j \neq i}^{K}
 KL(\phi_{z_i}, \phi_{z_j})
-\label{eq:topicdistinctiveness}
+\label{eq:topicdistinctness}
 \end{equation}
 
-We score the overall topic distinctiveness of a model $\phi$ as the mean of
-its topic distinctiveness scores:
+We score the overall topic distinctness of a model $\phi$ as the mean of
+its topic distinctness scores, $\forall z \in \phi$
+
+\begin{comment}
 \begin{equation}
 TD(\phi) =
 \frac{1}{K - 1}
 \sum_{i=1}^{K}
 TD(\phi_{z_i})
-\label{eq:overalltopicdistinctiveness}
+\label{eq:overalltopicdistinctness}
 \end{equation}
+\end{comment}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,6 +294,6 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
     \bottomrule
 \end{tabular}
 \label{tab:systems}
-\caption{Comparison of topic distinctiveness scores (RQ2)}
+\caption{Comparison of topic distinctness scores (RQ2)}
 \end{table}
 
