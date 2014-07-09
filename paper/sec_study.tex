@@ -177,10 +177,11 @@ We create two distributions from all unique terms from both corpora.
 That is, each vector is of the same length and contain zero values for terms not in its respective corpus.
 We measure the similarity of the two word-vectors using cosine distance.
 
-To answer RQ2, we follow Thomas et al~\cite{Thomas-etal:2011}.
-We use topic distinctiveness to evaluate our topic models.
+To answer RQ2, we follow Thomas et al.~\cite{Thomas-etal:2011} 
+and use topic distinctiveness to evaluate our topic models.
 Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
-Topic distinctiveness has been show to be an effective measure for qualitative
+Using this metric will also allow a comparison to the results of Thomas et al.~\cite{Thomas-etal:2011}. 
+Topic distinctiveness has also been shown to be an effective measure for qualitative
 comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chuang-etal:2012}.
 Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
 should depend on real-world tasks over metrics,
