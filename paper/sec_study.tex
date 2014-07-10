@@ -192,7 +192,7 @@ KL(\phi_{z_i}, \phi_{z_j})
 \end{equation}
 
 We score the overall topic distinctness of a model $\phi$ as the mean of
-its topic distinctness scores, $\forall z \in \phi$
+its topic distinctness scores, $\forall z \in \phi$.
 
 \begin{comment}
 \begin{equation}
@@ -209,13 +209,32 @@ TD(\phi_{z_i})
 
 \subsection{Results}
 
+\begin{table*}[ht]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\centering
+\caption{Subject systems version and corpora description}
+\begin{tabular}{lll rr rr rr}
+    \toprule
+            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+     System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+    \midrule
+    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
+    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
+    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
+    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
+    \bottomrule
+\end{tabular}
+\label{tab:systems}
+\end{table*}
+
 RQ1 asks whether a corpus generated from changesets have similar terms
 as a corpus generated from a release.
 We expected to find that set of unique terms in the changeset corpus to be
 a superset of the set of unique terms in the release corpus.
 Interestingly, this holds true for \jodatime\ and \aspectj,
 but not for \ant\ and \postgres.
-Further inspection shows that 2 terms appear in the \ant release corpus that do not appear in the changeset corpus,
+Further inspection shows that 2 terms appear in the \ant\ release corpus that do not appear in the changeset corpus,
 and 19 terms appear in \postgres's respective corpora.
 However, these anomalies appear to have been file encoding errors that
 had been introduced into the version history.
@@ -225,8 +244,8 @@ to an encoding error in the \texttt{KEYS} files for a developer named
 
 To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
-Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant release corpus.
-Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant changeset corpus.
+Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant\ release corpus.
+Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant\ changeset corpus.
 We measure the differences between the two distributions using the simple
 cosine distance. For \ant, we had the lowest cosine distance of $0.00396$.
 \aspectj\ and \jodatime\ have similar distances to another of $0.06929$ and
@@ -249,7 +268,6 @@ $0.06540$. \postgres\ had the highest, at an astounding $0.33957$.
     \caption{Normalized distribution of the changeset corpus}
     \label{fig:antdist2}
 \end{subfigure}
-
 \caption{Comparison of \ant\ word distributions}
 \end{figure*}
 
@@ -258,35 +276,19 @@ RQ2 asks if topic models trained on changeset corpora produce more distinct
 topics.
 We expected to find that they would since ``popular'' words would become
 more prevalent in the corpus from receiving several changes.
+Table~\ref{tab:tdscores} shows our topic distinctness scores for each system.
 Interestingly, this is true for \ant\ and \postgres,
-but not for \jodatime\ and \aspectj!
-We hypothesize this is because \ant\ and \postgres have a much richer history than \jodatime\ and \aspectj.
-That is, \ant\ and \postgres have drastically more documents in the changeset corpora.
+but not for \jodatime\ and \aspectj.
+We hypothesize this is because \ant\ and \postgres\ have a much richer history than \jodatime\ and \aspectj.
+That is, \ant\ and \postgres\ have drastically more documents in their respective changeset corpora.
 Table~\ref{tab:systems} shows the document count and term count for each system.
 
-\begin{table*}[ht]
-\renewcommand{\arraystretch}{1.3}
-\centering
-\caption{Subject systems version and corpora description}
-\begin{tabular}{lll rr rr rr}
-    \toprule
-            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
-     System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
-    \midrule
-    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
-    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
-    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
-    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
-    \bottomrule
-\end{tabular}
-\label{tab:systems}
-\end{table*}
 
-
-\begin{table}[ht]
+\begin{table}[h]
 \renewcommand{\arraystretch}{1.3}
+\footnotesize
 \centering
-\begin{tabular}{lllrrrrrr}
+\begin{tabular}{lrr}
     \toprule
     System      & Snapshot TD & Changeset TD \\
     \midrule
@@ -296,7 +298,6 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
     \postgres   & 2.59      & 3.56      \\
     \bottomrule
 \end{tabular}
-\label{tab:systems}
+\label{tab:tdscores}
 \caption{Comparison of topic distinctness scores (RQ2)}
 \end{table}
-
