@@ -1,7 +1,8 @@
 % vim:syntax=tex
 
 In this section we describe the design of a case study in which we
-explore the relationship between ownership and linguistic topics in source code.
+compare topic models trained on changesets to those trained on snapshots.
+%explore the relationship between ownership and linguistic topics in source code.
 We describe the case study using the Goal-Question-Metric approach~\cite{Basili-etal:94}.
 %The data for the case study is available in this paper's online
 %appendix\footnote{\url{http://software.eng.ua.edu/data/ownership-topics}}.
@@ -71,7 +72,7 @@ we do not parse the source code documents for classes, methods, and so on.
 %but also it leaves our technique language-independent.
 We do this to leave our technique language-independent,
 and to also allow for a fair comparison between the two approaches.
-Special characters such as braces and semicolons will be removed during
+Special characters such as braces and semicolons are removed during
 preprocessing.
 
 To extract text from the changesets, we look at the output of viewing
@@ -180,7 +181,7 @@ topic models should thus focus on evaluations that depend on real-world
 task performance rather than optimizing likelihood-based measures.''~\cite{Chang-etal:2009}
 \end{comment}
 
-
+\newpage
 Thomas et al.\ define topic distinctness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
 \begin{equation}
@@ -232,7 +233,7 @@ Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant\ changese
 We measure the differences between the two distributions using the simple
 cosine distance. For \ant, we had the lowest cosine distance of $0.00396$.
 \aspectj\ and \jodatime\ have similar distances to another of $0.06929$ and
-$0.06540$. \postgres\ had the highest, at an astounding $0.33957$.
+$0.06540$. \postgres\ had the largest, $0.33957$.
 
 %
 % At this point, I would love to do a stats test. But I am way too tired
@@ -252,16 +253,19 @@ $0.06540$. \postgres\ had the highest, at an astounding $0.33957$.
     \label{fig:antdist2}
 \end{subfigure}
 \caption{Comparison of \ant\ word distributions}
+\vspace*{-12pt}
 \end{figure*}
 
 
 RQ2 asks if topic models trained on changeset corpora produce more distinct
 topics.
-We expected to find that they would since ``popular'' words would become
-more prevalent in the corpus from receiving several changes.
+We expected to find that they would, due to ``popular'' words becoming
+more prevalent in the corpus after appearing in several changes.
 Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj.
 We hypothesize this is because \ant\ and \postgres\ have drastically more documents in their respective change set corpora than \jodatime\ and \aspectj.
+That is, we think that the feasibility of using changeset topics is somewhat
+dependent on the amount of history in the repository.
 %Table~\ref{tab:systems} shows the document count and term count for each system.
 
 We can compare directly to the results of Thomas et al.~\cite{Thomas-etal:2011},
@@ -270,7 +274,7 @@ as we were able to run our study on \postgres\footnote{
     JHotDraw, as no official Git mirror of the repository is available.}.
 We find similar topic distinctness scores for \postgres\ in our study,
 even though we consider a later version of the source code.
-This suggests that our approach is more feasible,
+This suggests that our approach is feasible,
 as it captures distinct topics while not needing post-processing and is
 always up-to-date with the source code repository.
 
@@ -293,7 +297,7 @@ The highest related change adds helper methods to the
 \caption{Comparison of topic distinctness scores (RQ2)}
 \begin{tabular}{lrr}
     \toprule
-    System      & Snapshot TD & Changeset TD \\
+    System      & Release TD & Changeset TD \\
     \midrule
     \ant        & 2.31      & \textbf{3.17}      \\
     \aspectj    & \textbf{3.75}      & 2.78      \\
