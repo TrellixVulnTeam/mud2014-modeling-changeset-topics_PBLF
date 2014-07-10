@@ -265,6 +265,16 @@ We hypothesize this is because \ant\ and \postgres\ have a much richer history t
 That is, \ant\ and \postgres\ have drastically more documents in their respective changeset corpora.
 %Table~\ref{tab:systems} shows the document count and term count for each system.
 
+We can compare directly to the results of Thomas et al.~\cite{Thomas-etal:2011},
+as we were able to run our study on \postgres\footnote{
+    We were not able to run this study on their other subject system,
+    JHotDraw, as no official Git mirror of the repository is available.}.
+We find similar topic distinctness scores for \postgres\ in our study,
+even though we consider a later version of the source code.
+This suggests that our approach is more feasible,
+as it captures distinct topics while not needing post-processing and
+always being up-to-date with the source code repository.
+
 \begin{comment}
 % This is garbage
 We investigated the problem in AspectJ further. One of the worst scoring
