@@ -129,7 +129,7 @@ index 635ef2c..5af88a8 100644
 +Deeper and more profound,
 +The door of all subtleties!
 \end{lstlisting}
-\caption{Example of a \texttt{git diff}. Black or blue lines denote metadata about the change, red lines (beginning with a single \texttt{-}) denote line removals, and green lines (beginning with a single \texttt{+}) denote line additions.}
+\caption{Example of a \texttt{git diff}. Black or blue lines denote metadata about the change useful for patching, red lines (beginning with a single~\texttt{-}) denote line removals, and green lines (beginning with a single~\texttt{+}) denote line additions.}
 \label{fig:diff}
 \end{figure}
 
@@ -209,24 +209,6 @@ TD(\phi_{z_i})
 
 \subsection{Results}
 
-\begin{table*}[ht]
-\renewcommand{\arraystretch}{1.3}
-\footnotesize
-\centering
-\caption{Subject systems version and corpora description}
-\begin{tabular}{lll rr rr rr}
-    \toprule
-            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
-     System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
-    \midrule
-    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
-    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
-    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
-    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
-    \bottomrule
-\end{tabular}
-\label{tab:systems}
-\end{table*}
 
 RQ1 asks whether a corpus generated from changesets have similar terms
 as a corpus generated from a release.
@@ -238,9 +220,10 @@ Further inspection shows that 2 terms appear in the \ant\ release corpus that do
 and 19 terms appear in \postgres's respective corpora.
 However, these anomalies appear to have been file encoding errors that
 had been introduced into the version history.
-For example, one of the terms for \ant\ was \texttt{rapha}. This is due
-to an encoding error in the \texttt{KEYS} files for a developer named
-``Rapha\"{e}l Luta''.
+For example, one of the terms for \ant\ was ``rapha''. This is due
+to an encoding error in the \texttt{KEYS} file for a developer named
+``Rapha\"{e}l Luta''. 
+Similar encoding errors were found for the remaining 20 terms.
 
 To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
@@ -276,18 +259,29 @@ RQ2 asks if topic models trained on changeset corpora produce more distinct
 topics.
 We expected to find that they would since ``popular'' words would become
 more prevalent in the corpus from receiving several changes.
-Table~\ref{tab:tdscores} shows our topic distinctness scores for each system.
 Interestingly, this is true for \ant\ and \postgres,
 but not for \jodatime\ and \aspectj.
 We hypothesize this is because \ant\ and \postgres\ have a much richer history than \jodatime\ and \aspectj.
 That is, \ant\ and \postgres\ have drastically more documents in their respective changeset corpora.
-Table~\ref{tab:systems} shows the document count and term count for each system.
+%Table~\ref{tab:systems} shows the document count and term count for each system.
 
+\begin{comment}
+% This is garbage
+We investigated the problem in AspectJ further. One of the worst scoring
+topics for distinctness was topic 90. The top 15 words from this topic were:
+code, type, stack, method, names, string, index, array, exception, and constant.
+Two of the highest ranked documents to this topic within $\theta$ are
+changes to the {\small\texttt{org.aspectj.apache.bcel.classfile.Utility}} class.
+The highest related change adds helper methods to the
+{\small\texttt{org.aspectj.asm.internal.CharOperation}} class.
+%Four out of the top five changes, however, were committed by "aclement".
+\end{comment}
 
 \begin{table}[h]
 \renewcommand{\arraystretch}{1.3}
 \footnotesize
 \centering
+\caption{Comparison of topic distinctness scores (RQ2)}
 \begin{tabular}{lrr}
     \toprule
     System      & Snapshot TD & Changeset TD \\
@@ -299,5 +293,4 @@ Table~\ref{tab:systems} shows the document count and term count for each system.
     \bottomrule
 \end{tabular}
 \label{tab:tdscores}
-\caption{Comparison of topic distinctness scores (RQ2)}
 \end{table}
