@@ -50,6 +50,25 @@ Thomas et al.~\cite{Thomas-etal:2011} describe an approach to modeling the evolu
 
 Hindle et al.~\cite{Hindle_etal:2012} validate the use LDA topics during software maintenance via a study at Microsoft. Their focus is on stakeholder validation of topics --- i.e., they seek confirmation that LDA topics are interpretable by stakeholders (e.g., developers or managers) and relevant to the requirements implemented by the modeled source code. Previous work by Hindle et al.~\cite{Hindle-etal:2009} describes an approach to modeling the evolution of software topics using commit messages rather than source code.
 
+\begin{table*}[ht]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\centering
+\caption{Subject systems version and corpora description}
+\begin{tabular}{lll rr rr rr}
+    \toprule
+            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+     System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
+    \midrule
+    \ant        & 1.9.4   & 1c927b15 & 2208      & 12996     & 17986         & 74681         & 1066446       & 11801353 \\
+    \aspectj    & 1.8.0   & 5a5bef1e & 10130     & 7650      & 22855         & 25071         & 4825289       & 10583008 \\
+    \jodatime   & 2.3     & b0fcbb95 & 402       & 1750      & 9298          & 11385         & 493131        & 5541330 \\
+    \postgres  & 9.3.4   & d4f8dde3 & 4080      & 36870     & 84591         & 164703        & 6644409       & 59850328 \\
+    \bottomrule
+\end{tabular}
+\label{tab:systems}
+\end{table*}
+
 Although our work is preliminary, we believe that it is the first to consider modeling changesets in lieu of snapshots to support software maintenance. Like Rao et al.~\cite{Rao-etal:2011}, we are targeting problems that require an up-to-date topic model. Thus, the expense of training a topic model is a key consideration for us, unlike for Thomas et al.~\cite{Thomas-etal:2011} or Hindle et al.~\cite{Hindle-etal:2009,Hindle_etal:2012}.
 
 \begin{comment}

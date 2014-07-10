@@ -8,15 +8,21 @@ topics from changesets and source code.
 We address two research questions regarding the topic modeling of changesets.
 First, we investigated whether changeset copora were any different than
 traditional release corpora, and what differences there might be.
-For 2 of the 4 systems, we found that the changeset vocabulary was a superset
+For all of the systems, we found that the changeset vocabulary was a superset
 to the release vocabulary.
+We measured the cosine distance of each distribution of words,
+and found for 3 of the systems very low (0.3\% to 6\%),
+while the last was much higher than the rest(33\%).
 Next, we investigated whether a topic model trained on a changeset corpus
 was more or less distinct than a topic model trained on a release corpus.
 For 2 of the 4 systems, we found that the changeset corpus produced more
 distinct topics, while for the other 2 it did not.
 
+
 Future work includes expanding our evaluation and conducting an experiment
 where we utilize these topic models, such as for bug localization.
 Additional future work includes expanding our study to other systems, particularly ones that are not Java.
 It seems unlikely that our results are specific to Java systems, though we cannot confirm this assumption without experimentation.
+This expansion should also include an investigation into why some
+changeset topic models are more distinct than others.
  
