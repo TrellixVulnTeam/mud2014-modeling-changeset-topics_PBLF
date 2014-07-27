@@ -12,11 +12,12 @@ Code for generating the corpora.
 """
 
 from StringIO import StringIO
-import os
 import re
 
 import gensim
-import dulwich, dulwich.repo, dulwich.patch
+import dulwich
+import dulwich.repo
+import dulwich.patch
 
 from preprocessing import tokenize, split, remove_stops, read_stops, to_unicode
 
@@ -24,31 +25,31 @@ import logging
 logger = logging.getLogger('mct.corpora')
 
 STOPS = read_stops([
-                    'data/english_stops.txt',
-                    'data/java_reserved.txt',
-                    ])
+    'data/english_stops.txt',
+    'data/java_reserved.txt',
+])
+
 
 class GitCorpus(gensim.interfaces.CorpusABC):
     """
-    Helper class to simplify the pipeline of getting bag-of-words vectors (= a
-    gensim corpus) from plain text.
+    Helper class to simplify the pipeline of getting bag-of-words vectors (=
+    a gensim corpus) from plain text.
 
     This is an abstract base class: override the `get_texts()` method to match
     your particular input.
 
     Given a filename (or a file-like object) in constructor, the corpus object
     will be automatically initialized with a dictionary in `self.dictionary` and
-    will support the `iter` corpus method. You must only provide a correct `get_texts`
-    implementation.
-
+    will support the `iter` corpus method. You must only provide a correct
+    `get_texts` implementation.
     """
 
     def __init__(self, repo=None, ref='HEAD', remove_stops=True,
-            split=True, lower=True, min_len=3, max_len=40,
-            lazy_dict=False):
+                 split=True, lower=True, min_len=3, max_len=40,
+                 lazy_dict=False):
 
         logger.info('Creating %s corpus out of source files for commit %s' % (
-                self.__class__.__name__, ref))
+            self.__class__.__name__, ref))
 
         self.repo = repo
         self.remove_stops = remove_stops
@@ -101,29 +102,33 @@ class GitCorpus(gensim.interfaces.CorpusABC):
         """
         The function that defines a corpus.
 
-        Iterating over the corpus must yield sparse vectors, one for each document.
+        Iterating over the corpus must yield sparse vectors, one for each
+        document.
         """
         for text in self.get_texts():
             if self.metadata:
-                yield self.id2word.doc2bow(text[0], allow_update=self.lazy_dict), text[1]
+                meta = text[1]
+                text = text[0]
+                yield (self.id2word.doc2bow(text, allow_update=self.lazy_dict),
+                       meta)
             else:
                 yield self.id2word.doc2bow(text, allow_update=self.lazy_dict)
 
     def get_texts(self):
         """
         Iterate over the collection, yielding one document at a time. A document
-        is a sequence of words (strings) that can be fed into `Dictionary.doc2bow`.
+        is a sequence of words (strings) that can be fed into
+        `Dictionary.doc2bow`.
 
         Override this function to match your input (parse input files, do any
-        text preprocessing, lowercasing, tokenizing etc.). There will be no further
-        preprocessing of the words coming out of this function.
+        text preprocessing, lowercasing, tokenizing etc.). There will be no
+        further preprocessing of the words coming out of this function.
         """
         raise NotImplementedError
 
     def __len__(self):
         return self.length  # will throw if corpus not initialized
 
-# endclass Corpus
 
 class MultiTextCorpus(GitCorpus):
     def get_texts(self):
@@ -143,7 +148,8 @@ class MultiTextCorpus(GitCorpus):
             else:
                 yield words
 
-        self.length = length # only reset after iteration is done.
+        self.length = length  # only reset after iteration is done.
+
 
 class ChangesetCorpus(GitCorpus):
     def _get_diff(self, changeset):
@@ -153,8 +159,8 @@ class ChangesetCorpus(GitCorpus):
         """
         patch_file = StringIO()
         dulwich.patch.write_object_diff(patch_file,
-                self.repo.object_store,
-                changeset.old, changeset.new)
+                                        self.repo.object_store,
+                                        changeset.old, changeset.new)
         return patch_file.getvalue()
 
     def _walk_changes(self, reverse=False):
@@ -168,9 +174,8 @@ class ChangesetCorpus(GitCorpus):
             # initial revision, has no parent
             if len(commit.parents) == 0:
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.object_store,
-                        None,
-                        commit.tree):
+                        self.repo.object_store, None, commit.tree
+                ):
                     diff = self._get_diff(changes)
                     yield commit.id, None, diff
 
@@ -178,9 +183,8 @@ class ChangesetCorpus(GitCorpus):
                 # do I need to know the parent id?
 
                 for changes in dulwich.diff_tree.tree_changes(
-                        self.repo.object_store,
-                        self.repo[parent].tree,
-                        commit.tree):
+                    self.repo.object_store, self.repo[parent].tree, commit.tree
+                ):
                     diff = self._get_diff(changes)
                     yield commit.id, parent, diff
 
@@ -188,7 +192,7 @@ class ChangesetCorpus(GitCorpus):
         length = 0
         unified = re.compile(r'^[+ -].*')
         current = None
-        low = list() # collecting the list of words
+        low = list()  # collecting the list of words
 
         for commit, parent, diff in self._walk_changes():
             # write out once all diff lines for commit have been collected
@@ -203,10 +207,9 @@ class ChangesetCorpus(GitCorpus):
                     yield low, (current, u'en')
                 else:
                     yield low
-                length += 1
-                current = commit
-                low = list()
-
+                    length += 1
+                    current = commit
+                    low = list()
 
             # to process out whitespace only changes, the rest of this
             # loop will need to be structured differently. possibly need
@@ -216,20 +219,21 @@ class ChangesetCorpus(GitCorpus):
             diff_lines = filter(lambda x: unified.match(x),
                                 diff.splitlines())
             if len(diff_lines) < 2:
-                continue # useful for not worrying with binary files
+                continue  # useful for not worrying with binary files
 
             # sanity?
             assert diff_lines[0].startswith('--- '), diff_lines[0]
             assert diff_lines[1].startswith('+++ '), diff_lines[1]
-            #parent_fn = diff_lines[0][4:]
-            #commit_fn = diff_lines[1][4:]
+            # parent_fn = diff_lines[0][4:]
+            # commit_fn = diff_lines[1][4:]
 
-            lines = diff_lines[2:] # chop off file names hashtag rebel
-            lines = [line[1:] for line in lines] # remove unified markers
+            lines = diff_lines[2:]  # chop off file names hashtag rebel
+            lines = [line[1:] for line in lines]  # remove unified markers
             document = ' '.join(lines)
 
             # call the tokenizer
-            words = self.preprocess(document, [commit, str(parent), diff_lines[0]])
+            words = self.preprocess(document,
+                                    [commit, str(parent), diff_lines[0]])
             low.extend(words)
 
         length += 1
@@ -239,7 +243,8 @@ class ChangesetCorpus(GitCorpus):
         else:
             yield low
 
-        self.length = length # only reset after iteration is done.
+        self.length = length  # only reset after iteration is done.
+
 
 class CommitLogCorpus(GitCorpus):
     def get_texts(self):
@@ -256,4 +261,4 @@ class CommitLogCorpus(GitCorpus):
             else:
                 yield words
 
-        self.length = length # only reset after iteration is done.
+        self.length = length  # only reset after iteration is done.

@@ -11,30 +11,28 @@
 Code for splitting the terms.
 """
 
-import sys
-import re
 import string
-
-import nltk
 
 import logging
 logger = logging.getLogger('mct.preprocessing')
 
-#tokenize = nltk.word_tokenize
+
 def tokenize(s):
     return s.split()
 
+
 def to_unicode(document, info=[]):
-    document = document.replace('\x00', ' ') #remove nulls
+    document = document.replace('\x00', ' ')  # remove nulls
     document = document.strip()
     if not isinstance(document, unicode):
         for codec in ['utf8', 'latin1', 'ascii']:
             try:
                 return unicode(document, encoding=codec)
             except UnicodeDecodeError as e:
-                logger.debug('%s %s %s' %(codec, str(e), ' '.join(info)))
+                logger.debug('%s %s %s' % (codec, str(e), ' '.join(info)))
 
     return document
+
 
 def split(iterator):
     for token in iterator:
@@ -79,8 +77,9 @@ def split(iterator):
         if len(word) > 0:
             yield word
 
+
 def remove_stops(iterator, stopwords=set()):
-    if type(stopwords) is not set:
+    if not isinstance(stopwords, set):
         stopwords = set(stopwords)
 
     stopwords.update(string.punctuation)
@@ -93,6 +92,7 @@ def remove_stops(iterator, stopwords=set()):
             float(word)
         except ValueError:
             yield word
+
 
 def read_stops(l):
     stops = list()
