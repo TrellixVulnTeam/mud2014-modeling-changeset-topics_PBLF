@@ -14,9 +14,11 @@ def kullback_leibler_divergence(q_dist, p_dist, filter_by=0.001):
     for q, p in z:
         if q < filter_by and p < filter_by:
             continue
+
         if q > 0.0 and p > 0.0:
             divergence += q * math.log10(q / p)
-            return divergence
+
+    return divergence
 
 
 def hellinger_distance(q_dist, p_dist, filter_by=0.001):
@@ -29,9 +31,10 @@ def hellinger_distance(q_dist, p_dist, filter_by=0.001):
 
         inner = math.sqrt(q) - math.sqrt(p)
         distance += (inner * inner)
-        distance /= 2
-        distance = math.sqrt(distance)
-        return distance
+
+    distance /= 2
+    distance = math.sqrt(distance)
+    return distance
 
 
 def cosine_distance(q_dist, p_dist, filter_by=0.001):
@@ -43,12 +46,14 @@ def cosine_distance(q_dist, p_dist, filter_by=0.001):
     for q, p in z:
         if q < filter_by and p < filter_by:
             continue
+
         numerator += (q * p)
         denominator_a += (q * q)
         denominator_b += (p * p)
-        denominator = math.sqrt(denominator_a) * math.sqrt(denominator_b)
-        similarity = (numerator / denominator)
-        return 1.0 - similarity
+
+    denominator = math.sqrt(denominator_a) * math.sqrt(denominator_b)
+    similarity = (numerator / denominator)
+    return 1.0 - similarity
 
 
 def jensen_shannon_divergence(q_dist, p_dist, filter_by=0.001):
@@ -58,12 +63,14 @@ def jensen_shannon_divergence(q_dist, p_dist, filter_by=0.001):
     for q, p in z:
         if q < filter_by and p < filter_by:
             continue
+
         M.append((q + p) / 2)
         q_dist.append(q)
         p_dist.append(p)
-        divergence_a = (kullback_leibler_divergence(q_dist, M) / 2)
-        divergence_b = (kullback_leibler_divergence(p_dist, M) / 2)
-        return divergence_a + divergence_b
+
+    divergence_a = (kullback_leibler_divergence(q_dist, M) / 2)
+    divergence_b = (kullback_leibler_divergence(p_dist, M) / 2)
+    return divergence_a + divergence_b
 
 
 def total_variation_distance(q_dist, p_dist, filter_by=0.001):
@@ -72,9 +79,11 @@ def total_variation_distance(q_dist, p_dist, filter_by=0.001):
     for q, p in z:
         if q < filter_by and p < filter_by:
             continue
+
         distance += math.fabs(q - p)
-        distance /= 2
-        return distance
+
+    distance /= 2
+    return distance
 
 
 def score(model, fn):
@@ -86,11 +95,14 @@ def score(model, fn):
         for b, topic_b in norm_phi(model):
             if a == b:
                 continue
+
             score += fn(topic_a, topic_b)
-            score *= (1.0 / (model.num_topics - 1))
-            logger.debug("topic %d score %f" % (a, score))
-            scores.append((a, score))
-            return scores
+
+        score *= (1.0 / (model.num_topics - 1))
+        logger.debug("topic %d score %f" % (a, score))
+        scores.append((a, score))
+
+    return scores
 
 
 def norm_phi(model):

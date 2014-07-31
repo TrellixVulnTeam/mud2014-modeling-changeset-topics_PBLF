@@ -207,9 +207,10 @@ class ChangesetCorpus(GitCorpus):
                     yield low, (current, u'en')
                 else:
                     yield low
-                    length += 1
-                    current = commit
-                    low = list()
+
+                length += 1
+                current = commit
+                low = list()
 
             # to process out whitespace only changes, the rest of this
             # loop will need to be structured differently. possibly need
