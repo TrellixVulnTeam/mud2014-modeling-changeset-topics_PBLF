@@ -222,7 +222,7 @@ class PreprocessTests(unittest.TestCase):
             u'Erwin_Schrödinger': ('erwin', u'schrödinger')
             })
 
-        c = GitCorpus()
+        c = GitCorpus(min_len=2)
         for term, expected in cases.items():
             result = c.preprocess(term)
             self.assertEqual(tuple(result), expected)
