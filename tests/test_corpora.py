@@ -16,7 +16,7 @@ import os.path
 from io import StringIO
 
 from nose.tools import *
-import gittle
+import dulwich.repo
 
 from src.corpora import MultiTextCorpus, ChangesetCorpus
 
@@ -27,7 +27,7 @@ datapath = lambda fname: os.path.join(module_path, u'test_data', fname)
 class TestMultitextCorpus(unittest.TestCase):
     def setUp(self):
         self.basepath = datapath(u'multitext_git/')
-        self.repo = gittle.Gittle(self.basepath).repo
+        self.repo = dulwich.repo.Repo(self.basepath)
         self.corpus = MultiTextCorpus(self.repo,
                 remove_stops=False,
                 lower=True,
@@ -223,7 +223,7 @@ class TestMultitextCorpusAtRef(unittest.TestCase):
     def setUp(self):
         self.basepath = datapath(u'multitext_git/')
         self.ref = u'f33a0fb070a34fc1b9105453b3ffb4edc49131d9'
-        self.repo = gittle.Gittle(self.basepath).repo
+        self.repo = dulwich.repo.Repo(self.basepath)
         self.corpus = MultiTextCorpus(self.repo, self.ref,
                 remove_stops=False,
                 lower=True,
@@ -370,7 +370,7 @@ class TestChangesetCorpus(unittest.TestCase):
             with tarfile.open(gz) as tar:
                 tar.extractall(extraction_path)
 
-        self.repo = gittle.Gittle(self.basepath).repo
+        self.repo = dulwich.repo.Repo(self.basepath)
         self.corpus = ChangesetCorpus(self.repo,
                 remove_stops=False,
                 lower=True,
