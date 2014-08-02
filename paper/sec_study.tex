@@ -55,25 +55,21 @@ each system studied.
     \includegraphics[width=.75\textwidth]{changeset}
     \caption{Extraction and Modeling Process}
     \label{fig:process}
+\vspace{-10pt}
 \end{figure*}
 
 Our document extraction process is shown on the left side of Figure~\ref{fig:process}.
 We implemented our document extractor in Python v2.7
-using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}} %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
+using the Dulwich library\footnote{\url{http://www.samba.org/~jelmer/dulwich/}}. %\footnote{\url{https://pypi.python.org/pypi/dulwich}}
 We extract documents from both a snapshot of the repository at a tagged
 release and each commit reachable from that tag's commit.
 The same preprocessing steps are employed on all documents extracted.
 
 For our document extraction from a snapshot,
-we simply use the entire contents of the document.
-Unlike previous methods, %\needcite,
-we do not parse the source code documents for classes, methods, and so on.
-%We do this because so-and-so-I-forget\needcite,
-%but also it leaves our technique language-independent.
+we use the entire contents of the document.
+We do not parse the source code documents for classes, methods, and so on.
 We do this to leave our technique language-independent,
 and to also allow for a fair comparison between the two approaches.
-Special characters such as braces and semicolons are removed during
-preprocessing.
 
 To extract text from the changesets, we look at the output of viewing
 the \texttt{git diff} between two commits.
@@ -81,20 +77,16 @@ Figure~\ref{fig:diff} shows an example of what a changeset might look
 like in Git.
 In our changeset text extractor, we only extract text from removed or added lines.
 Context and metadata lines are ignored.
-%Figure~\ref{fig:diffdocument} shows what words would be extracted to make up the document without preprocessing
-%from the change shown in Figure~\ref{fig:diff}.
-Note that we do not consider what type of document the text originates from,
+Note that we do not consider where the text originates from,
 only that it is text changed by the commit.
 
-%Our document preprocessor implements the transformations described in Section~\ref{sec:preprocessing}.
-%We filter \texttt{java.lang} class names before splitting tokens.
 After extracting tokens, we split them based on camel case, underscores, and non-letters.
-We normalize to lower case before filtering English stop words~\cite{StopWords}, Java keywords, and words shorter than three characters long.
-We do not stem.
+We normalize to lower case before filtering non-letters, English stop words~\cite{StopWords}, Java keywords, and words shorter than three characters long.
+We do not stem words.
 
-
-For our model generation, we use the open source Python library Gensim~\cite{Gensim}.
-Gensim's LDA implementation is based on the Online LDA by Hoffman et al.~\cite{Hoffman-etal:2010}
+Our modeling generation is shown on the right side of Figure~\ref{fig:process}.
+We implemented our modeling using the Python library Gensim~\cite{Gensim}.
+Gensim's LDA implementation is based on an Online LDA by Hoffman et al.~\cite{Hoffman-etal:2010}
 and uses variational inference instead of a Collapsed Gibbs Sampler.
 Unlike Gibbs sampling, in order to ensure that the model converges for each document,
 we allow LDA to see each document $10$ times by setting Gensim's initialization parameter \texttt{passes} to this value.
@@ -132,23 +124,9 @@ index 635ef2c..5af88a8 100644
 \end{lstlisting}
 \caption{Example of a \texttt{git diff}. Black or blue lines denote metadata about the change useful for patching, red lines (beginning with a single~\texttt{-}) denote line removals, and green lines (beginning with a single~\texttt{+}) denote line additions.}
 \label{fig:diff}
+\vspace{-10pt}
 \end{figure}
 
-\begin{comment}
-\begin{figure}[ht]
-\em
-\footnotesize
-The Way that can be told of is not the eternal Way;
-The name that can be named is not the eternal name.
-The Named is the mother of all things.
-The named is the mother of all things.
-They both may be called deep and profound.
-Deeper and more profound,
-The door of all subtleties!
-\caption{An example extracted changeset document before preprocessing}
-\label{fig:diffdocument}
-\end{figure}
-\end{comment}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -173,15 +151,7 @@ should depend on real-world tasks over metrics,
 we argue that the positive results from using topic distinctness for visualization
 techniques qualifies the metric for this exploratory study.
 
-\begin{comment}
-``Traditional metrics are, indeed, negatively correlated with the
-measures of topic quality developed in this paper.  Our measures enable
-new forms of model selection and suggest that practitioners developing
-topic models should thus focus on evaluations that depend on real-world
-task performance rather than optimizing likelihood-based measures.''~\cite{Chang-etal:2009}
-\end{comment}
 
-\newpage
 Thomas et al.\ define topic distinctness (TD) of a topic $z_i$ as the mean
 Kullback-Leibler (KL) divergence between the vectors $z_i$ and $z_j$, $\forall j \neq i$:
 \begin{equation}
@@ -194,17 +164,6 @@ KL(\phi_{z_i}, \phi_{z_j})
 
 We score the overall topic distinctness of a model $\phi$ as the mean of
 its topic distinctness scores, $\forall z \in \phi$.
-
-\begin{comment}
-\begin{equation}
-TD(\phi) =
-\frac{1}{K - 1}
-\sum_{i=1}^{K}
-TD(\phi_{z_i})
-\label{eq:overalltopicdistinctness}
-\end{equation}
-\end{comment}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -230,15 +189,10 @@ To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
 Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant\ snapshot corpus.
 Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant\ changeset corpus.
-We measure the differences between the two distributions using the simple
-cosine distance. For \ant, we had the lowest cosine distance of $0.00396$.
+We measure the differences between the two distributions using cosine distance.
+For \ant, we had the lowest cosine distance of $0.00396$.
 \aspectj\ and \jodatime\ have similar distances to another of $0.06929$ and
 $0.06540$. \postgres\ had the largest, $0.33957$.
-
-%
-% At this point, I would love to do a stats test. But I am way too tired
-% to figure that out because I am butts at stats
-%
 
 \begin{figure*}[ht]
 \centering
@@ -268,7 +222,7 @@ That is, we think that the feasibility of using changeset topics is somewhat
 dependent on the amount of history in the repository.
 %Table~\ref{tab:systems} shows the document count and term count for each system.
 
-We can compare directly to the results of Thomas et al.~\cite{Thomas-etal:2011},
+We can compare to the results of Thomas et al.~\cite{Thomas-etal:2011},
 as we were able to run our study on \postgres\footnote{
     We were not able to run this study on their other subject system,
     JHotDraw, as no official Git mirror of the repository is available.}.
@@ -277,18 +231,6 @@ even though we consider a later version of the source code.
 This suggests that our approach is feasible,
 as it captures distinct topics while not needing post-processing and is
 always up-to-date with the source code repository.
-
-\begin{comment}
-% This is garbage
-We investigated the problem in AspectJ further. One of the worst scoring
-topics for distinctness was topic 90. The top 15 words from this topic were:
-code, type, stack, method, names, string, index, array, exception, and constant.
-Two of the highest ranked documents to this topic within $\theta$ are
-changes to the {\small\texttt{org.aspectj.apache.bcel.classfile.Utility}} class.
-The highest related change adds helper methods to the
-{\small\texttt{org.aspectj.asm.internal.CharOperation}} class.
-%Four out of the top five changes, however, were committed by "aclement".
-\end{comment}
 
 \begin{table}[h]
 \renewcommand{\arraystretch}{1.3}
