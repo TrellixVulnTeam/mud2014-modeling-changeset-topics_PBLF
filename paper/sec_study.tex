@@ -64,7 +64,7 @@ We extract documents from both a snapshot of the repository at a tagged
 release and each commit reachable from that tag's commit.
 The same preprocessing steps are employed on all documents extracted.
 
-For our document extraction from a release,
+For our document extraction from a snapshot,
 we simply use the entire contents of the document.
 Unlike previous methods, %\needcite,
 we do not parse the source code documents for classes, methods, and so on.
@@ -162,10 +162,10 @@ We create two distributions from all unique terms from both corpora.
 That is, each vector is of the same length and contain zero values for terms not in its respective corpus.
 We measure the similarity of the two word-vectors using cosine distance.
 
-To answer RQ2, we follow Thomas et al.~\cite{Thomas-etal:2011} 
+To answer RQ2, we follow Thomas et al.~\cite{Thomas-etal:2011}
 and use topic distinctness to evaluate our topic models.
 Distinct topics are topics with dissimilar word probabilities to all other topics in the model.
-Using this metric will also allow a comparison to the results of Thomas et al.~\cite{Thomas-etal:2011}. 
+Using this metric will also allow a comparison to the results of Thomas et al.~\cite{Thomas-etal:2011}.
 Topic distinctness has also been shown to be an effective measure for qualitative
 comparison of topic models in context of visualization~\cite{Wei-etal:2010, Chuang-etal:2012}.
 Although Chang et al.~\cite{Chang-etal:2009} conclude that evaluating topic models
@@ -212,23 +212,23 @@ TD(\phi_{z_i})
 
 
 RQ1 asks whether a corpus generated from changesets have similar terms
-as a corpus generated from a release.
+as a corpus generated from a snapshot.
 We expected to find that set of unique terms in the changeset corpus to be
-a superset of the set of unique terms in the release corpus.
+a superset of the set of unique terms in the snapshot corpus.
 Interestingly, this holds true for \jodatime\ and \aspectj,
 but not for \ant\ and \postgres.
-Further inspection shows that 2 terms appear in the \ant\ release corpus that do not appear in the changeset corpus,
+Further inspection shows that 2 terms appear in the \ant\ snapshot corpus that do not appear in the changeset corpus,
 and 19 terms appear in \postgres's respective corpora.
 However, these anomalies appear to have been file encoding errors that
-had been introduced into the version history.
+had been introduced into the version history and resolved before the release.
 For example, one of the terms for \ant\ was ``rapha''. This is due
 to an encoding error in the \texttt{KEYS} file for a developer named
-``Rapha\"{e}l Luta''. 
+``Rapha\"{e}l Luta''.
 Similar encoding errors were found for the remaining 20 terms.
 
 To answer RQ1, we created two word distributions that represented the unique
 terms from both corpora for each system.
-Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant\ release corpus.
+Figure~\ref{fig:antdist1} shows the normalized distribution of the \ant\ snapshot corpus.
 Likewise, Figure~\ref{fig:antdist2} shows the distribution of the \ant\ changeset corpus.
 We measure the differences between the two distributions using the simple
 cosine distance. For \ant, we had the lowest cosine distance of $0.00396$.
@@ -244,7 +244,7 @@ $0.06540$. \postgres\ had the largest, $0.33957$.
 \centering
 \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=\textwidth]{dist1}
-    \caption{Normalized distribution of the release corpus}
+    \caption{Normalized distribution of the snapshot corpus}
     \label{fig:antdist1}
 \end{subfigure}
 \begin{subfigure}[b]{0.4\textwidth}
@@ -297,7 +297,7 @@ The highest related change adds helper methods to the
 \caption{Comparison of topic distinctness scores (RQ2)}
 \begin{tabular}{lrr}
     \toprule
-    System      & Release TD & Changeset TD \\
+    System      & Snapshot TD & Changeset TD \\
     \midrule
     \ant        & 2.31      & \textbf{3.17}      \\
     \aspectj    & \textbf{3.75}      & 2.78      \\

@@ -57,7 +57,7 @@ Hindle et al.~\cite{Hindle_etal:2012} validate the use LDA topics during softwar
 \caption{Subject systems version and corpora description}
 \begin{tabular}{lll rr rr rr}
     \toprule
-            & Release & Commit & Release No.  & Changeset No. & Release No.    & Changeset No.  & Release No.    & Changeset No.\\
+            & Snapshot & Commit & Snapshot No.  & Changeset No. & Snapshot No.    & Changeset No.  & Snapshot No.    & Changeset No.\\
      System    & Version & SHA  & Documents   & Documents    & Unique Terms  & Unique Terms  & Total Terms   & Total Terms \\
     \midrule
     \ant        & 1.9.4   & 1c927b15 & 2208      & 12,996     & 17,986         & 74,681         & 1,066,446       & 11,801,353 \\
@@ -70,18 +70,3 @@ Hindle et al.~\cite{Hindle_etal:2012} validate the use LDA topics during softwar
 \end{table*}
 
 Although our work is preliminary, we believe that it is the first to consider modeling changesets in lieu of snapshots to support software maintenance. Like Rao et al.~\cite{Rao-etal:2011}, we are targeting problems that require an up-to-date topic model. Thus, the expense of training a topic model is a key consideration for us, unlike for Thomas et al.~\cite{Thomas-etal:2011} or Hindle et al.~\cite{Hindle-etal:2009,Hindle_etal:2012}.
-
-\begin{comment}
-Software source code is often compiled through a series of commits that change the source code between releases.
-These commits can be of many sizes from a small change in a function to additions of many functions.
-The person who commits these changes is seen as being the owner of the code~\cite{Corley-etal:2012}.
-The owner of the code is assumed to have a greater working knowledge of the code in question than other members of the design team.
-Being able to determine who would know most about a certain topic would allow someone working on a design team to know who is best fit to solve an issue pertaining to a certain topic.
-Unfortunately, most of the topic modeling that is currently used to determine ownership is only based off of larger releases rather than intermediate changes.
-These types of topic models can be problematic if you are working between releases.
-Think for a second that you are a project manager at a software company with a rapidly approaching release deadline.
-There is a problem of some sort with the code, and through the use of a topic model you could be able to identify precisely who should be delegated the task of fixing it.
-With the type of dynamic topic model like we are proposing, this is easily attainable.
-A model based on the change sets between commits would allow software developers never to have an obsolete model.
-While there has been some research in the use of commit log comments~\cite{Hindle-etal:2009}, we are not aware of any analyses of topic models that have been created by using the differences of the source code between commits.
-\end{comment}
