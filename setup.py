@@ -26,7 +26,7 @@ setup(
     long_description=readme,
     author='Christopher S. Corley',
     author_email='cscorley@crimson.ua.edu',
-    url='https://github.com/cscorley/topic-of-change',
+    url='https://github.com/cscorley/mud2014-modeling-changeset-topics',
     license=license,
     packages=find_packages(exclude=('tests', 'docs', 'data', 'paper', 'lib')),
     keywords = [],
@@ -38,11 +38,10 @@ setup(
         "Topic :: Software Development :: Version Control",
         "Topic :: Text Processing",
         ],
-    py_modules=['mct'],
+    py_modules=['mtc'],
     install_requires=requirementstxt,
     entry_points='''
         [console_scripts]
         mct=src:main
     ''',
 )
-
