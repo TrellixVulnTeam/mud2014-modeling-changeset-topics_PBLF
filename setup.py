@@ -38,7 +38,7 @@ setup(
         "Topic :: Software Development :: Version Control",
         "Topic :: Text Processing",
         ],
-    py_modules=['mtc'],
+    py_modules=['mct'],
     install_requires=requirementstxt,
     entry_points='''
         [console_scripts]
